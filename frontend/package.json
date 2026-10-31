@@ -9,6 +9,7 @@
     "lint": "eslint src && node scripts/boundaries.mjs",
     "test": "vitest run",
     "test:e2e": "node scripts/e2e.mjs",
+    "test:motion": "node scripts/motion-e2e.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1"
   },

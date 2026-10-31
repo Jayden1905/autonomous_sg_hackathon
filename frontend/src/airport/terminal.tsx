@@ -159,7 +159,7 @@ function Tower() {
   );
 }
 
-export function Terminal() {
+export const Terminal = memo(function Terminal() {
   return (
     <group>
       <Concourse position={[0, 0, 0]} length={206} />
@@ -178,4 +178,5 @@ export function Terminal() {
       ))}
     </group>
   );
-}
+});
+import { memo } from "react";

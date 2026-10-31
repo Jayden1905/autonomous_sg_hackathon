@@ -114,6 +114,25 @@ Flight context, negotiation, rule details, and decision history are the first pr
 
 Replay means stepping through recorded negotiation turns. Aircraft movement replay is not supported by the current backend. Comparison is an on-demand table in history, not a permanent set of summary cards.
 
+### Ambient motion and weather
+
+Bill requested an animated airport after the integrated workspace was approved.
+Decorative aircraft may taxi, depart, approach and circle while the selected
+flight remains a clearly labelled proposal preview. Background traffic does not
+represent an executed negotiation, an approved decision or real aircraft telemetry.
+Runway traffic only uses explicitly mapped, open, unblocked scenario runways.
+
+The compact Scene disclosure offers pause, weather and Auto/Eco/High quality.
+"From scenario" infers a visual preset from the disruption text; it is not a weather
+feed. Manual presets do not change backend rules. Rain, haze and damp surfaces must
+remain restrained enough to read the airport and overlays. Avoid lightning flashes,
+automatic camera sweeps and unnecessary postprocessing.
+
+Reduced motion disables ambient animation automatically. Hidden tabs pause it;
+paused scenes return to demand rendering. Narrow screens and slow devices use a
+smaller rendering budget. Animation must not cause frame-rate React state updates
+or imply that a no-legal-option result has been executed.
+
 ## Visual acceptance check
 
 - Does the detailed 3D airport still dominate the view?
