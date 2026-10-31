@@ -1,6 +1,10 @@
-# Loads GITHUB_TOKEN from .env (gitignored). Never commit tokens.
+# Loads GITHUB_TOKEN and the Anthropic settings from .env (gitignored). Never commit tokens.
+# Copy .env.example to .env to start.
 -include .env
 export GITHUB_TOKEN
+# Exported only when set, so an unset one falls back to the shell or the SDK default
+# instead of reaching the agents as an empty string.
+$(foreach v,ANTHROPIC_API_KEY ANTHROPIC_BASE_URL ATC_MODEL,$(if $($(v)),$(eval export $(v))))
 
 REPO := https://github.com/Jayden1905/autonomous_sg_hackathon.git
 # Token goes through a credential helper, not the URL, so it never shows in `ps`.

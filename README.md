@@ -59,10 +59,11 @@ missing connections and crews running into overtime while the calls happen.
 ## Running it
 
 ```bash
+cp .env.example .env             # then set ANTHROPIC_API_KEY (and GITHUB_TOKEN for push/pull)
 make setup                       # uv venv + deps
 make test                        # rule and orchestrator tests, no API calls
 make demo-mock                   # scripted agents on the sample scenario
-make demo                        # real agents (needs ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN)
+make demo                        # real agents (needs ANTHROPIC_API_KEY in .env)
 
 # from the DOT dataset (put flights.csv under data/, it is gitignored)
 uv run atc from-dot data/flights.csv --row 3 --out trace.json
