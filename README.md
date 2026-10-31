@@ -56,21 +56,36 @@ missing connections and crews running into overtime while the calls happen.
 | Choose to accept or counter | Veto an accept on an infeasible plan |
 | | Pick the fallback when turns run out |
 
-## Running it
+## Running it (local demo, three commands)
+
+Needs `git` and [`uv`](https://docs.astral.sh/uv/getting-started/installation/). Python is fetched by uv.
 
 ```bash
-cp .env.example .env             # then set ANTHROPIC_API_KEY (and GITHUB_TOKEN for push/pull)
-make setup                       # uv venv + deps
-make test                        # rule and orchestrator tests, no API calls
-make demo-mock                   # scripted agents on the sample scenario
-make demo                        # real agents (needs ANTHROPIC_API_KEY in .env)
-
-# from the DOT dataset (put flights.csv under data/, it is gitignored)
-uv run atc from-dot data/flights.csv --row 3 --out trace.json
-uv run atc batch data/flights.csv --n 50 --mock --out results.jsonl
+cp .env.example .env    # set ANTHROPIC_API_KEY (only needed for real agents)
+make setup              # venv + deps, ~1 min
+make demo-check         # preflight: tells you exactly what is missing, if anything
+make serve              # API on http://localhost:8000
 ```
 
-Model defaults to `claude-opus-5-5`; override with `ATC_MODEL` or `--model`.
+Then open:
+
+| | |
+|---|---|
+| `http://localhost:8000/semantic/` | the semantic model: ontology, rules with sources, operator knowledge, each agent's brief |
+| `http://localhost:8000/docs` | every endpoint; try `POST /negotiate/stream` with a scenario from `GET /scenarios` |
+
+Terminal demos, no server needed:
+
+```bash
+make demo-mock          # scripted agents, no API key, under a second
+make demo               # real agents on the UA599 storm scenario, ~1 min
+make demo DEMO_SCENARIO=scenarios/demo_storm_vx204_divert.json   # the "no legal option" case
+make test               # 87 tests, no API calls
+```
+
+The organisers' dataset is optional for the demo scenarios. To enable the SQL tool and
+`/dot/scenarios`, put the Challenge 2 zip in the repo root and run `make data`.
+Model defaults to `claude-opus-5-5`; override with `ATC_MODEL` in `.env`.
 
 ## Frontend (React, separate)
 

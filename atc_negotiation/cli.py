@@ -60,7 +60,17 @@ def _print_trace(tr: NegotiationTrace) -> None:
         print(f"  reason: {tr.fallback_reason}")
 
 
+def _preflight_credentials(mock: bool) -> None:
+    """Fail with one clear line instead of an SDK stack trace when no key is configured."""
+    import os
+    if mock or os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"):
+        return
+    sys.exit("no Anthropic credentials: set ANTHROPIC_API_KEY in .env (cp .env.example .env), "
+             "or add --mock to run scripted agents without an API key")
+
+
 def _run(s: Scenario, args) -> NegotiationTrace:
+    _preflight_credentials(args.mock)
     agents = make_agents(mock=args.mock, model=args.model)
     tr = negotiate(s, agents, max_turns=args.max_turns)
     _print_trace(tr)
@@ -83,6 +93,7 @@ def cmd_from_dot(args) -> None:
 
 
 def cmd_batch(args) -> None:
+    _preflight_credentials(args.mock)
     agents = make_agents(mock=args.mock, model=args.model)
     out = Path(args.out).open("w") if args.out else None
     stats = {"consensus": 0, "fallback": 0, "no_legal_option": 0, "vetoes": 0, "turns": 0}

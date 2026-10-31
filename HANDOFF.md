@@ -1,41 +1,38 @@
 # Demo handoff
 
-State as pushed on 31 Oct 2026. Everything below is verified against commit `e40744b` on `main`.
+The demo runs on a laptop. Everything below is verified against `main`.
 
-## Start / stop (on the VM)
+## Local demo, start to finish
 
 ```bash
-make setup                                                  # once per clone
-make data                                                   # needs the organisers' zip in the repo root
-uv run uvicorn atc_negotiation.api:app --host 0.0.0.0 --port 8000 --reload --reload-include '*.yaml'
-cloudflared tunnel --url http://localhost:8000 --no-autoupdate      # optional public URL, random, dies with the process
+git clone https://github.com/Jayden1905/autonomous_sg_hackathon.git && cd autonomous_sg_hackathon
+cp .env.example .env        # paste ANTHROPIC_API_KEY
+make setup                  # ~1 min
+make demo-check             # prints ✓ / ✗ per item and the next command
+make serve                  # http://localhost:8000, Ctrl-C to stop
 ```
 
-`--host 0.0.0.0` so Tailscale can reach it (`make serve` binds loopback only). `--reload --reload-include '*.yaml'`
-means a `git pull`, or an edit to `semantic/*.yaml`, is picked up without a restart. Log: `/tmp/atc_serve.log`
-(append with `>>`; a `>` redirect from a second command truncates the running server's log).
+`make demo-check` is the thing to run first on the demo machine. It verifies uv, deps, the API key, the
+semantic model, a mock negotiation, and whether :8000 is free, and names the fix for anything missing.
 
-### Restarting, and the one trap
+Dataset: optional. The demo scenarios are self-contained. With the organisers' zip in the repo root,
+`make data` enables the agents' SQL tool and `/dot/scenarios`.
 
-Under `--reload` the parent `uv run uvicorn …` process holds the port and a child worker answers requests.
-
-- Code or YAML changed: nothing to do, it reloads. For anything else, `touch atc_negotiation/semantic/__init__.py`.
-- **Never `kill` the worker pid.** The parent keeps the port but does not respawn, so every request hangs with no
-  response (connection accepted, nothing answers). If that has happened, `touch` a watched file to respawn.
-- Full stop: kill the parent (`pgrep -af 'uvicorn atc_negotiation'`, the `uv run …` line), wait until
-  `ss -ltnp | grep :8000` is empty, then start again. Never start a second copy while one is listening.
+Stopping: Ctrl-C in the `make serve` terminal. If a server is already on :8000 from earlier, `make demo-check`
+says so; stop that one before starting another, never run two.
 
 ## Where to look
 
 | What | URL |
 |---|---|
-| Health, shows model and whether the dataset is present | `/health` |
-| API docs (every endpoint, every event schema) | `/docs` |
-| Semantic model viewer (ontology, rules, sources, operator knowledge, agent briefs) | `/semantic/` |
-| Elicitation: the questions the documents left open, coverage, answers | `/semantic/elicitation` |
+| Health, shows model and whether the dataset is present | `http://localhost:8000/health` |
+| API docs (every endpoint, every event schema) | `http://localhost:8000/docs` |
+| Semantic model viewer (ontology, rules, sources, operator knowledge, agent briefs) | `http://localhost:8000/semantic/` |
+| Elicitation: the questions the documents left open, coverage, answers | `http://localhost:8000/semantic/elicitation` |
 | Live negotiation stream for the FE | `POST /negotiate/stream` |
 
-Tailnet: `http://100.97.150.86:8000`. Public tunnel URL: whatever `cloudflared` prints; it changes every run.
+Terminal alternative with no server: `make demo` (real agents, ~1 min) or `make demo-mock` (instant, no key).
+Pick the scenario with `make demo DEMO_SCENARIO=scenarios/demo_storm_vx204_divert.json`.
 
 ## The four scenarios (`GET /scenarios`)
 
