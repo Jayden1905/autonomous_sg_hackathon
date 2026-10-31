@@ -1,0 +1,4586 @@
+{
+  "generated_by": "frontend/scripts/reference.py",
+  "source": "Organisers' airlines.csv, airports.csv and flights.csv (US DOT 2015). 'disrupted' counts only flights that meet the brief's disruption filter.",
+  "airlines": {
+    "AA": {
+      "iata": "AA",
+      "name": "American Airlines Inc.",
+      "disrupted": {
+        "flights": 38919,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "AS": {
+      "iata": "AS",
+      "name": "Alaska Airlines Inc.",
+      "disrupted": {
+        "flights": 5599,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "B6": {
+      "iata": "B6",
+      "name": "JetBlue Airways",
+      "disrupted": {
+        "flights": 19411,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "DL": {
+      "iata": "DL",
+      "name": "Delta Air Lines Inc.",
+      "disrupted": {
+        "flights": 33509,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "EV": {
+      "iata": "EV",
+      "name": "Atlantic Southeast Airlines",
+      "disrupted": {
+        "flights": 35872,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "F9": {
+      "iata": "F9",
+      "name": "Frontier Airlines Inc.",
+      "disrupted": {
+        "flights": 6888,
+        "median_arrival_delay_min": 83
+      }
+    },
+    "HA": {
+      "iata": "HA",
+      "name": "Hawaiian Airlines Inc.",
+      "disrupted": {
+        "flights": 2176,
+        "median_arrival_delay_min": 40
+      }
+    },
+    "MQ": {
+      "iata": "MQ",
+      "name": "American Eagle Airlines Inc.",
+      "disrupted": {
+        "flights": 24306,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "NK": {
+      "iata": "NK",
+      "name": "Spirit Air Lines",
+      "disrupted": {
+        "flights": 9099,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "OO": {
+      "iata": "OO",
+      "name": "Skywest Airlines Inc.",
+      "disrupted": {
+        "flights": 40437,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "UA": {
+      "iata": "UA",
+      "name": "United Air Lines Inc.",
+      "disrupted": {
+        "flights": 34927,
+        "median_arrival_delay_min": 73
+      }
+    },
+    "US": {
+      "iata": "US",
+      "name": "US Airways Inc.",
+      "disrupted": {
+        "flights": 8443,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "VX": {
+      "iata": "VX",
+      "name": "Virgin America",
+      "disrupted": {
+        "flights": 4226,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "WN": {
+      "iata": "WN",
+      "name": "Southwest Airlines Co.",
+      "disrupted": {
+        "flights": 94962,
+        "median_arrival_delay_min": 54
+      }
+    }
+  },
+  "airports": {
+    "ABE": {
+      "iata": "ABE",
+      "name": "Lehigh Valley International Airport",
+      "city": "Allentown",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 40.65236,
+      "longitude": -75.4404,
+      "disrupted": {
+        "departures": 141,
+        "arrivals": 127,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "ABI": {
+      "iata": "ABI",
+      "name": "Abilene Regional Airport",
+      "city": "Abilene",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 32.41132,
+      "longitude": -99.6819,
+      "disrupted": {
+        "departures": 146,
+        "arrivals": 192,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "ABQ": {
+      "iata": "ABQ",
+      "name": "Albuquerque International Sunport",
+      "city": "Albuquerque",
+      "state": "NM",
+      "country": "USA",
+      "latitude": 35.04022,
+      "longitude": -106.60919,
+      "disrupted": {
+        "departures": 1489,
+        "arrivals": 1504,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "ABR": {
+      "iata": "ABR",
+      "name": "Aberdeen Regional Airport",
+      "city": "Aberdeen",
+      "state": "SD",
+      "country": "USA",
+      "latitude": 45.44906,
+      "longitude": -98.42183,
+      "disrupted": {
+        "departures": 40,
+        "arrivals": 27,
+        "median_arrival_delay_min": 46
+      }
+    },
+    "ABY": {
+      "iata": "ABY",
+      "name": "Southwest Georgia Regional Airport",
+      "city": "Albany",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 31.53552,
+      "longitude": -84.19447,
+      "disrupted": {
+        "departures": 67,
+        "arrivals": 60,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "ACK": {
+      "iata": "ACK",
+      "name": "Nantucket Memorial Airport",
+      "city": "Nantucket",
+      "state": "MA",
+      "country": "USA",
+      "latitude": 41.25305,
+      "longitude": -70.06018,
+      "disrupted": {
+        "departures": 43,
+        "arrivals": 27,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "ACT": {
+      "iata": "ACT",
+      "name": "Waco Regional Airport",
+      "city": "Waco",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 31.61129,
+      "longitude": -97.23052,
+      "disrupted": {
+        "departures": 165,
+        "arrivals": 136,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "ACV": {
+      "iata": "ACV",
+      "name": "Arcata Airport",
+      "city": "Arcata/Eureka",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 40.97812,
+      "longitude": -124.10862,
+      "disrupted": {
+        "departures": 164,
+        "arrivals": 181,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "ACY": {
+      "iata": "ACY",
+      "name": "Atlantic City International Airport",
+      "city": "Atlantic City",
+      "state": "NJ",
+      "country": "USA",
+      "latitude": 39.45758,
+      "longitude": -74.57717,
+      "disrupted": {
+        "departures": 242,
+        "arrivals": 278,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "ADK": {
+      "iata": "ADK",
+      "name": "Adak Airport",
+      "city": "Adak",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 51.87796,
+      "longitude": -176.64603,
+      "disrupted": {
+        "departures": 4,
+        "arrivals": 4,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "ADQ": {
+      "iata": "ADQ",
+      "name": "Kodiak Airport",
+      "city": "Kodiak",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 57.74997,
+      "longitude": -152.49386,
+      "disrupted": {
+        "departures": 16,
+        "arrivals": 10,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "AEX": {
+      "iata": "AEX",
+      "name": "Alexandria International Airport",
+      "city": "Alexandria",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 31.32737,
+      "longitude": -92.54856,
+      "disrupted": {
+        "departures": 260,
+        "arrivals": 225,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "AGS": {
+      "iata": "AGS",
+      "name": "Augusta Regional Airport (Bush Field)",
+      "city": "Augusta",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 33.36996,
+      "longitude": -81.9645,
+      "disrupted": {
+        "departures": 153,
+        "arrivals": 134,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "AKN": {
+      "iata": "AKN",
+      "name": "King Salmon Airport",
+      "city": "King Salmon",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 58.6768,
+      "longitude": -156.64922,
+      "disrupted": {
+        "departures": 3,
+        "arrivals": 4,
+        "median_arrival_delay_min": 24
+      }
+    },
+    "ALB": {
+      "iata": "ALB",
+      "name": "Albany International Airport",
+      "city": "Albany",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 42.74812,
+      "longitude": -73.80298,
+      "disrupted": {
+        "departures": 337,
+        "arrivals": 537,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "ALO": {
+      "iata": "ALO",
+      "name": "Waterloo Regional Airport",
+      "city": "Waterloo",
+      "state": "IA",
+      "country": "USA",
+      "latitude": 42.55708,
+      "longitude": -92.40034,
+      "disrupted": {
+        "departures": 40,
+        "arrivals": 59,
+        "median_arrival_delay_min": 71
+      }
+    },
+    "AMA": {
+      "iata": "AMA",
+      "name": "Rick Husband Amarillo International Airport",
+      "city": "Amarillo",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 35.21937,
+      "longitude": -101.70593,
+      "disrupted": {
+        "departures": 324,
+        "arrivals": 273,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "ANC": {
+      "iata": "ANC",
+      "name": "Ted Stevens Anchorage International Airport",
+      "city": "Anchorage",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 61.17432,
+      "longitude": -149.99619,
+      "disrupted": {
+        "departures": 618,
+        "arrivals": 752,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "APN": {
+      "iata": "APN",
+      "name": "Alpena County Regional Airport",
+      "city": "Alpena",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 45.07807,
+      "longitude": -83.56029,
+      "disrupted": {
+        "departures": 53,
+        "arrivals": 34,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "ASE": {
+      "iata": "ASE",
+      "name": "Aspen-Pitkin County Airport",
+      "city": "Aspen",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 39.22316,
+      "longitude": -106.86885,
+      "disrupted": {
+        "departures": 502,
+        "arrivals": 344,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "ATL": {
+      "iata": "ATL",
+      "name": "Hartsfield-Jackson Atlanta International Airport",
+      "city": "Atlanta",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 33.64044,
+      "longitude": -84.42694,
+      "disrupted": {
+        "departures": 17606,
+        "arrivals": 18504,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "ATW": {
+      "iata": "ATW",
+      "name": "Appleton International Airport",
+      "city": "Appleton",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 44.25741,
+      "longitude": -88.51948,
+      "disrupted": {
+        "departures": 189,
+        "arrivals": 153,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "AUS": {
+      "iata": "AUS",
+      "name": "Austin-Bergstrom International Airport",
+      "city": "Austin",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 30.19453,
+      "longitude": -97.66987,
+      "disrupted": {
+        "departures": 3008,
+        "arrivals": 3174,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "AVL": {
+      "iata": "AVL",
+      "name": "Asheville Regional Airport",
+      "city": "Asheville",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 35.43619,
+      "longitude": -82.54181,
+      "disrupted": {
+        "departures": 188,
+        "arrivals": 167,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "AVP": {
+      "iata": "AVP",
+      "name": "Wilkes-Barre/Scranton International Airport",
+      "city": "Wilkes-Barre/Scranton",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 41.33815,
+      "longitude": -75.72427,
+      "disrupted": {
+        "departures": 76,
+        "arrivals": 102,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "AZO": {
+      "iata": "AZO",
+      "name": "Kalamazoo/Battle Creek International Airport",
+      "city": "Kalamazoo",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 42.23488,
+      "longitude": -85.55206,
+      "disrupted": {
+        "departures": 126,
+        "arrivals": 128,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "BDL": {
+      "iata": "BDL",
+      "name": "Bradley International Airport",
+      "city": "Windsor Locks",
+      "state": "CT",
+      "country": "USA",
+      "latitude": 41.93887,
+      "longitude": -72.68323,
+      "disrupted": {
+        "departures": 1062,
+        "arrivals": 1374,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "BET": {
+      "iata": "BET",
+      "name": "Bethel Airport",
+      "city": "Bethel",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 60.77978,
+      "longitude": -161.838,
+      "disrupted": {
+        "departures": 66,
+        "arrivals": 40,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "BFL": {
+      "iata": "BFL",
+      "name": "Meadows Field",
+      "city": "Bakersfield",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 35.4336,
+      "longitude": -119.05677,
+      "disrupted": {
+        "departures": 178,
+        "arrivals": 212,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "BGM": {
+      "iata": "BGM",
+      "name": "Greater Binghamton Airport",
+      "city": "Binghamton",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 42.20848,
+      "longitude": -75.97961,
+      "disrupted": {
+        "departures": 13,
+        "arrivals": 16,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "BGR": {
+      "iata": "BGR",
+      "name": "Bangor International Airport",
+      "city": "Bangor",
+      "state": "ME",
+      "country": "USA",
+      "latitude": 44.80744,
+      "longitude": -68.82814,
+      "disrupted": {
+        "departures": 6,
+        "arrivals": 16,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "BHM": {
+      "iata": "BHM",
+      "name": "Birmingham-Shuttlesworth International Airport",
+      "city": "Birmingham",
+      "state": "AL",
+      "country": "USA",
+      "latitude": 33.56294,
+      "longitude": -86.75355,
+      "disrupted": {
+        "departures": 832,
+        "arrivals": 840,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "BIL": {
+      "iata": "BIL",
+      "name": "Billings Logan International Airport",
+      "city": "Billings",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 45.80766,
+      "longitude": -108.54286,
+      "disrupted": {
+        "departures": 131,
+        "arrivals": 150,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "BIS": {
+      "iata": "BIS",
+      "name": "Bismarck Municipal Airport",
+      "city": "Bismarck",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 46.77411,
+      "longitude": -100.74672,
+      "disrupted": {
+        "departures": 225,
+        "arrivals": 249,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "BJI": {
+      "iata": "BJI",
+      "name": "Bemidji Regional Airport",
+      "city": "Bemidji",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 47.50942,
+      "longitude": -94.93372,
+      "disrupted": {
+        "departures": 25,
+        "arrivals": 14,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "BLI": {
+      "iata": "BLI",
+      "name": "Bellingham International Airport",
+      "city": "Bellingham",
+      "state": "WA",
+      "country": "USA",
+      "latitude": 48.79275,
+      "longitude": -122.53753,
+      "disrupted": {
+        "departures": 9,
+        "arrivals": 24,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "BMI": {
+      "iata": "BMI",
+      "name": "Central Illinois Regional Airport at Bloomington-Normal",
+      "city": "Bloomington",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 40.47799,
+      "longitude": -88.91595,
+      "disrupted": {
+        "departures": 171,
+        "arrivals": 188,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "BNA": {
+      "iata": "BNA",
+      "name": "Nashville International Airport",
+      "city": "Nashville",
+      "state": "TN",
+      "country": "USA",
+      "latitude": 36.12448,
+      "longitude": -86.67818,
+      "disrupted": {
+        "departures": 3453,
+        "arrivals": 3421,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "BOI": {
+      "iata": "BOI",
+      "name": "Boise Airport (Boise Air Terminal)",
+      "city": "Boise",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 43.56444,
+      "longitude": -116.22278,
+      "disrupted": {
+        "departures": 784,
+        "arrivals": 950,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "BOS": {
+      "iata": "BOS",
+      "name": "Gen. Edward Lawrence Logan International Airport",
+      "city": "Boston",
+      "state": "MA",
+      "country": "USA",
+      "latitude": 42.36435,
+      "longitude": -71.00518,
+      "disrupted": {
+        "departures": 6488,
+        "arrivals": 8472,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "BPT": {
+      "iata": "BPT",
+      "name": "Jack Brooks Regional Airport (Southeast Texas Regional)",
+      "city": "Beaumont/Port Arthur",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 29.95083,
+      "longitude": -94.02069,
+      "disrupted": {
+        "departures": 106,
+        "arrivals": 79,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "BQK": {
+      "iata": "BQK",
+      "name": "Brunswick Golden Isles Airport",
+      "city": "Brunswick",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 31.25903,
+      "longitude": -81.46631,
+      "disrupted": {
+        "departures": 50,
+        "arrivals": 52,
+        "median_arrival_delay_min": 75
+      }
+    },
+    "BQN": {
+      "iata": "BQN",
+      "name": "Rafael Hernández Airport",
+      "city": "Aguadilla",
+      "state": "PR",
+      "country": "USA",
+      "latitude": 18.49486,
+      "longitude": -67.12944,
+      "disrupted": {
+        "departures": 170,
+        "arrivals": 128,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "BRD": {
+      "iata": "BRD",
+      "name": "Brainerd Lakes Regional Airport",
+      "city": "Brainerd",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 46.39786,
+      "longitude": -94.13723,
+      "disrupted": {
+        "departures": 20,
+        "arrivals": 20,
+        "median_arrival_delay_min": 46
+      }
+    },
+    "BRO": {
+      "iata": "BRO",
+      "name": "Brownsville/South Padre Island International Airport",
+      "city": "Brownsville",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 25.90683,
+      "longitude": -97.42586,
+      "disrupted": {
+        "departures": 145,
+        "arrivals": 151,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "BRW": {
+      "iata": "BRW",
+      "name": "Wiley Post-Will Rogers Memorial Airport",
+      "city": "Barrow",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 71.28545,
+      "longitude": -156.766,
+      "disrupted": {
+        "departures": 76,
+        "arrivals": 64,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "BTM": {
+      "iata": "BTM",
+      "name": "Bert Mooney Airport",
+      "city": "Butte",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 45.9548,
+      "longitude": -112.49746,
+      "disrupted": {
+        "departures": 20,
+        "arrivals": 7,
+        "median_arrival_delay_min": 116
+      }
+    },
+    "BTR": {
+      "iata": "BTR",
+      "name": "Baton Rouge Metropolitan Airport",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 30.53316,
+      "longitude": -91.14963,
+      "disrupted": {
+        "departures": 504,
+        "arrivals": 508,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "BTV": {
+      "iata": "BTV",
+      "name": "Burlington International Airport",
+      "city": "Burlington",
+      "state": "VT",
+      "country": "USA",
+      "latitude": 44.473,
+      "longitude": -73.15031,
+      "disrupted": {
+        "departures": 189,
+        "arrivals": 240,
+        "median_arrival_delay_min": 74
+      }
+    },
+    "BUF": {
+      "iata": "BUF",
+      "name": "Buffalo Niagara International Airport",
+      "city": "Buffalo",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 42.94052,
+      "longitude": -78.73217,
+      "disrupted": {
+        "departures": 983,
+        "arrivals": 1269,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "BUR": {
+      "iata": "BUR",
+      "name": "Bob Hope Airport (Hollywood Burbank Airport)",
+      "city": "Burbank",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 34.20062,
+      "longitude": -118.3585,
+      "disrupted": {
+        "departures": 1381,
+        "arrivals": 1338,
+        "median_arrival_delay_min": 51
+      }
+    },
+    "BWI": {
+      "iata": "BWI",
+      "name": "Baltimore-Washington International Airport",
+      "city": "Baltimore",
+      "state": "MD",
+      "country": "USA",
+      "latitude": 39.1754,
+      "longitude": -76.6682,
+      "disrupted": {
+        "departures": 6330,
+        "arrivals": 6180,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "BZN": {
+      "iata": "BZN",
+      "name": "Bozeman Yellowstone International Airport (Gallatin Field Airport)",
+      "city": "Bozeman",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 45.7769,
+      "longitude": -111.15301,
+      "disrupted": {
+        "departures": 189,
+        "arrivals": 194,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "CAE": {
+      "iata": "CAE",
+      "name": "Columbia Metropolitan Airport",
+      "city": "Columbia",
+      "state": "SC",
+      "country": "USA",
+      "latitude": 33.93884,
+      "longitude": -81.11954,
+      "disrupted": {
+        "departures": 320,
+        "arrivals": 358,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "CAK": {
+      "iata": "CAK",
+      "name": "Akron-Canton Regional Airport",
+      "city": "Akron",
+      "state": "OH",
+      "country": "USA",
+      "latitude": 40.91631,
+      "longitude": -81.44247,
+      "disrupted": {
+        "departures": 289,
+        "arrivals": 511,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "CDC": {
+      "iata": "CDC",
+      "name": "Cedar City Regional Airport",
+      "city": "Cedar City",
+      "state": "UT",
+      "country": "USA",
+      "latitude": 37.70097,
+      "longitude": -113.09858,
+      "disrupted": {
+        "departures": 36,
+        "arrivals": 13,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "CDV": {
+      "iata": "CDV",
+      "name": "Merle K. (Mudhole) Smith Airport",
+      "city": "Cordova",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 60.49183,
+      "longitude": -145.47765,
+      "disrupted": {
+        "departures": 47,
+        "arrivals": 42,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "CEC": {
+      "iata": "CEC",
+      "name": "Del Norte County Airport (Jack McNamara Field)",
+      "city": "Crescent City",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 41.78016,
+      "longitude": -124.23653,
+      "disrupted": {
+        "departures": 17,
+        "arrivals": 18,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "CHA": {
+      "iata": "CHA",
+      "name": "Chattanooga Metropolitan Airport (Lovell Field)",
+      "city": "Chattanooga",
+      "state": "TN",
+      "country": "USA",
+      "latitude": 35.03527,
+      "longitude": -85.20379,
+      "disrupted": {
+        "departures": 296,
+        "arrivals": 275,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "CHO": {
+      "iata": "CHO",
+      "name": "Charlottesville-Albemarle Airport",
+      "city": "Charlottesville",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 38.13864,
+      "longitude": -78.45286,
+      "disrupted": {
+        "departures": 188,
+        "arrivals": 209,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "CHS": {
+      "iata": "CHS",
+      "name": "Charleston International Airport/Charleston AFB",
+      "city": "Charleston",
+      "state": "SC",
+      "country": "USA",
+      "latitude": 32.89865,
+      "longitude": -80.04051,
+      "disrupted": {
+        "departures": 703,
+        "arrivals": 693,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "CID": {
+      "iata": "CID",
+      "name": "The Eastern Iowa Airport",
+      "city": "Cedar Rapids",
+      "state": "IA",
+      "country": "USA",
+      "latitude": 41.88459,
+      "longitude": -91.71087,
+      "disrupted": {
+        "departures": 622,
+        "arrivals": 574,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "CIU": {
+      "iata": "CIU",
+      "name": "Chippewa County International Airport",
+      "city": "Sault Ste. Marie",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 46.25075,
+      "longitude": -84.47239,
+      "disrupted": {
+        "departures": 48,
+        "arrivals": 42,
+        "median_arrival_delay_min": 75
+      }
+    },
+    "CLD": {
+      "iata": "CLD",
+      "name": "McClellan-Palomar Airport",
+      "city": "San Diego",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 33.12723,
+      "longitude": -117.27873,
+      "disrupted": {
+        "departures": 43,
+        "arrivals": 43,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "CLE": {
+      "iata": "CLE",
+      "name": "Cleveland Hopkins International Airport",
+      "city": "Cleveland",
+      "state": "OH",
+      "country": "USA",
+      "latitude": 41.41089,
+      "longitude": -81.8494,
+      "disrupted": {
+        "departures": 1868,
+        "arrivals": 2707,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "CLL": {
+      "iata": "CLL",
+      "name": "Easterwood Airport",
+      "city": "College Station",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 30.58859,
+      "longitude": -96.36382,
+      "disrupted": {
+        "departures": 144,
+        "arrivals": 120,
+        "median_arrival_delay_min": 50
+      }
+    },
+    "CLT": {
+      "iata": "CLT",
+      "name": "Charlotte Douglas International Airport",
+      "city": "Charlotte",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 35.21401,
+      "longitude": -80.94313,
+      "disrupted": {
+        "departures": 4885,
+        "arrivals": 4383,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "CMH": {
+      "iata": "CMH",
+      "name": "Port Columbus International Airport",
+      "city": "Columbus",
+      "state": "OH",
+      "country": "USA",
+      "latitude": 39.99799,
+      "longitude": -82.89188,
+      "disrupted": {
+        "departures": 1726,
+        "arrivals": 1910,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "CMI": {
+      "iata": "CMI",
+      "name": "University of Illinois - Willard Airport",
+      "city": "Champaign/Urbana",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 40.03925,
+      "longitude": -88.27806,
+      "disrupted": {
+        "departures": 151,
+        "arrivals": 183,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "CMX": {
+      "iata": "CMX",
+      "name": "Houghton County Memorial Airport",
+      "city": "Hancock",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 47.16842,
+      "longitude": -88.48906,
+      "disrupted": {
+        "departures": 46,
+        "arrivals": 55,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "CNY": {
+      "iata": "CNY",
+      "name": "Canyonlands Field",
+      "city": "Moab",
+      "state": "UT",
+      "country": "USA",
+      "latitude": 38.75496,
+      "longitude": -109.75484,
+      "disrupted": {
+        "departures": 4,
+        "arrivals": 2,
+        "median_arrival_delay_min": 73
+      }
+    },
+    "COD": {
+      "iata": "COD",
+      "name": "Yellowstone Regional Airport",
+      "city": "Cody",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 44.52019,
+      "longitude": -109.0238,
+      "disrupted": {
+        "departures": 50,
+        "arrivals": 51,
+        "median_arrival_delay_min": 49
+      }
+    },
+    "COS": {
+      "iata": "COS",
+      "name": "City of Colorado Springs Municipal Airport",
+      "city": "Colorado Springs",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 38.80581,
+      "longitude": -104.70025,
+      "disrupted": {
+        "departures": 325,
+        "arrivals": 639,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "COU": {
+      "iata": "COU",
+      "name": "Columbia Regional Airport",
+      "city": "Columbia",
+      "state": "MO",
+      "country": "USA",
+      "latitude": 38.81809,
+      "longitude": -92.21963,
+      "disrupted": {
+        "departures": 111,
+        "arrivals": 141,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "CPR": {
+      "iata": "CPR",
+      "name": "Natrona County International Airport",
+      "city": "Casper",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 42.90836,
+      "longitude": -106.46447,
+      "disrupted": {
+        "departures": 97,
+        "arrivals": 88,
+        "median_arrival_delay_min": 50
+      }
+    },
+    "CRP": {
+      "iata": "CRP",
+      "name": "Corpus Christi International Airport",
+      "city": "Corpus Christi",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 27.77036,
+      "longitude": -97.50122,
+      "disrupted": {
+        "departures": 482,
+        "arrivals": 401,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "CRW": {
+      "iata": "CRW",
+      "name": "Yeager Airport",
+      "city": "Charleston",
+      "state": "WV",
+      "country": "USA",
+      "latitude": 38.37315,
+      "longitude": -81.59319,
+      "disrupted": {
+        "departures": 218,
+        "arrivals": 153,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "CSG": {
+      "iata": "CSG",
+      "name": "Columbus Metropolitan Airport",
+      "city": "Columbus",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 32.51633,
+      "longitude": -84.93886,
+      "disrupted": {
+        "departures": 83,
+        "arrivals": 74,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "CVG": {
+      "iata": "CVG",
+      "name": "Cincinnati/Northern Kentucky International Airport",
+      "city": "Covington",
+      "state": "KY",
+      "country": "USA",
+      "latitude": 39.04614,
+      "longitude": -84.66217,
+      "disrupted": {
+        "departures": 1343,
+        "arrivals": 1338,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "CWA": {
+      "iata": "CWA",
+      "name": "Central Wisconsin Airport",
+      "city": "Mosinee",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 44.77762,
+      "longitude": -89.66678,
+      "disrupted": {
+        "departures": 87,
+        "arrivals": 114,
+        "median_arrival_delay_min": 82
+      }
+    },
+    "DAB": {
+      "iata": "DAB",
+      "name": "Daytona Beach International Airport",
+      "city": "Daytona Beach",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 29.17992,
+      "longitude": -81.05806,
+      "disrupted": {
+        "departures": 62,
+        "arrivals": 71,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "DAL": {
+      "iata": "DAL",
+      "name": "Dallas Love Field",
+      "city": "Dallas",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 32.84711,
+      "longitude": -96.85177,
+      "disrupted": {
+        "departures": 4908,
+        "arrivals": 4711,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "DAY": {
+      "iata": "DAY",
+      "name": "James M. Cox Dayton International Airport",
+      "city": "Dayton",
+      "state": "OH",
+      "country": "USA",
+      "latitude": 39.90238,
+      "longitude": -84.21938,
+      "disrupted": {
+        "departures": 586,
+        "arrivals": 672,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "DBQ": {
+      "iata": "DBQ",
+      "name": "Dubuque Regional Airport",
+      "city": "Dubuque",
+      "state": "IA",
+      "country": "USA",
+      "latitude": 42.40296,
+      "longitude": -90.70917,
+      "disrupted": {
+        "departures": 70,
+        "arrivals": 72,
+        "median_arrival_delay_min": 74
+      }
+    },
+    "DCA": {
+      "iata": "DCA",
+      "name": "Ronald Reagan Washington National Airport",
+      "city": "Arlington",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 38.85208,
+      "longitude": -77.03772,
+      "disrupted": {
+        "departures": 4858,
+        "arrivals": 4453,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "DEN": {
+      "iata": "DEN",
+      "name": "Denver International Airport",
+      "city": "Denver",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 39.85841,
+      "longitude": -104.667,
+      "disrupted": {
+        "departures": 15480,
+        "arrivals": 14316,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "DFW": {
+      "iata": "DFW",
+      "name": "Dallas/Fort Worth International Airport",
+      "city": "Dallas-Fort Worth",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 32.89595,
+      "longitude": -97.0372,
+      "disrupted": {
+        "departures": 17484,
+        "arrivals": 17310,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "DHN": {
+      "iata": "DHN",
+      "name": "Dothan Regional Airport",
+      "city": "Dothan",
+      "state": "AL",
+      "country": "USA",
+      "latitude": 31.32134,
+      "longitude": -85.44963,
+      "disrupted": {
+        "departures": 100,
+        "arrivals": 78,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "DIK": {
+      "iata": "DIK",
+      "name": "Dickinson Theodore Roosevelt Regional Airport",
+      "city": "Dickinson",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 46.79739,
+      "longitude": -102.80195,
+      "disrupted": {
+        "departures": 40,
+        "arrivals": 30,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "DLG": {
+      "iata": "DLG",
+      "name": "Dillingham Airport",
+      "city": "Dillingham",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 59.04541,
+      "longitude": -158.50334,
+      "disrupted": {
+        "departures": 2,
+        "arrivals": 1,
+        "median_arrival_delay_min": 92
+      }
+    },
+    "DLH": {
+      "iata": "DLH",
+      "name": "Duluth International Airport",
+      "city": "Duluth",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 46.84209,
+      "longitude": -92.19365,
+      "disrupted": {
+        "departures": 137,
+        "arrivals": 117,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "DRO": {
+      "iata": "DRO",
+      "name": "Durango-La Plata County Airport",
+      "city": "Durango",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 37.15152,
+      "longitude": -107.75377,
+      "disrupted": {
+        "departures": 154,
+        "arrivals": 128,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "DSM": {
+      "iata": "DSM",
+      "name": "Des Moines International Airport",
+      "city": "Des Moines",
+      "state": "IA",
+      "country": "USA",
+      "latitude": 41.53493,
+      "longitude": -93.66068,
+      "disrupted": {
+        "departures": 725,
+        "arrivals": 709,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "DTW": {
+      "iata": "DTW",
+      "name": "Detroit Metropolitan Airport",
+      "city": "Detroit",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 42.21206,
+      "longitude": -83.34884,
+      "disrupted": {
+        "departures": 5174,
+        "arrivals": 6542,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "DVL": {
+      "iata": "DVL",
+      "name": "Devils Lake Regional Airport",
+      "city": "Devils Lake",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 48.11425,
+      "longitude": -98.90878,
+      "disrupted": {
+        "departures": 22,
+        "arrivals": 23,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "EAU": {
+      "iata": "EAU",
+      "name": "Chippewa Valley Regional Airport",
+      "city": "Eau Claire",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 44.86526,
+      "longitude": -91.48507,
+      "disrupted": {
+        "departures": 63,
+        "arrivals": 54,
+        "median_arrival_delay_min": 77
+      }
+    },
+    "EGE": {
+      "iata": "EGE",
+      "name": "Eagle County Regional Airport",
+      "city": "Eagle",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 39.64257,
+      "longitude": -106.9177,
+      "disrupted": {
+        "departures": 127,
+        "arrivals": 84,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "EKO": {
+      "iata": "EKO",
+      "name": "Elko Regional Airport",
+      "city": "Elko",
+      "state": "NV",
+      "country": "USA",
+      "latitude": 40.82493,
+      "longitude": -115.7917,
+      "disrupted": {
+        "departures": 17,
+        "arrivals": 9,
+        "median_arrival_delay_min": 74
+      }
+    },
+    "ELM": {
+      "iata": "ELM",
+      "name": "Elmira/Corning Regional Airport",
+      "city": "Elmira",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 42.15991,
+      "longitude": -76.89144,
+      "disrupted": {
+        "departures": 117,
+        "arrivals": 126,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "ELP": {
+      "iata": "ELP",
+      "name": "El Paso International Airport",
+      "city": "El Paso",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 31.80667,
+      "longitude": -106.37781,
+      "disrupted": {
+        "departures": 883,
+        "arrivals": 1027,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "ERI": {
+      "iata": "ERI",
+      "name": "Erie International Airport",
+      "city": "Erie",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 42.08202,
+      "longitude": -80.17622,
+      "disrupted": {
+        "departures": 40,
+        "arrivals": 58,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "ESC": {
+      "iata": "ESC",
+      "name": "Delta County Airport",
+      "city": "Escanaba",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 45.72267,
+      "longitude": -87.09373,
+      "disrupted": {
+        "departures": 25,
+        "arrivals": 35,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "EUG": {
+      "iata": "EUG",
+      "name": "Eugene Airport (Mahlon Sweet Field)",
+      "city": "Eugene",
+      "state": "OR",
+      "country": "USA",
+      "latitude": 44.12326,
+      "longitude": -123.21869,
+      "disrupted": {
+        "departures": 234,
+        "arrivals": 281,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "EVV": {
+      "iata": "EVV",
+      "name": "Evansville Regional Airport",
+      "city": "Evansville",
+      "state": "IN",
+      "country": "USA",
+      "latitude": 38.03799,
+      "longitude": -87.53063,
+      "disrupted": {
+        "departures": 278,
+        "arrivals": 255,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "EWN": {
+      "iata": "EWN",
+      "name": "Coastal Carolina Regional Airport (Craven County Regional)",
+      "city": "New Bern",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 35.07297,
+      "longitude": -77.04294,
+      "disrupted": {
+        "departures": 42,
+        "arrivals": 42,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "EWR": {
+      "iata": "EWR",
+      "name": "Newark Liberty International Airport",
+      "city": "Newark",
+      "state": "NJ",
+      "country": "USA",
+      "latitude": 40.6925,
+      "longitude": -74.16866,
+      "disrupted": {
+        "departures": 7330,
+        "arrivals": 7128,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "EYW": {
+      "iata": "EYW",
+      "name": "Key West International Airport",
+      "city": "Key West",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 24.55611,
+      "longitude": -81.75956,
+      "disrupted": {
+        "departures": 127,
+        "arrivals": 94,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "FAI": {
+      "iata": "FAI",
+      "name": "Fairbanks International Airport",
+      "city": "Fairbanks",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 64.81368,
+      "longitude": -147.85967,
+      "disrupted": {
+        "departures": 110,
+        "arrivals": 101,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "FAR": {
+      "iata": "FAR",
+      "name": "Hector International Airport",
+      "city": "Fargo",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 46.91935,
+      "longitude": -96.81499,
+      "disrupted": {
+        "departures": 409,
+        "arrivals": 427,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "FAT": {
+      "iata": "FAT",
+      "name": "Fresno Yosemite International Airport",
+      "city": "Fresno",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 36.77619,
+      "longitude": -119.71814,
+      "disrupted": {
+        "departures": 400,
+        "arrivals": 603,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "FAY": {
+      "iata": "FAY",
+      "name": "Fayetteville Regional Airport",
+      "city": "Fayetteville",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 34.99147,
+      "longitude": -78.88,
+      "disrupted": {
+        "departures": 136,
+        "arrivals": 75,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "FCA": {
+      "iata": "FCA",
+      "name": "Glacier Park International Airport",
+      "city": "Kalispell",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 48.3114,
+      "longitude": -114.25507,
+      "disrupted": {
+        "departures": 95,
+        "arrivals": 87,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "FLG": {
+      "iata": "FLG",
+      "name": "Flagstaff Pulliam Airport",
+      "city": "Flagstaff",
+      "state": "AZ",
+      "country": "USA",
+      "latitude": 35.13845,
+      "longitude": -111.67122,
+      "disrupted": {
+        "departures": 109,
+        "arrivals": 90,
+        "median_arrival_delay_min": 71
+      }
+    },
+    "FLL": {
+      "iata": "FLL",
+      "name": "Fort Lauderdale-Hollywood International Airport",
+      "city": "Ft. Lauderdale",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 26.07258,
+      "longitude": -80.15275,
+      "disrupted": {
+        "departures": 4531,
+        "arrivals": 5130,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "FNT": {
+      "iata": "FNT",
+      "name": "Bishop International Airport",
+      "city": "Flint",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 42.9655,
+      "longitude": -83.74346,
+      "disrupted": {
+        "departures": 235,
+        "arrivals": 339,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "FSD": {
+      "iata": "FSD",
+      "name": "Sioux Falls Regional Airport",
+      "city": "Sioux Falls",
+      "state": "SD",
+      "country": "USA",
+      "latitude": 43.58135,
+      "longitude": -96.7417,
+      "disrupted": {
+        "departures": 449,
+        "arrivals": 454,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "FSM": {
+      "iata": "FSM",
+      "name": "Fort Smith Regional Airport",
+      "city": "Fort Smith",
+      "state": "AR",
+      "country": "USA",
+      "latitude": 35.33659,
+      "longitude": -94.36744,
+      "disrupted": {
+        "departures": 165,
+        "arrivals": 166,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "FWA": {
+      "iata": "FWA",
+      "name": "Fort Wayne International Airport",
+      "city": "Fort Wayne",
+      "state": "IN",
+      "country": "USA",
+      "latitude": 40.97847,
+      "longitude": -85.19515,
+      "disrupted": {
+        "departures": 361,
+        "arrivals": 382,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "GCC": {
+      "iata": "GCC",
+      "name": "Gillette-Campbell County Airport",
+      "city": "Gillette",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 44.3489,
+      "longitude": -105.53936,
+      "disrupted": {
+        "departures": 46,
+        "arrivals": 52,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "GCK": {
+      "iata": "GCK",
+      "name": "Garden City Regional Airport",
+      "city": "Garden City",
+      "state": "KS",
+      "country": "USA",
+      "latitude": 37.92752,
+      "longitude": -100.72441,
+      "disrupted": {
+        "departures": 39,
+        "arrivals": 45,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "GEG": {
+      "iata": "GEG",
+      "name": "Spokane International Airport",
+      "city": "Spokane",
+      "state": "WA",
+      "country": "USA",
+      "latitude": 47.61986,
+      "longitude": -117.53384,
+      "disrupted": {
+        "departures": 512,
+        "arrivals": 556,
+        "median_arrival_delay_min": 49
+      }
+    },
+    "GFK": {
+      "iata": "GFK",
+      "name": "Grand Forks International Airport",
+      "city": "Grand Forks",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 47.94926,
+      "longitude": -97.17611,
+      "disrupted": {
+        "departures": 55,
+        "arrivals": 29,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "GGG": {
+      "iata": "GGG",
+      "name": "East Texas Regional Airport",
+      "city": "Longview",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 32.38486,
+      "longitude": -94.71171,
+      "disrupted": {
+        "departures": 60,
+        "arrivals": 28,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "GJT": {
+      "iata": "GJT",
+      "name": "Grand Junction Regional Airport (Walker Field)",
+      "city": "Grand Junction",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 39.12241,
+      "longitude": -108.52673,
+      "disrupted": {
+        "departures": 148,
+        "arrivals": 149,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "GNV": {
+      "iata": "GNV",
+      "name": "Gainesville Regional Airport",
+      "city": "Gainesville",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 29.69006,
+      "longitude": -82.27178,
+      "disrupted": {
+        "departures": 215,
+        "arrivals": 160,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "GPT": {
+      "iata": "GPT",
+      "name": "Gulfport-Biloxi International Airport",
+      "city": "Gulfport-Biloxi",
+      "state": "MS",
+      "country": "USA",
+      "latitude": 30.40728,
+      "longitude": -89.07009,
+      "disrupted": {
+        "departures": 214,
+        "arrivals": 207,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "GRB": {
+      "iata": "GRB",
+      "name": "Green Bay-Austin Straubel International Airport",
+      "city": "Green Bay",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 44.48507,
+      "longitude": -88.12959,
+      "disrupted": {
+        "departures": 336,
+        "arrivals": 313,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "GRI": {
+      "iata": "GRI",
+      "name": "Central Nebraska Regional Airport",
+      "city": "Grand Island",
+      "state": "NE",
+      "country": "USA",
+      "latitude": 40.96747,
+      "longitude": -98.30861,
+      "disrupted": {
+        "departures": 29,
+        "arrivals": 45,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "GRK": {
+      "iata": "GRK",
+      "name": "Killeen-Fort Hood Regional Airport",
+      "city": "Killeen",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 31.0649,
+      "longitude": -97.8278,
+      "disrupted": {
+        "departures": 323,
+        "arrivals": 276,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "GRR": {
+      "iata": "GRR",
+      "name": "Gerald R. Ford International Airport",
+      "city": "Grand Rapids",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 42.88082,
+      "longitude": -85.52277,
+      "disrupted": {
+        "departures": 722,
+        "arrivals": 802,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "GSO": {
+      "iata": "GSO",
+      "name": "Piedmont Triad International Airport",
+      "city": "Greensboro",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 36.09775,
+      "longitude": -79.9373,
+      "disrupted": {
+        "departures": 475,
+        "arrivals": 480,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "GSP": {
+      "iata": "GSP",
+      "name": "Greenville-Spartanburg International Airport",
+      "city": "Greer",
+      "state": "SC",
+      "country": "USA",
+      "latitude": 34.89567,
+      "longitude": -82.21886,
+      "disrupted": {
+        "departures": 394,
+        "arrivals": 395,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "GST": {
+      "iata": "GST",
+      "name": "Gustavus Airport",
+      "city": "Gustavus",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 58.42438,
+      "longitude": -135.70738,
+      "disrupted": {
+        "departures": 14,
+        "arrivals": 9,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "GTF": {
+      "iata": "GTF",
+      "name": "Great Falls International Airport",
+      "city": "Great Falls",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 47.482,
+      "longitude": -111.37069,
+      "disrupted": {
+        "departures": 61,
+        "arrivals": 84,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "GTR": {
+      "iata": "GTR",
+      "name": "Golden Triangle Regional Airport",
+      "city": "Columbus-Starkville-West Point",
+      "state": "MS",
+      "country": "USA",
+      "latitude": 33.45033,
+      "longitude": -88.59137,
+      "disrupted": {
+        "departures": 56,
+        "arrivals": 56,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "GUC": {
+      "iata": "GUC",
+      "name": "Gunnison-Crested Butte Regional Airport",
+      "city": "Gunnison",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 38.53396,
+      "longitude": -106.93318,
+      "disrupted": {
+        "departures": 52,
+        "arrivals": 36,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "GUM": {
+      "iata": "GUM",
+      "name": "Guam International Airport",
+      "city": "Agana",
+      "state": "GU",
+      "country": "USA",
+      "latitude": 13.48345,
+      "longitude": -144.79598,
+      "disrupted": {
+        "departures": 1,
+        "arrivals": 24,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "HDN": {
+      "iata": "HDN",
+      "name": "Yampa Valley Airport (Yampa Valley Regional)",
+      "city": "Hayden",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 40.48118,
+      "longitude": -107.21766,
+      "disrupted": {
+        "departures": 85,
+        "arrivals": 43,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "HIB": {
+      "iata": "HIB",
+      "name": "Range Regional Airport (Chisholm-Hibbing Airport)",
+      "city": "Hibbing",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 47.3866,
+      "longitude": -92.83899,
+      "disrupted": {
+        "departures": 55,
+        "arrivals": 25,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "HLN": {
+      "iata": "HLN",
+      "name": "Helena Regional Airport",
+      "city": "Helena",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 46.60682,
+      "longitude": -111.98275,
+      "disrupted": {
+        "departures": 18,
+        "arrivals": 61,
+        "median_arrival_delay_min": 75
+      }
+    },
+    "HNL": {
+      "iata": "HNL",
+      "name": "Honolulu International Airport",
+      "city": "Honolulu",
+      "state": "HI",
+      "country": "USA",
+      "latitude": 21.31869,
+      "longitude": -157.92241,
+      "disrupted": {
+        "departures": 1170,
+        "arrivals": 1725,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "HOB": {
+      "iata": "HOB",
+      "name": "Lea County Regional Airport",
+      "city": "Hobbs",
+      "state": "NM",
+      "country": "USA",
+      "latitude": 32.68753,
+      "longitude": -103.21703,
+      "disrupted": {
+        "departures": 20,
+        "arrivals": 18,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "HOU": {
+      "iata": "HOU",
+      "name": "William P. Hobby Airport",
+      "city": "Houston",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 29.64542,
+      "longitude": -95.27889,
+      "disrupted": {
+        "departures": 4120,
+        "arrivals": 4075,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "HPN": {
+      "iata": "HPN",
+      "name": "Westchester County Airport",
+      "city": "White Plains",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 41.06696,
+      "longitude": -73.70757,
+      "disrupted": {
+        "departures": 588,
+        "arrivals": 590,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "HRL": {
+      "iata": "HRL",
+      "name": "Valley International Airport",
+      "city": "Harlingen",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 26.22851,
+      "longitude": -97.65439,
+      "disrupted": {
+        "departures": 195,
+        "arrivals": 195,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "HSV": {
+      "iata": "HSV",
+      "name": "Huntsville International Airport",
+      "city": "Huntsville",
+      "state": "AL",
+      "country": "USA",
+      "latitude": 34.64045,
+      "longitude": -86.77311,
+      "disrupted": {
+        "departures": 253,
+        "arrivals": 269,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "HYA": {
+      "iata": "HYA",
+      "name": "Barnstable Municipal Airport",
+      "city": "Hyannis",
+      "state": "MA",
+      "country": "USA",
+      "latitude": 41.66934,
+      "longitude": -70.28036,
+      "disrupted": {
+        "departures": 8,
+        "arrivals": 6,
+        "median_arrival_delay_min": 76
+      }
+    },
+    "HYS": {
+      "iata": "HYS",
+      "name": "Hays Regional Airport",
+      "city": "Hays",
+      "state": "KS",
+      "country": "USA",
+      "latitude": 38.84494,
+      "longitude": -99.27403,
+      "disrupted": {
+        "departures": 42,
+        "arrivals": 25,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "IAD": {
+      "iata": "IAD",
+      "name": "Washington Dulles International Airport",
+      "city": "Chantilly",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 38.94453,
+      "longitude": -77.45581,
+      "disrupted": {
+        "departures": 2166,
+        "arrivals": 2425,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "IAG": {
+      "iata": "IAG",
+      "name": "Niagara Falls International Airport",
+      "city": "Niagara Falls",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 43.10726,
+      "longitude": -78.94538,
+      "disrupted": {
+        "departures": 26,
+        "arrivals": 21,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "IAH": {
+      "iata": "IAH",
+      "name": "George Bush Intercontinental Airport",
+      "city": "Houston",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 29.98047,
+      "longitude": -95.33972,
+      "disrupted": {
+        "departures": 9354,
+        "arrivals": 9654,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "ICT": {
+      "iata": "ICT",
+      "name": "Wichita Dwight D. Eisenhower National Airport (Wichita Mid-Continent Airport)",
+      "city": "Wichita",
+      "state": "KS",
+      "country": "USA",
+      "latitude": 37.64996,
+      "longitude": -97.43305,
+      "disrupted": {
+        "departures": 646,
+        "arrivals": 611,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "IDA": {
+      "iata": "IDA",
+      "name": "Idaho Falls Regional Airport",
+      "city": "Idaho Falls",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 43.51456,
+      "longitude": -112.07017,
+      "disrupted": {
+        "departures": 92,
+        "arrivals": 106,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "ILG": {
+      "iata": "ILG",
+      "name": "Wilmington Airport",
+      "city": "Wilmington",
+      "state": "DE",
+      "country": "USA",
+      "latitude": 39.67872,
+      "longitude": -75.60653,
+      "disrupted": {
+        "departures": 17,
+        "arrivals": 14,
+        "median_arrival_delay_min": 78
+      }
+    },
+    "ILM": {
+      "iata": "ILM",
+      "name": "Wilmington International Airport",
+      "city": "Wilmington",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 34.27061,
+      "longitude": -77.90256,
+      "disrupted": {
+        "departures": 100,
+        "arrivals": 100,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "IMT": {
+      "iata": "IMT",
+      "name": "Ford Airport",
+      "city": "Iron Mountain/Kingsford",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 45.81835,
+      "longitude": -88.11454,
+      "disrupted": {
+        "departures": 35,
+        "arrivals": 36,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "IND": {
+      "iata": "IND",
+      "name": "Indianapolis International Airport",
+      "city": "Indianapolis",
+      "state": "IN",
+      "country": "USA",
+      "latitude": 39.71733,
+      "longitude": -86.29438,
+      "disrupted": {
+        "departures": 1582,
+        "arrivals": 1797,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "INL": {
+      "iata": "INL",
+      "name": "Falls International Airport",
+      "city": "International Falls",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 48.56619,
+      "longitude": -93.40307,
+      "disrupted": {
+        "departures": 35,
+        "arrivals": 46,
+        "median_arrival_delay_min": 40
+      }
+    },
+    "ISN": {
+      "iata": "ISN",
+      "name": "Sloulin Field International Airport",
+      "city": "Williston",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 48.17794,
+      "longitude": -103.64235,
+      "disrupted": {
+        "departures": 146,
+        "arrivals": 117,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "ISP": {
+      "iata": "ISP",
+      "name": "Long Island MacArthur Airport",
+      "city": "Islip",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 40.79524,
+      "longitude": -73.10021,
+      "disrupted": {
+        "departures": 285,
+        "arrivals": 430,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "ITH": {
+      "iata": "ITH",
+      "name": "Ithaca Tompkins Regional Airport",
+      "city": "Ithaca",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 42.49103,
+      "longitude": -76.45844,
+      "disrupted": {
+        "departures": 3,
+        "arrivals": 5,
+        "median_arrival_delay_min": 42
+      }
+    },
+    "ITO": {
+      "iata": "ITO",
+      "name": "Hilo International Airport",
+      "city": "Hilo",
+      "state": "HI",
+      "country": "USA",
+      "latitude": 19.72026,
+      "longitude": -155.04847,
+      "disrupted": {
+        "departures": 234,
+        "arrivals": 162,
+        "median_arrival_delay_min": 40
+      }
+    },
+    "JAC": {
+      "iata": "JAC",
+      "name": "Jackson Hole Airport",
+      "city": "Jackson",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 43.60732,
+      "longitude": -110.73774,
+      "disrupted": {
+        "departures": 222,
+        "arrivals": 241,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "JAN": {
+      "iata": "JAN",
+      "name": "Jackson-Evers International Airport",
+      "city": "Jackson",
+      "state": "MS",
+      "country": "USA",
+      "latitude": 32.31117,
+      "longitude": -90.07589,
+      "disrupted": {
+        "departures": 491,
+        "arrivals": 416,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "JAX": {
+      "iata": "JAX",
+      "name": "Jacksonville International Airport",
+      "city": "Jacksonville",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 30.49406,
+      "longitude": -81.68786,
+      "disrupted": {
+        "departures": 1169,
+        "arrivals": 1163,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "JFK": {
+      "iata": "JFK",
+      "name": "John F. Kennedy International Airport (New York International Airport)",
+      "city": "New York",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 40.63975,
+      "longitude": -73.77893,
+      "disrupted": {
+        "departures": 5993,
+        "arrivals": 6524,
+        "median_arrival_delay_min": 71
+      }
+    },
+    "JLN": {
+      "iata": "JLN",
+      "name": "Joplin Regional Airport",
+      "city": "Joplin",
+      "state": "MO",
+      "country": "USA",
+      "latitude": 37.15181,
+      "longitude": -94.49827,
+      "disrupted": {
+        "departures": 55,
+        "arrivals": 65,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "JMS": {
+      "iata": "JMS",
+      "name": "Jamestown Regional Airport",
+      "city": "Jamestown",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 46.92972,
+      "longitude": -98.6782,
+      "disrupted": {
+        "departures": 41,
+        "arrivals": 46,
+        "median_arrival_delay_min": 46
+      }
+    },
+    "JNU": {
+      "iata": "JNU",
+      "name": "Juneau International Airport",
+      "city": "Juneau",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 58.35496,
+      "longitude": -134.57628,
+      "disrupted": {
+        "departures": 273,
+        "arrivals": 225,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "KOA": {
+      "iata": "KOA",
+      "name": "Kona International Airport at Keahole",
+      "city": "Kailua/Kona",
+      "state": "HI",
+      "country": "USA",
+      "latitude": 19.73877,
+      "longitude": -156.04563,
+      "disrupted": {
+        "departures": 468,
+        "arrivals": 292,
+        "median_arrival_delay_min": 44
+      }
+    },
+    "KTN": {
+      "iata": "KTN",
+      "name": "Ketchikan International Airport",
+      "city": "Ketchikan",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 55.35557,
+      "longitude": -131.71374,
+      "disrupted": {
+        "departures": 194,
+        "arrivals": 103,
+        "median_arrival_delay_min": 51
+      }
+    },
+    "LAN": {
+      "iata": "LAN",
+      "name": "Capital Region International Airport ( Lansing Capital City)",
+      "city": "Lansing",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 42.7787,
+      "longitude": -84.58736,
+      "disrupted": {
+        "departures": 127,
+        "arrivals": 107,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "LAR": {
+      "iata": "LAR",
+      "name": "Laramie Regional Airport",
+      "city": "Laramie",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 41.31205,
+      "longitude": -105.67499,
+      "disrupted": {
+        "departures": 30,
+        "arrivals": 26,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "LAS": {
+      "iata": "LAS",
+      "name": "McCarran International Airport",
+      "city": "Las Vegas",
+      "state": "NV",
+      "country": "USA",
+      "latitude": 36.08036,
+      "longitude": -115.15233,
+      "disrupted": {
+        "departures": 10104,
+        "arrivals": 9659,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "LAW": {
+      "iata": "LAW",
+      "name": "Lawton-Fort Sill Regional Airport",
+      "city": "Lawton",
+      "state": "OK",
+      "country": "USA",
+      "latitude": 34.56771,
+      "longitude": -98.41664,
+      "disrupted": {
+        "departures": 126,
+        "arrivals": 108,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "LAX": {
+      "iata": "LAX",
+      "name": "Los Angeles International Airport",
+      "city": "Los Angeles",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 33.94254,
+      "longitude": -118.40807,
+      "disrupted": {
+        "departures": 14854,
+        "arrivals": 13863,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "LBB": {
+      "iata": "LBB",
+      "name": "Lubbock Preston Smith International Airport",
+      "city": "Lubbock",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 33.66364,
+      "longitude": -101.82278,
+      "disrupted": {
+        "departures": 320,
+        "arrivals": 315,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "LBE": {
+      "iata": "LBE",
+      "name": "Arnold Palmer Regional Airport",
+      "city": "Latrobe",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 40.27594,
+      "longitude": -79.4048,
+      "disrupted": {
+        "departures": 129,
+        "arrivals": 141,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "LCH": {
+      "iata": "LCH",
+      "name": "Lake Charles Regional Airport",
+      "city": "Lake Charles",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 30.1261,
+      "longitude": -93.2234,
+      "disrupted": {
+        "departures": 107,
+        "arrivals": 108,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "LEX": {
+      "iata": "LEX",
+      "name": "Blue Grass Airport",
+      "city": "Lexington",
+      "state": "KY",
+      "country": "USA",
+      "latitude": 38.03697,
+      "longitude": -84.60539,
+      "disrupted": {
+        "departures": 368,
+        "arrivals": 306,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "LFT": {
+      "iata": "LFT",
+      "name": "Lafayette Regional Airport",
+      "city": "Lafayette",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 30.20528,
+      "longitude": -91.98766,
+      "disrupted": {
+        "departures": 394,
+        "arrivals": 289,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "LGA": {
+      "iata": "LGA",
+      "name": "LaGuardia Airport (Marine Air Terminal)",
+      "city": "New York",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 40.77724,
+      "longitude": -73.87261,
+      "disrupted": {
+        "departures": 9575,
+        "arrivals": 7048,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "LGB": {
+      "iata": "LGB",
+      "name": "Long Beach Airport (Daugherty Field)",
+      "city": "Long Beach",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 33.81772,
+      "longitude": -118.15161,
+      "disrupted": {
+        "departures": 603,
+        "arrivals": 635,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "LIH": {
+      "iata": "LIH",
+      "name": "Lihue Airport",
+      "city": "Lihue",
+      "state": "HI",
+      "country": "USA",
+      "latitude": 21.97598,
+      "longitude": -159.33896,
+      "disrupted": {
+        "departures": 439,
+        "arrivals": 270,
+        "median_arrival_delay_min": 50
+      }
+    },
+    "LIT": {
+      "iata": "LIT",
+      "name": "Bill and Hillary Clinton National Airport (Adams Field)",
+      "city": "Little Rock",
+      "state": "AR",
+      "country": "USA",
+      "latitude": 34.7294,
+      "longitude": -92.22425,
+      "disrupted": {
+        "departures": 799,
+        "arrivals": 812,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "LNK": {
+      "iata": "LNK",
+      "name": "Lincoln Airport (Lincoln Municipal)",
+      "city": "Lincoln",
+      "state": "NE",
+      "country": "USA",
+      "latitude": 40.85097,
+      "longitude": -96.75925,
+      "disrupted": {
+        "departures": 161,
+        "arrivals": 198,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "LRD": {
+      "iata": "LRD",
+      "name": "Laredo International Airport",
+      "city": "Laredo",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 27.54374,
+      "longitude": -99.46154,
+      "disrupted": {
+        "departures": 128,
+        "arrivals": 127,
+        "median_arrival_delay_min": 51
+      }
+    },
+    "LSE": {
+      "iata": "LSE",
+      "name": "La Crosse Regional Airport",
+      "city": "La Crosse",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 43.87938,
+      "longitude": -91.25654,
+      "disrupted": {
+        "departures": 107,
+        "arrivals": 119,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "LWS": {
+      "iata": "LWS",
+      "name": "Lewiston-Nez Perce County Airport",
+      "city": "Lewiston",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 46.3745,
+      "longitude": -117.01539,
+      "disrupted": {
+        "departures": 11,
+        "arrivals": 2,
+        "median_arrival_delay_min": 334
+      }
+    },
+    "MAF": {
+      "iata": "MAF",
+      "name": "Midland International Airport",
+      "city": "Midland",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 31.94253,
+      "longitude": -102.20191,
+      "disrupted": {
+        "departures": 659,
+        "arrivals": 589,
+        "median_arrival_delay_min": 54
+      }
+    },
+    "MBS": {
+      "iata": "MBS",
+      "name": "MBS International Airport",
+      "city": "Saginaw",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 43.53291,
+      "longitude": -84.07965,
+      "disrupted": {
+        "departures": 180,
+        "arrivals": 127,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "MCI": {
+      "iata": "MCI",
+      "name": "Kansas City International Airport",
+      "city": "Kansas City",
+      "state": "MO",
+      "country": "USA",
+      "latitude": 39.29761,
+      "longitude": -94.71391,
+      "disrupted": {
+        "departures": 2653,
+        "arrivals": 2876,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MCO": {
+      "iata": "MCO",
+      "name": "Orlando International Airport",
+      "city": "Orlando",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 28.42889,
+      "longitude": -81.31603,
+      "disrupted": {
+        "departures": 8711,
+        "arrivals": 7572,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "MDT": {
+      "iata": "MDT",
+      "name": "Harrisburg International Airport",
+      "city": "Harrisburg",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 40.1935,
+      "longitude": -76.7634,
+      "disrupted": {
+        "departures": 183,
+        "arrivals": 213,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "MDW": {
+      "iata": "MDW",
+      "name": "Chicago Midway International Airport",
+      "city": "Chicago",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 41.78598,
+      "longitude": -87.75242,
+      "disrupted": {
+        "departures": 6293,
+        "arrivals": 5736,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MEI": {
+      "iata": "MEI",
+      "name": "Meridian Regional Airport",
+      "city": "Meridian",
+      "state": "MS",
+      "country": "USA",
+      "latitude": 32.33313,
+      "longitude": -88.75121,
+      "disrupted": {
+        "departures": 102,
+        "arrivals": 67,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "MEM": {
+      "iata": "MEM",
+      "name": "Memphis International Airport",
+      "city": "Memphis",
+      "state": "TN",
+      "country": "USA",
+      "latitude": 35.04242,
+      "longitude": -89.97667,
+      "disrupted": {
+        "departures": 961,
+        "arrivals": 950,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "MFE": {
+      "iata": "MFE",
+      "name": "McAllen-Miller International Airport (McAllen Miller International)",
+      "city": "McAllen",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 26.17583,
+      "longitude": -98.23861,
+      "disrupted": {
+        "departures": 220,
+        "arrivals": 253,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "MFR": {
+      "iata": "MFR",
+      "name": "Rogue Valley International Airport",
+      "city": "Medford",
+      "state": "OR",
+      "country": "USA",
+      "latitude": 42.37423,
+      "longitude": -122.8735,
+      "disrupted": {
+        "departures": 184,
+        "arrivals": 201,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "MGM": {
+      "iata": "MGM",
+      "name": "Montgomery Regional Airport",
+      "city": "Montgomery",
+      "state": "AL",
+      "country": "USA",
+      "latitude": 32.30064,
+      "longitude": -86.39398,
+      "disrupted": {
+        "departures": 272,
+        "arrivals": 238,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MHK": {
+      "iata": "MHK",
+      "name": "Manhattan Regional Airport",
+      "city": "Manhattan",
+      "state": "KS",
+      "country": "USA",
+      "latitude": 39.14097,
+      "longitude": -96.67083,
+      "disrupted": {
+        "departures": 110,
+        "arrivals": 131,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "MHT": {
+      "iata": "MHT",
+      "name": "Manchester-Boston Regional Airport",
+      "city": "Manchester",
+      "state": "NH",
+      "country": "USA",
+      "latitude": 42.93452,
+      "longitude": -71.43706,
+      "disrupted": {
+        "departures": 290,
+        "arrivals": 466,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MIA": {
+      "iata": "MIA",
+      "name": "Miami International Airport",
+      "city": "Miami",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 25.79325,
+      "longitude": -80.29056,
+      "disrupted": {
+        "departures": 5013,
+        "arrivals": 4323,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "MKE": {
+      "iata": "MKE",
+      "name": "General Mitchell International Airport",
+      "city": "Milwaukee",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 42.94722,
+      "longitude": -87.89658,
+      "disrupted": {
+        "departures": 2028,
+        "arrivals": 2124,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "MKG": {
+      "iata": "MKG",
+      "name": "Muskegon County Airport",
+      "city": "Muskegon",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 43.16949,
+      "longitude": -86.23822,
+      "disrupted": {
+        "departures": 79,
+        "arrivals": 54,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "MLB": {
+      "iata": "MLB",
+      "name": "Melbourne International Airport",
+      "city": "Melbourne",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 28.10275,
+      "longitude": -80.64581,
+      "disrupted": {
+        "departures": 83,
+        "arrivals": 67,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "MLI": {
+      "iata": "MLI",
+      "name": "Quad City International Airport",
+      "city": "Moline",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 41.44853,
+      "longitude": -90.50754,
+      "disrupted": {
+        "departures": 316,
+        "arrivals": 299,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MLU": {
+      "iata": "MLU",
+      "name": "Monroe Regional Airport",
+      "city": "Monroe",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 32.51087,
+      "longitude": -92.03769,
+      "disrupted": {
+        "departures": 241,
+        "arrivals": 209,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "MMH": {
+      "iata": "MMH",
+      "name": "Mammoth Yosemite Airport",
+      "city": "Mammoth Lakes",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 37.62405,
+      "longitude": -118.83777,
+      "disrupted": {
+        "departures": 22,
+        "arrivals": 14,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "MOB": {
+      "iata": "MOB",
+      "name": "Mobile Regional Airport",
+      "city": "Mobile",
+      "state": "AL",
+      "country": "USA",
+      "latitude": 30.69142,
+      "longitude": -88.24283,
+      "disrupted": {
+        "departures": 384,
+        "arrivals": 309,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "MOT": {
+      "iata": "MOT",
+      "name": "Minot International Airport",
+      "city": "Minot",
+      "state": "ND",
+      "country": "USA",
+      "latitude": 48.25938,
+      "longitude": -101.28033,
+      "disrupted": {
+        "departures": 128,
+        "arrivals": 109,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "MQT": {
+      "iata": "MQT",
+      "name": "Sawyer International Airport",
+      "city": "Marquette",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 46.35364,
+      "longitude": -87.39536,
+      "disrupted": {
+        "departures": 7,
+        "arrivals": 43,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "MRY": {
+      "iata": "MRY",
+      "name": "Monterey Regional Airport (Monterey Peninsula Airport)",
+      "city": "Monterey",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 36.58698,
+      "longitude": -121.84295,
+      "disrupted": {
+        "departures": 253,
+        "arrivals": 267,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "MSN": {
+      "iata": "MSN",
+      "name": "Dane County Regional Airport",
+      "city": "Madison",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 43.13986,
+      "longitude": -89.33751,
+      "disrupted": {
+        "departures": 607,
+        "arrivals": 568,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "MSO": {
+      "iata": "MSO",
+      "name": "Missoula International Airport",
+      "city": "Missoula",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 46.91631,
+      "longitude": -114.09056,
+      "disrupted": {
+        "departures": 94,
+        "arrivals": 94,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "MSP": {
+      "iata": "MSP",
+      "name": "Minneapolis-Saint Paul International Airport",
+      "city": "Minneapolis",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 44.88055,
+      "longitude": -93.21692,
+      "disrupted": {
+        "departures": 5060,
+        "arrivals": 6153,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "MSY": {
+      "iata": "MSY",
+      "name": "Louis Armstrong New Orleans International Airport",
+      "city": "New Orleans",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 29.99339,
+      "longitude": -90.25803,
+      "disrupted": {
+        "departures": 2852,
+        "arrivals": 2636,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "MTJ": {
+      "iata": "MTJ",
+      "name": "Montrose Regional Airport",
+      "city": "Montrose",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 38.50887,
+      "longitude": -107.89383,
+      "disrupted": {
+        "departures": 101,
+        "arrivals": 86,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "MVY": {
+      "iata": "MVY",
+      "name": "Martha's Vineyard Airport",
+      "city": "Marthas Vineyard",
+      "state": "MA",
+      "country": "USA",
+      "latitude": 41.39303,
+      "longitude": -70.61433,
+      "disrupted": {
+        "departures": 21,
+        "arrivals": 13,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "MYR": {
+      "iata": "MYR",
+      "name": "Myrtle Beach International Airport",
+      "city": "Myrtle Beach",
+      "state": "SC",
+      "country": "USA",
+      "latitude": 33.67975,
+      "longitude": -78.92833,
+      "disrupted": {
+        "departures": 392,
+        "arrivals": 242,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "OAJ": {
+      "iata": "OAJ",
+      "name": "Albert J. Ellis Airport",
+      "city": "Jacksonville",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 34.82916,
+      "longitude": -77.61214,
+      "disrupted": {
+        "departures": 101,
+        "arrivals": 58,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "OAK": {
+      "iata": "OAK",
+      "name": "Oakland International Airport",
+      "city": "Oakland",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 37.72129,
+      "longitude": -122.22072,
+      "disrupted": {
+        "departures": 3314,
+        "arrivals": 3637,
+        "median_arrival_delay_min": 51
+      }
+    },
+    "OGG": {
+      "iata": "OGG",
+      "name": "Kahului Airport",
+      "city": "Kahului",
+      "state": "HI",
+      "country": "USA",
+      "latitude": 20.89865,
+      "longitude": -156.43046,
+      "disrupted": {
+        "departures": 949,
+        "arrivals": 605,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "OKC": {
+      "iata": "OKC",
+      "name": "Will Rogers World Airport",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "country": "USA",
+      "latitude": 35.39309,
+      "longitude": -97.60073,
+      "disrupted": {
+        "departures": 1298,
+        "arrivals": 1337,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "OMA": {
+      "iata": "OMA",
+      "name": "Eppley Airfield",
+      "city": "Omaha",
+      "state": "NE",
+      "country": "USA",
+      "latitude": 41.30252,
+      "longitude": -95.89417,
+      "disrupted": {
+        "departures": 1075,
+        "arrivals": 1166,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "OME": {
+      "iata": "OME",
+      "name": "Nome Airport",
+      "city": "Nome",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 64.5122,
+      "longitude": -165.44525,
+      "disrupted": {
+        "departures": 63,
+        "arrivals": 45,
+        "median_arrival_delay_min": 46
+      }
+    },
+    "ONT": {
+      "iata": "ONT",
+      "name": "Ontario International Airport",
+      "city": "Ontario",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 34.056,
+      "longitude": -117.60119,
+      "disrupted": {
+        "departures": 1450,
+        "arrivals": 1609,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "ORD": {
+      "iata": "ORD",
+      "name": "Chicago O'Hare International Airport",
+      "city": "Chicago",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 41.9796,
+      "longitude": -87.90446,
+      "disrupted": {
+        "departures": 25274,
+        "arrivals": 21584,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "ORF": {
+      "iata": "ORF",
+      "name": "Norfolk International Airport",
+      "city": "Norfolk",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 36.89461,
+      "longitude": -76.20122,
+      "disrupted": {
+        "departures": 587,
+        "arrivals": 652,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "ORH": {
+      "iata": "ORH",
+      "name": "Worcester Regional Airport",
+      "city": "Worcester",
+      "state": "MA",
+      "country": "USA",
+      "latitude": 42.26734,
+      "longitude": -71.87571,
+      "disrupted": {
+        "departures": 36,
+        "arrivals": 23,
+        "median_arrival_delay_min": 79
+      }
+    },
+    "OTH": {
+      "iata": "OTH",
+      "name": "Southwest Oregon Regional Airport (North Bend Municipal)",
+      "city": "North Bend",
+      "state": "OR",
+      "country": "USA",
+      "latitude": 43.41714,
+      "longitude": -124.24603,
+      "disrupted": {
+        "departures": 55,
+        "arrivals": 42,
+        "median_arrival_delay_min": 72
+      }
+    },
+    "OTZ": {
+      "iata": "OTZ",
+      "name": "Ralph Wien Memorial Airport",
+      "city": "Kotzebue",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 66.88468,
+      "longitude": -162.59855,
+      "disrupted": {
+        "departures": 60,
+        "arrivals": 24,
+        "median_arrival_delay_min": 68
+      }
+    },
+    "PAH": {
+      "iata": "PAH",
+      "name": "Barkley Regional Airport",
+      "city": "Paducah",
+      "state": "KY",
+      "country": "USA",
+      "latitude": 37.06083,
+      "longitude": -88.77375,
+      "disrupted": {
+        "departures": 45,
+        "arrivals": 59,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "PBI": {
+      "iata": "PBI",
+      "name": "Palm Beach International Airport",
+      "city": "West Palm Beach",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 26.68316,
+      "longitude": -80.09559,
+      "disrupted": {
+        "departures": 1896,
+        "arrivals": 1677,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "PDX": {
+      "iata": "PDX",
+      "name": "Portland International Airport",
+      "city": "Portland",
+      "state": "OR",
+      "country": "USA",
+      "latitude": 45.58872,
+      "longitude": -122.5975,
+      "disrupted": {
+        "departures": 2167,
+        "arrivals": 2952,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "PHF": {
+      "iata": "PHF",
+      "name": "Newport News/Williamsburg International Airport",
+      "city": "Newport News",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 37.1319,
+      "longitude": -76.49299,
+      "disrupted": {
+        "departures": 111,
+        "arrivals": 74,
+        "median_arrival_delay_min": 49
+      }
+    },
+    "PHL": {
+      "iata": "PHL",
+      "name": "Philadelphia International Airport",
+      "city": "Philadelphia",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 39.87195,
+      "longitude": -75.24114,
+      "disrupted": {
+        "departures": 4095,
+        "arrivals": 3837,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "PHX": {
+      "iata": "PHX",
+      "name": "Phoenix Sky Harbor International Airport",
+      "city": "Phoenix",
+      "state": "AZ",
+      "country": "USA",
+      "latitude": 33.43417,
+      "longitude": -112.00806,
+      "disrupted": {
+        "departures": 8238,
+        "arrivals": 8633,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "PIA": {
+      "iata": "PIA",
+      "name": "General Wayne A. Downing Peoria International Airport",
+      "city": "Peoria",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 40.66424,
+      "longitude": -89.69331,
+      "disrupted": {
+        "departures": 314,
+        "arrivals": 294,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "PIB": {
+      "iata": "PIB",
+      "name": "Hattiesburg-Laurel Regional Airport",
+      "city": "Hattiesburg-Laurel",
+      "state": "MS",
+      "country": "USA",
+      "latitude": 31.46715,
+      "longitude": -89.33706,
+      "disrupted": {
+        "departures": 30,
+        "arrivals": 78,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "PIH": {
+      "iata": "PIH",
+      "name": "Pocatello Regional Airport",
+      "city": "Pocatello",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 42.91131,
+      "longitude": -112.59586,
+      "disrupted": {
+        "departures": 18,
+        "arrivals": 7,
+        "median_arrival_delay_min": 46
+      }
+    },
+    "PIT": {
+      "iata": "PIT",
+      "name": "Pittsburgh International Airport",
+      "city": "Pittsburgh",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 40.49147,
+      "longitude": -80.23287,
+      "disrupted": {
+        "departures": 1218,
+        "arrivals": 1692,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "PLN": {
+      "iata": "PLN",
+      "name": "Pellston Regional Airport of Emmet County",
+      "city": "Pellston",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 45.57093,
+      "longitude": -84.79672,
+      "disrupted": {
+        "departures": 59,
+        "arrivals": 57,
+        "median_arrival_delay_min": 71
+      }
+    },
+    "PNS": {
+      "iata": "PNS",
+      "name": "Pensacola International Airport (Pensacola Gulf Coast Regional Airport)",
+      "city": "Pensacola",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 30.47331,
+      "longitude": -87.18744,
+      "disrupted": {
+        "departures": 505,
+        "arrivals": 421,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "PPG": {
+      "iata": "PPG",
+      "name": "Pago Pago International Airport (Tafuna Airport)",
+      "city": "Pago Pago",
+      "state": "AS",
+      "country": "USA",
+      "latitude": 14.33102,
+      "longitude": -170.71053,
+      "disrupted": {
+        "departures": 6,
+        "arrivals": 0,
+        "median_arrival_delay_min": null
+      }
+    },
+    "PSC": {
+      "iata": "PSC",
+      "name": "Tri-Cities Airport",
+      "city": "Pasco",
+      "state": "WA",
+      "country": "USA",
+      "latitude": 46.26468,
+      "longitude": -119.11903,
+      "disrupted": {
+        "departures": 131,
+        "arrivals": 160,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "PSE": {
+      "iata": "PSE",
+      "name": "Mercedita Airport",
+      "city": "Ponce",
+      "state": "PR",
+      "country": "USA",
+      "latitude": 18.0083,
+      "longitude": -66.56301,
+      "disrupted": {
+        "departures": 61,
+        "arrivals": 60,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "PSG": {
+      "iata": "PSG",
+      "name": "Petersburg James A. Johnson Airport",
+      "city": "Petersburg",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 56.80165,
+      "longitude": -132.94528,
+      "disrupted": {
+        "departures": 76,
+        "arrivals": 60,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "PSP": {
+      "iata": "PSP",
+      "name": "Palm Springs International Airport",
+      "city": "Palm Springs",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 33.82922,
+      "longitude": -116.50625,
+      "disrupted": {
+        "departures": 529,
+        "arrivals": 625,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "PUB": {
+      "iata": "PUB",
+      "name": "Pueblo Memorial Airport",
+      "city": "Pueblo",
+      "state": "CO",
+      "country": "USA",
+      "latitude": 38.28909,
+      "longitude": -104.49657,
+      "disrupted": {
+        "departures": 24,
+        "arrivals": 14,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "PVD": {
+      "iata": "PVD",
+      "name": "Theodore Francis Green State Airport",
+      "city": "Providence",
+      "state": "RI",
+      "country": "USA",
+      "latitude": 41.724,
+      "longitude": -71.42822,
+      "disrupted": {
+        "departures": 619,
+        "arrivals": 749,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "PWM": {
+      "iata": "PWM",
+      "name": "Portland International Jetport",
+      "city": "Portland",
+      "state": "ME",
+      "country": "USA",
+      "latitude": 43.64617,
+      "longitude": -70.30875,
+      "disrupted": {
+        "departures": 296,
+        "arrivals": 329,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "RAP": {
+      "iata": "RAP",
+      "name": "Rapid City Regional Airport",
+      "city": "Rapid City",
+      "state": "SD",
+      "country": "USA",
+      "latitude": 44.04532,
+      "longitude": -103.05737,
+      "disrupted": {
+        "departures": 211,
+        "arrivals": 191,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "RDD": {
+      "iata": "RDD",
+      "name": "Redding Municipal Airport",
+      "city": "Redding",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 40.50898,
+      "longitude": -122.2934,
+      "disrupted": {
+        "departures": 62,
+        "arrivals": 95,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "RDM": {
+      "iata": "RDM",
+      "name": "Redmond Municipal Airport (Roberts Field)",
+      "city": "Redmond",
+      "state": "OR",
+      "country": "USA",
+      "latitude": 44.25407,
+      "longitude": -121.14996,
+      "disrupted": {
+        "departures": 124,
+        "arrivals": 164,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "RDU": {
+      "iata": "RDU",
+      "name": "Raleigh-Durham International Airport",
+      "city": "Raleigh",
+      "state": "NC",
+      "country": "USA",
+      "latitude": 35.87764,
+      "longitude": -78.78747,
+      "disrupted": {
+        "departures": 2281,
+        "arrivals": 2389,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "RHI": {
+      "iata": "RHI",
+      "name": "Rhinelander-Oneida County Airport",
+      "city": "Rhinelander",
+      "state": "WI",
+      "country": "USA",
+      "latitude": 45.63119,
+      "longitude": -89.46745,
+      "disrupted": {
+        "departures": 69,
+        "arrivals": 47,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "RIC": {
+      "iata": "RIC",
+      "name": "Richmond International Airport",
+      "city": "Richmond",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 37.50517,
+      "longitude": -77.31967,
+      "disrupted": {
+        "departures": 790,
+        "arrivals": 1206,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "RKS": {
+      "iata": "RKS",
+      "name": "Rock Springs-Sweetwater County Airport",
+      "city": "Rock Springs",
+      "state": "WY",
+      "country": "USA",
+      "latitude": 41.59422,
+      "longitude": -109.06519,
+      "disrupted": {
+        "departures": 35,
+        "arrivals": 43,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "RNO": {
+      "iata": "RNO",
+      "name": "Reno/Tahoe International Airport",
+      "city": "Reno",
+      "state": "NV",
+      "country": "USA",
+      "latitude": 39.49858,
+      "longitude": -119.76806,
+      "disrupted": {
+        "departures": 1000,
+        "arrivals": 1066,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "ROA": {
+      "iata": "ROA",
+      "name": "Roanoke Regional Airport (Woodrum Field)",
+      "city": "Roanoke",
+      "state": "VA",
+      "country": "USA",
+      "latitude": 37.32547,
+      "longitude": -79.97543,
+      "disrupted": {
+        "departures": 185,
+        "arrivals": 118,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "ROC": {
+      "iata": "ROC",
+      "name": "Greater Rochester International Airport",
+      "city": "Rochester",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 43.11887,
+      "longitude": -77.67238,
+      "disrupted": {
+        "departures": 430,
+        "arrivals": 536,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "ROW": {
+      "iata": "ROW",
+      "name": "Roswell International Air Center",
+      "city": "Roswell",
+      "state": "NM",
+      "country": "USA",
+      "latitude": 33.30156,
+      "longitude": -104.53056,
+      "disrupted": {
+        "departures": 76,
+        "arrivals": 69,
+        "median_arrival_delay_min": 51
+      }
+    },
+    "RST": {
+      "iata": "RST",
+      "name": "Rochester International Airport",
+      "city": "Rochester",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 43.90883,
+      "longitude": -92.49799,
+      "disrupted": {
+        "departures": 160,
+        "arrivals": 161,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "RSW": {
+      "iata": "RSW",
+      "name": "Southwest Florida International Airport",
+      "city": "Ft. Myers",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 26.53617,
+      "longitude": -81.75517,
+      "disrupted": {
+        "departures": 1971,
+        "arrivals": 1514,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "SAF": {
+      "iata": "SAF",
+      "name": "Santa Fe Municipal Airport",
+      "city": "Santa Fe",
+      "state": "NM",
+      "country": "USA",
+      "latitude": 35.61678,
+      "longitude": -106.08814,
+      "disrupted": {
+        "departures": 108,
+        "arrivals": 97,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "SAN": {
+      "iata": "SAN",
+      "name": "San Diego International Airport (Lindbergh Field)",
+      "city": "San Diego",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 32.73356,
+      "longitude": -117.18966,
+      "disrupted": {
+        "departures": 4960,
+        "arrivals": 4951,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "SAT": {
+      "iata": "SAT",
+      "name": "San Antonio International Airport",
+      "city": "San Antonio",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 29.53369,
+      "longitude": -98.46978,
+      "disrupted": {
+        "departures": 1966,
+        "arrivals": 2296,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "SAV": {
+      "iata": "SAV",
+      "name": "Savannah/Hilton Head International Airport",
+      "city": "Savannah",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 32.12758,
+      "longitude": -81.20214,
+      "disrupted": {
+        "departures": 478,
+        "arrivals": 433,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "SBA": {
+      "iata": "SBA",
+      "name": "Santa Barbara Municipal Airport (Santa Barbara Airport)",
+      "city": "Santa Barbara",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 34.42621,
+      "longitude": -119.84037,
+      "disrupted": {
+        "departures": 459,
+        "arrivals": 447,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "SBN": {
+      "iata": "SBN",
+      "name": "South Bend International Airport (South Bend Regional)",
+      "city": "South Bend",
+      "state": "IN",
+      "country": "USA",
+      "latitude": 41.70895,
+      "longitude": -86.31847,
+      "disrupted": {
+        "departures": 269,
+        "arrivals": 402,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "SBP": {
+      "iata": "SBP",
+      "name": "San Luis Obispo County Regional Airport (McChesney Field)",
+      "city": "San Luis Obispo",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 35.23706,
+      "longitude": -120.64239,
+      "disrupted": {
+        "departures": 255,
+        "arrivals": 228,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "SCC": {
+      "iata": "SCC",
+      "name": "Deadhorse Airport (Prudhoe Bay Airport)",
+      "city": "Deadhorse",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 70.19476,
+      "longitude": -148.46516,
+      "disrupted": {
+        "departures": 64,
+        "arrivals": 43,
+        "median_arrival_delay_min": 48
+      }
+    },
+    "SCE": {
+      "iata": "SCE",
+      "name": "University Park Airport",
+      "city": "State College",
+      "state": "PA",
+      "country": "USA",
+      "latitude": 40.85121,
+      "longitude": -77.8463,
+      "disrupted": {
+        "departures": 59,
+        "arrivals": 77,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "SDF": {
+      "iata": "SDF",
+      "name": "Louisville International Airport (Standiford Field)",
+      "city": "Louisville",
+      "state": "KY",
+      "country": "USA",
+      "latitude": 38.17439,
+      "longitude": -85.736,
+      "disrupted": {
+        "departures": 677,
+        "arrivals": 661,
+        "median_arrival_delay_min": 69
+      }
+    },
+    "SEA": {
+      "iata": "SEA",
+      "name": "Seattle-Tacoma International Airport",
+      "city": "Seattle",
+      "state": "WA",
+      "country": "USA",
+      "latitude": 47.44898,
+      "longitude": -122.30931,
+      "disrupted": {
+        "departures": 4623,
+        "arrivals": 6061,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "SFO": {
+      "iata": "SFO",
+      "name": "San Francisco International Airport",
+      "city": "San Francisco",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 37.619,
+      "longitude": -122.37484,
+      "disrupted": {
+        "departures": 12182,
+        "arrivals": 10970,
+        "median_arrival_delay_min": 63
+      }
+    },
+    "SGF": {
+      "iata": "SGF",
+      "name": "Springfield-Branson National Airport",
+      "city": "Springfield",
+      "state": "MO",
+      "country": "USA",
+      "latitude": 37.24433,
+      "longitude": -93.38686,
+      "disrupted": {
+        "departures": 515,
+        "arrivals": 516,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "SGU": {
+      "iata": "SGU",
+      "name": "St. George Regional Airport",
+      "city": "St George",
+      "state": "UT",
+      "country": "USA",
+      "latitude": 37.09058,
+      "longitude": -113.59306,
+      "disrupted": {
+        "departures": 82,
+        "arrivals": 93,
+        "median_arrival_delay_min": 53
+      }
+    },
+    "SHV": {
+      "iata": "SHV",
+      "name": "Shreveport Regional Airport",
+      "city": "Shreveport",
+      "state": "LA",
+      "country": "USA",
+      "latitude": 32.44663,
+      "longitude": -93.8256,
+      "disrupted": {
+        "departures": 467,
+        "arrivals": 460,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "SIT": {
+      "iata": "SIT",
+      "name": "Sitka Rocky Gutierrez Airport",
+      "city": "Sitka",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 57.04714,
+      "longitude": -135.3616,
+      "disrupted": {
+        "departures": 82,
+        "arrivals": 81,
+        "median_arrival_delay_min": 61
+      }
+    },
+    "SJC": {
+      "iata": "SJC",
+      "name": "Norman Y. Mineta San José International Airport",
+      "city": "San Jose",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 37.36186,
+      "longitude": -121.92901,
+      "disrupted": {
+        "departures": 2918,
+        "arrivals": 3078,
+        "median_arrival_delay_min": 49
+      }
+    },
+    "SJT": {
+      "iata": "SJT",
+      "name": "San Angelo Regional Airport (Mathis Field)",
+      "city": "San Angelo",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 31.35775,
+      "longitude": -100.49631,
+      "disrupted": {
+        "departures": 141,
+        "arrivals": 111,
+        "median_arrival_delay_min": 59
+      }
+    },
+    "SJU": {
+      "iata": "SJU",
+      "name": "Luis Muñoz Marín International Airport",
+      "city": "San Juan",
+      "state": "PR",
+      "country": "USA",
+      "latitude": 18.43942,
+      "longitude": -66.00183,
+      "disrupted": {
+        "departures": 1753,
+        "arrivals": 1520,
+        "median_arrival_delay_min": 67
+      }
+    },
+    "SLC": {
+      "iata": "SLC",
+      "name": "Salt Lake City International Airport",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "country": "USA",
+      "latitude": 40.78839,
+      "longitude": -111.97777,
+      "disrupted": {
+        "departures": 3687,
+        "arrivals": 4846,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "SMF": {
+      "iata": "SMF",
+      "name": "Sacramento International Airport",
+      "city": "Sacramento",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 38.69542,
+      "longitude": -121.59077,
+      "disrupted": {
+        "departures": 2884,
+        "arrivals": 3161,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "SMX": {
+      "iata": "SMX",
+      "name": "Santa Maria Public Airport (Capt G. Allan Hancock Field)",
+      "city": "Santa Maria",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 34.89925,
+      "longitude": -120.45758,
+      "disrupted": {
+        "departures": 50,
+        "arrivals": 62,
+        "median_arrival_delay_min": 47
+      }
+    },
+    "SNA": {
+      "iata": "SNA",
+      "name": "John Wayne Airport (Orange County Airport)",
+      "city": "Santa Ana",
+      "state": "CA",
+      "country": "USA",
+      "latitude": 33.67566,
+      "longitude": -117.86822,
+      "disrupted": {
+        "departures": 2166,
+        "arrivals": 2082,
+        "median_arrival_delay_min": 49
+      }
+    },
+    "SPI": {
+      "iata": "SPI",
+      "name": "Abraham Lincoln Capital Airport",
+      "city": "Springfield",
+      "state": "IL",
+      "country": "USA",
+      "latitude": 39.84395,
+      "longitude": -89.67762,
+      "disrupted": {
+        "departures": 131,
+        "arrivals": 157,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "SPS": {
+      "iata": "SPS",
+      "name": "Wichita Falls Municipal Airport/Sheppard AFB",
+      "city": "Wichita Falls",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 33.9888,
+      "longitude": -98.49189,
+      "disrupted": {
+        "departures": 104,
+        "arrivals": 82,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "SRQ": {
+      "iata": "SRQ",
+      "name": "Sarasota-Bradenton International Airport",
+      "city": "Sarasota",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 27.39533,
+      "longitude": -82.55411,
+      "disrupted": {
+        "departures": 245,
+        "arrivals": 176,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "STC": {
+      "iata": "STC",
+      "name": "St. Cloud Regional Airport",
+      "city": "St Cloud",
+      "state": "MN",
+      "country": "USA",
+      "latitude": 45.54532,
+      "longitude": -94.05834,
+      "disrupted": {
+        "departures": 15,
+        "arrivals": 17,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "STL": {
+      "iata": "STL",
+      "name": "St. Louis International Airport at Lambert Field",
+      "city": "St Louis",
+      "state": "MO",
+      "country": "USA",
+      "latitude": 38.74769,
+      "longitude": -90.35999,
+      "disrupted": {
+        "departures": 3558,
+        "arrivals": 3406,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "STT": {
+      "iata": "STT",
+      "name": "Cyril E. King Airport",
+      "city": "Charlotte Amalie",
+      "state": "VI",
+      "country": "USA",
+      "latitude": 18.33731,
+      "longitude": -64.97336,
+      "disrupted": {
+        "departures": 336,
+        "arrivals": 220,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "STX": {
+      "iata": "STX",
+      "name": "Henry E. Rohlsen Airport",
+      "city": "Christiansted",
+      "state": "VI",
+      "country": "USA",
+      "latitude": 17.70189,
+      "longitude": -64.79856,
+      "disrupted": {
+        "departures": 67,
+        "arrivals": 64,
+        "median_arrival_delay_min": 50
+      }
+    },
+    "SUN": {
+      "iata": "SUN",
+      "name": "Friedman Memorial Airport",
+      "city": "Hailey",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 43.50484,
+      "longitude": -114.29659,
+      "disrupted": {
+        "departures": 58,
+        "arrivals": 32,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "SUX": {
+      "iata": "SUX",
+      "name": "Sioux Gateway Airport",
+      "city": "Sioux City",
+      "state": "IA",
+      "country": "USA",
+      "latitude": 42.4026,
+      "longitude": -96.38437,
+      "disrupted": {
+        "departures": 46,
+        "arrivals": 73,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "SWF": {
+      "iata": "SWF",
+      "name": "Stewart International Airport",
+      "city": "Newburgh",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 41.50409,
+      "longitude": -74.10484,
+      "disrupted": {
+        "departures": 39,
+        "arrivals": 45,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "SYR": {
+      "iata": "SYR",
+      "name": "Syracuse Hancock International Airport",
+      "city": "Syracuse",
+      "state": "NY",
+      "country": "USA",
+      "latitude": 43.11119,
+      "longitude": -76.10631,
+      "disrupted": {
+        "departures": 328,
+        "arrivals": 428,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "TLH": {
+      "iata": "TLH",
+      "name": "Tallahassee International Airport",
+      "city": "Tallahassee",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 30.39653,
+      "longitude": -84.35033,
+      "disrupted": {
+        "departures": 212,
+        "arrivals": 192,
+        "median_arrival_delay_min": 64
+      }
+    },
+    "TOL": {
+      "iata": "TOL",
+      "name": "Toledo Express Airport",
+      "city": "Toledo",
+      "state": "OH",
+      "country": "USA",
+      "latitude": 41.58681,
+      "longitude": -83.80783,
+      "disrupted": {
+        "departures": 54,
+        "arrivals": 70,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "TPA": {
+      "iata": "TPA",
+      "name": "Tampa International Airport",
+      "city": "Tampa",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 27.97547,
+      "longitude": -82.53325,
+      "disrupted": {
+        "departures": 4904,
+        "arrivals": 4328,
+        "median_arrival_delay_min": 65
+      }
+    },
+    "TRI": {
+      "iata": "TRI",
+      "name": "Tri-Cities Regional Airport",
+      "city": "Bristol",
+      "state": "TN",
+      "country": "USA",
+      "latitude": 36.47521,
+      "longitude": -82.40742,
+      "disrupted": {
+        "departures": 128,
+        "arrivals": 97,
+        "median_arrival_delay_min": 55
+      }
+    },
+    "TTN": {
+      "iata": "TTN",
+      "name": "Trenton Mercer Airport",
+      "city": "Trenton",
+      "state": "NJ",
+      "country": "USA",
+      "latitude": 40.27669,
+      "longitude": -74.81347,
+      "disrupted": {
+        "departures": 214,
+        "arrivals": 327,
+        "median_arrival_delay_min": 82
+      }
+    },
+    "TUL": {
+      "iata": "TUL",
+      "name": "Tulsa International Airport",
+      "city": "Tulsa",
+      "state": "OK",
+      "country": "USA",
+      "latitude": 36.19837,
+      "longitude": -95.88824,
+      "disrupted": {
+        "departures": 1071,
+        "arrivals": 1082,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "TUS": {
+      "iata": "TUS",
+      "name": "Tucson International Airport",
+      "city": "Tucson",
+      "state": "AZ",
+      "country": "USA",
+      "latitude": 32.11608,
+      "longitude": -110.94103,
+      "disrupted": {
+        "departures": 881,
+        "arrivals": 1258,
+        "median_arrival_delay_min": 57
+      }
+    },
+    "TVC": {
+      "iata": "TVC",
+      "name": "Cherry Capital Airport",
+      "city": "Traverse City",
+      "state": "MI",
+      "country": "USA",
+      "latitude": 44.74144,
+      "longitude": -85.58224,
+      "disrupted": {
+        "departures": 162,
+        "arrivals": 170,
+        "median_arrival_delay_min": 62
+      }
+    },
+    "TWF": {
+      "iata": "TWF",
+      "name": "Magic Valley Regional Airport (Joslin Field)",
+      "city": "Twin Falls",
+      "state": "ID",
+      "country": "USA",
+      "latitude": 42.4818,
+      "longitude": -114.48774,
+      "disrupted": {
+        "departures": 27,
+        "arrivals": 13,
+        "median_arrival_delay_min": 71
+      }
+    },
+    "TXK": {
+      "iata": "TXK",
+      "name": "Texarkana Regional Airport (Webb Field)",
+      "city": "Texarkana",
+      "state": "AR",
+      "country": "USA",
+      "latitude": 33.45371,
+      "longitude": -93.99102,
+      "disrupted": {
+        "departures": 65,
+        "arrivals": 56,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "TYR": {
+      "iata": "TYR",
+      "name": "Tyler Pounds Regional Airport",
+      "city": "Tyler",
+      "state": "TX",
+      "country": "USA",
+      "latitude": 32.35414,
+      "longitude": -95.40239,
+      "disrupted": {
+        "departures": 202,
+        "arrivals": 184,
+        "median_arrival_delay_min": 58
+      }
+    },
+    "TYS": {
+      "iata": "TYS",
+      "name": "McGhee Tyson Airport",
+      "city": "Knoxville",
+      "state": "TN",
+      "country": "USA",
+      "latitude": 35.81249,
+      "longitude": -83.99286,
+      "disrupted": {
+        "departures": 458,
+        "arrivals": 592,
+        "median_arrival_delay_min": 70
+      }
+    },
+    "VEL": {
+      "iata": "VEL",
+      "name": "Valdez Airport",
+      "city": "Vernal",
+      "state": "UT",
+      "country": "USA",
+      "latitude": 40.4409,
+      "longitude": -109.50992,
+      "disrupted": {
+        "departures": 3,
+        "arrivals": 0,
+        "median_arrival_delay_min": null
+      }
+    },
+    "VLD": {
+      "iata": "VLD",
+      "name": "Valdosta Regional Airport",
+      "city": "Valdosta",
+      "state": "GA",
+      "country": "USA",
+      "latitude": 30.7825,
+      "longitude": -83.27672,
+      "disrupted": {
+        "departures": 57,
+        "arrivals": 62,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "VPS": {
+      "iata": "VPS",
+      "name": "Destin-Fort Walton Beach Airport/Eglin AFB",
+      "city": "Valparaiso",
+      "state": "FL",
+      "country": "USA",
+      "latitude": 30.48325,
+      "longitude": -86.5254,
+      "disrupted": {
+        "departures": 361,
+        "arrivals": 285,
+        "median_arrival_delay_min": 60
+      }
+    },
+    "WRG": {
+      "iata": "WRG",
+      "name": "Wrangell Airport",
+      "city": "Wrangell",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 56.48433,
+      "longitude": -132.36982,
+      "disrupted": {
+        "departures": 67,
+        "arrivals": 66,
+        "median_arrival_delay_min": 56
+      }
+    },
+    "WYS": {
+      "iata": "WYS",
+      "name": "Westerly State Airport",
+      "city": "West Yellowstone",
+      "state": "MT",
+      "country": "USA",
+      "latitude": 44.6884,
+      "longitude": -111.11764,
+      "disrupted": {
+        "departures": 6,
+        "arrivals": 1,
+        "median_arrival_delay_min": 39
+      }
+    },
+    "XNA": {
+      "iata": "XNA",
+      "name": "Northwest Arkansas Regional Airport",
+      "city": "Fayetteville/Springdale/Rogers",
+      "state": "AR",
+      "country": "USA",
+      "latitude": 36.28187,
+      "longitude": -94.30681,
+      "disrupted": {
+        "departures": 854,
+        "arrivals": 784,
+        "median_arrival_delay_min": 66
+      }
+    },
+    "YAK": {
+      "iata": "YAK",
+      "name": "Yakutat Airport",
+      "city": "Yakutat",
+      "state": "AK",
+      "country": "USA",
+      "latitude": 59.50336,
+      "longitude": -139.66023,
+      "disrupted": {
+        "departures": 52,
+        "arrivals": 48,
+        "median_arrival_delay_min": 52
+      }
+    },
+    "YUM": {
+      "iata": "YUM",
+      "name": "Yuma International Airport",
+      "city": "Yuma",
+      "state": "AZ",
+      "country": "USA",
+      "latitude": 32.65658,
+      "longitude": -114.60597,
+      "disrupted": {
+        "departures": 85,
+        "arrivals": 65,
+        "median_arrival_delay_min": 71
+      }
+    }
+  }
+}
