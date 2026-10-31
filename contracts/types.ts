@@ -1596,6 +1596,16 @@ export interface components {
             /** Crew Shift Ends Min */
             crew_shift_ends_min: number;
             /**
+             * Assigned Gate
+             * @description Gate the flight was assigned before the disruption; moving off it needs the workbook's notice
+             */
+            assigned_gate?: string | null;
+            /**
+             * Flight Crew Duty Left Min
+             * @description Flight crew duty time left at t=0 under the workbook's 13 h limit; null if not known
+             */
+            flight_crew_duty_left_min?: number | null;
+            /**
              * Turnaround Min
              * @default 45
              */

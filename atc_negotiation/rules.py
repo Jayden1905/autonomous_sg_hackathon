@@ -33,6 +33,8 @@ MISSED_PAX_COST: float = float(_p("pilot.connections").get("cost_per_pax", 2.0))
 OVERTIME_COST_PER_MIN: float = float(_p("ground.crew_overtime").get("cost_per_min", 1.5))
 GATE_OVERRUN_COST_PER_MIN: float = float(_p("ground.gate_overrun").get("cost_per_min", 1.0))
 FINAL_RESERVE_DEFAULT_MIN: int = int(_p("pilot.final_reserve_fuel").get("value", 30))
+GATE_CHANGE_NOTICE_MIN: int = int(_p("ground.gate_change_notice").get("value", 20))
+FLIGHT_CREW_DUTY_MAX_MIN: int = int(_p("pilot.flight_crew_duty").get("value", 780))
 
 _HAS_RULE_ID = "rule_id" in RuleResult.model_fields
 
@@ -132,6 +134,13 @@ def pilot_rules(s: Scenario, p: Proposal) -> list[RuleResult]:
             detail=f"{margin} min above final reserve at landing; operator requires {DIVERT_BUFFER_MIN}",
         ))
 
+    if s.flight_crew_duty_left_min is not None:
+        out.append(_rr(
+            "pilot.flight_crew_duty", domain="pilot", passed=p.arrival_min <= s.flight_crew_duty_left_min, hard=True,
+            detail=f"crew duty runs out at t={s.flight_crew_duty_left_min} ({FLIGHT_CREW_DUTY_MAX_MIN // 60} h limit), "
+                   f"arrival t={p.arrival_min}",
+        ))
+
     missed = sum(c.passengers for c in s.connections
                  if p.arrival_min + c.min_connect_min > c.departs_min)
     out.append(_rr("pilot.connections", domain="pilot", passed=True, hard=False,
@@ -152,6 +161,13 @@ def ground_rules(s: Scenario, p: Proposal) -> list[RuleResult]:
         "ground.gate_available", domain="ground", passed=free, hard=True,
         detail=f"gate {gate.name} free t=[{gate.free_from_min}, {gate.free_until_min}], arrival t={p.arrival_min}",
     ))
+
+    if s.assigned_gate and gate.name != s.assigned_gate:
+        out.append(_rr(
+            "ground.gate_change_notice", domain="ground", passed=p.arrival_min >= GATE_CHANGE_NOTICE_MIN, hard=True,
+            detail=f"moving from {s.assigned_gate} to {gate.name} needs {GATE_CHANGE_NOTICE_MIN} min notice, "
+                   f"arrival t={p.arrival_min}",
+        ))
 
     # The turnaround keeps the gate busy; running past its window pushes the gate's next flight.
     on_block_until = p.arrival_min + s.turnaround_min

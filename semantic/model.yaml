@@ -381,6 +381,17 @@ rules:
     params: {op: ">=", value: 30, unit: min, applies_to: turbine, spare_holding_on_arrival_min: 45}
     source: easa:cat.op.mpa.181
     enforced_by: rules.pilot_rules
+  - id: pilot.flight_crew_duty
+    kind: threshold
+    hard: true
+    domain: pilot
+    subjects: [fuel_remaining_at_landing]
+    text: >-
+      Flight crew may not exceed 13 hours of duty from report time (organisers' workbook, simplified FAA Part 117).
+      The aircraft must be on the ground before the crew's duty runs out. Checked when the scenario gives duty left.
+    params: {op: "<=", value: 780, unit: min}
+    source: organisers:c2:constraints
+    enforced_by: rules.pilot_rules
   - id: pilot.connections
     kind: threshold
     hard: false
@@ -409,6 +420,17 @@ rules:
     subjects: [Gate]
     text: The gate must be free at the arrival time.
     source: brief:c2:ground
+    enforced_by: rules.ground_rules
+  - id: ground.gate_change_notice
+    kind: threshold
+    hard: true
+    domain: ground
+    subjects: [Gate]
+    text: >-
+      Moving a flight off its assigned gate needs at least 20 minutes' notice before arrival (organisers' workbook,
+      sheet fuel_and_crew). Checked only when the scenario names an assigned gate.
+    params: {op: ">=", value: 20, unit: min}
+    source: organisers:c2:constraints
     enforced_by: rules.ground_rules
   - id: ground.gate_overrun
     kind: threshold

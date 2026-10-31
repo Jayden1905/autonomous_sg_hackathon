@@ -104,6 +104,10 @@ class Scenario(BaseModel):
     runways: list[Runway]
     gates: list[Gate]
     crew_shift_ends_min: int
+    assigned_gate: str | None = Field(default=None, description=(
+        "Gate the flight was assigned before the disruption; moving off it needs the workbook's notice"))
+    flight_crew_duty_left_min: int | None = Field(default=None, description=(
+        "Flight crew duty time left at t=0 under the workbook's 13 h limit; null if not known"))
     turnaround_min: int = 45
     max_arrival_min: int = 180  # beyond this the sector hands the flight to a diversion plan
     moves: list[Move] = Field(default_factory=list, description=(

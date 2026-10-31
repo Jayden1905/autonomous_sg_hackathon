@@ -97,6 +97,10 @@ def test_rules_py_and_model_agree_both_ways():
     sm = Scenario.model_validate_json((ROOT / "scenarios" / "demo_storm_aa1453_moves.json").read_text())
     emitted |= {r.rule_id for r in rules.evaluate(sm, Proposal(
         arrival_min=56, runway="27R", gate="A1", rationale="", moves=["ground.tow_a1"])).results}
+    # Workbook rules apply only when the scenario names an assigned gate and crew duty left.
+    sw = s.model_copy(update={"assigned_gate": "B14", "flight_crew_duty_left_min": 600})
+    emitted |= {r.rule_id for r in rules.evaluate(sw, Proposal(
+        arrival_min=40, runway="27R", gate="B12", rationale="")).results}
     eng = default_engine()
     declared = {r.id for r in eng.model.rules if (r.enforced_by or "").startswith("rules.")}
     assert emitted - set(eng.rule_by_id) == set(), "emitted but not in model.yaml"

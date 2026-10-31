@@ -23,7 +23,7 @@ The workbook (`data/challenge2_operational_constraints.xlsx`) arrived during the
 | Turnaround | 45 min large hub, 35 min elsewhere | Same, per destination airport |
 | Holding burn, narrowbody | 2,400 kg/h | Same (40 kg/min) |
 | Ground crew overtime | 1.5x after 8 h | Same multiplier |
-| Gate change notice 20 min, flight crew duty 13 h | Required | Not enforced yet; stated |
+| Gate change notice 20 min, flight crew duty 13 h | Required | Enforced as hard rules when the scenario gives the assigned gate and duty left; dataset rows carry neither, so they apply to hand-built scenarios |
 | Runways, gates per airport | 1–4 runways, 8–150 gates | 2 runways, 3 candidate gates per scenario: only the ones in play |
 
 The evaluation tables were measured before the switch. Say so if asked.
