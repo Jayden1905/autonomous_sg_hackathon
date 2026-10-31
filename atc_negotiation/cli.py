@@ -3,6 +3,7 @@
   atc run scenarios/sample_weather.json [--mock] [--out trace.json]
   atc from-dot data/flights.csv --row 3 [--mock] [--out trace.json]
   atc batch data/flights.csv --n 50 [--mock] [--out results.jsonl]
+  atc impact results.jsonl      negotiated vs recorded 2015 delay, per batch (measured + labelled estimates)
   atc semantic profile          regenerate semantic/schema.yaml from data/*.csv
   atc semantic check            validate model.yaml + schema.yaml cross-references
   atc semantic brief atc        print the grounding brief one agent gets
@@ -195,6 +196,18 @@ def cmd_semantic(args) -> None:
             print("  " + line)
 
 
+def cmd_impact(args) -> None:
+    from . import impact
+    rep = impact.build(Path(args.traces), Path(args.csv))
+    if not rep.rows:
+        sys.exit("no traces matched rows in the CSV (were they produced by `atc batch` on this file?)")
+    summary = rep.summary()
+    print(impact.render(summary))
+    if args.out:
+        impact.write_json(summary, Path(args.out))
+        print(f"\njson written to {args.out}")
+
+
 def main(argv: list[str] | None = None) -> None:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--mock", action="store_true", help="scripted agents, no API calls")
@@ -219,6 +232,12 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("csv")
     c.add_argument("--n", type=int, default=20)
     c.set_defaults(fn=cmd_batch)
+
+    i = sub.add_parser("impact", help="compare a batch's negotiated plans against the recorded 2015 outcomes")
+    i.add_argument("traces", help="JSONL written by `atc batch --out`")
+    i.add_argument("--csv", default="data/flights.csv")
+    i.add_argument("--out", help="also write the summary JSON here")
+    i.set_defaults(fn=cmd_impact)
 
     d = sub.add_parser("semantic", help="semantic model: profile | check | brief | lookup")
     ds = d.add_subparsers(dest="action", required=True)

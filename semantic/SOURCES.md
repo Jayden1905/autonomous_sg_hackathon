@@ -27,6 +27,17 @@ gives no operational numbers, so those come from the regulations below.
 | `iata:mct` | Default minimum connect time 35 min; US hub range 30–55 | IATA PSC Resolution 765; OAG MCT data | [Travel Vient 2026 MCT survey](https://travelvient.com/blog/tightest-connections-2026/), [Navan glossary](https://navan.com/resources/glossary/what-is-minimum-connection-time), [OMAAT on AA MCTs](https://onemileatatime.com/insights/american-airlines-minimum-connection-time/) |
 | `airbus:turnaround` | Planning turnaround 45 min | Airbus A320 ground-ops figures; IATA Ground Operations Manual | [Simple Flying](https://simpleflying.com/narrowbody-turnaround-times-time-differences-guide/), [Aileron Air](https://www.aileronair.com/blog/aircraft-turnaround-time-aviation/) |
 
+## Impact estimates (`atc impact`)
+
+| Figure | Used for | Status | Source |
+|---|---|---|---|
+| Recorded `ARRIVAL_DELAY` and `DEPARTURE_DELAY` per flight | The before/after baseline | measured (DOT 2015) | `data/flights.csv` |
+| 40 kg/min holding fuel burn, A320 family | Fuel-in-hold estimate | estimate, planning rule of thumb; actual 30–40 kg/min | [BB711 A320 fuel-flow rules of thumb](https://blackbox711.com/docs/site/rules-of-thumb/fuel-flow-a320/), [Airliners.net line-pilot figures](https://www.airliners.net/forum/viewtopic.php?t=1440797), [Airbus *Getting to Grips with Fuel Economy*](https://ansperformance.eu/library/airbus-fuel-economy.pdf) |
+| Human coordination time per irregular flight | Decision-time comparison | **not quantified**: no per-flight figure found in the literature searched (MIT FTL 1995 AOCC study, Castro TAP AOCC study, FAA TRACON comms report give workload and message counts, not minutes per disruption) | [Grandeau, MIT FTL R95-2](https://dspace.mit.edu/bitstream/handle/1721.1/68117/FTL_R_1995_02.pdf), [Castro, The Airline Operations Control Problem](https://www.researchgate.net/publication/295092665_The_Airline_Operations_Control_Problem) |
+
+The comparison is against what actually happened to the same flight on the same day. Only
+post-departure delay is comparable (a flight cannot arrive before its recorded departure delay).
+
 ## Honest limits
 
 - The wake table is time-based ICAO minima, not RECAT-EU or FAA Order 7110.126 groups.
