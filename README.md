@@ -164,13 +164,21 @@ happened to the same flight.
 
 | | 200 rows, scripted agents | 20 rows, real agents (`claude-opus-5-5`) |
 |---|---|---|
-| Consensus | 194 (97%) | *(running; filled in when the batch lands)* |
-| Fallback to solver | 0 | |
-| Declined: no legal option | 6 | |
-| Turns, mean | 2.0 | |
-| Decision time, mean | 0.3 s | ~55 s |
-| Vetoed accepts (agent agreed to an illegal plan) | 0 | |
-| Passengers kept on connections | 5,260 of 5,447 (96.6%) | |
+| Consensus | 194 (97%) | 20 (100%) |
+| Fallback to solver | 0 | 0 |
+| Declined: no legal option | 6 | 0 |
+| Turns, mean | 2.0 | 1.0 |
+| Decision time, mean | 0.3 s | 50 s (max 65 s) |
+| Vetoed accepts (agent agreed to an illegal plan) | 0 | 0 |
+| Passengers kept on connections | 5,260 of 5,447 (96.6%) | 516 of 582 (88.7%) |
+| LLM calls / tool calls | — | 168 / 257 |
+| Citation checks / claims sent back for re-grounding | — | 98 / 38 |
+
+The real agents converge in one turn because they call `check_proposal` (the rule
+engine) before proposing, so what reaches the table is already legal. The 38
+rejected claims are the guardrail doing its job: a claim whose citation did not
+resolve to the semantic model was returned to the agent instead of being spoken.
+None reached a proposal.
 
 ### Impact against the recorded 2015 outcome
 
@@ -178,18 +186,19 @@ The baseline is real: each DOT row records the flight's actual `ARRIVAL_DELAY`.
 Only post-departure delay is comparable, because a flight cannot arrive before its
 recorded departure delay.
 
-| Measure | Status | 200-row result |
-|---|---|---|
-| Decision time per disruption | measured | 0.3 s scripted, ~55 s real, vs phone/radio coordination across three organisations (not quantified; no published per-flight figure) |
-| Passengers kept on connections | measured | 96.6% |
-| Plans refused because nothing legal existed | measured | 6 of 200 |
-| Holding absorbed per flight | measured | median 3 min |
-| Fuel burned in hold | estimate | median 120 kg/flight at 40 kg/min (A320 planning figure) |
-| Post-departure delay vs recorded | measured | **median 3 min worse** (54 better, 116 worse, 24 same) |
+| Measure | Status | 200 rows, scripted | 20 rows, real agents |
+|---|---|---|---|
+| Decision time per disruption | measured | 0.3 s | 50 s |
+| vs. today | not quantified | phone/radio coordination across three organisations; no published per-flight figure found | |
+| Passengers kept on connections | measured | 96.6% | 88.7% |
+| Plans refused because nothing legal existed | measured | 6 of 200 | 0 of 20 |
+| Holding absorbed per flight | measured | median 3 min | median 4.5 min |
+| Fuel burned in hold | estimate | median 120 kg/flight | median 180 kg/flight (40 kg/min, A320 planning figure) |
+| Post-departure delay vs recorded | measured | **median 3 min worse** (54 better, 116 worse, 24 same) | **median 3 min worse** (6 better, 12 worse, 2 same) |
 
-**The delay number is against us, and we report it.** In 127 of 194 comparable rows
-(65.5%) the real system had already absorbed the disruption before arrival: the
-recorded post-departure delay is 0. There was nothing left for a negotiation to
+**The delay number is against us, and we report it.** In 127 of 194 scripted rows
+(65.5%) and 13 of 20 real-agent rows (65%) the real system had already absorbed the
+disruption before arrival: the recorded post-departure delay is 0. There was nothing left for a negotiation to
 remove, and the holding our synthetic runway imposes shows up as "worse". On this
 dataset the disruption lives at departure; delay minutes cannot be claimed in our
 favour, and the comparison says more about the synthetic congestion than about the
@@ -204,6 +213,9 @@ protected, and honest refusals.
 - The ATC agent's first proposal on `sample-weather-ORD` missed the gate window; the
   rule engine rejected it and the agents converged on the next turn. The LLM got the
   wake spacing and fuel right and the gate wrong; the code caught it.
+- Across the 20 real-agent runs the citation guardrail sent 38 of 98 claims back to
+  the agent because their source did not resolve to the semantic model. That is the
+  LLM reaching for a number it did not have; the guardrail is what stops it being said.
 - Operator knowledge in the model is a labelled worked example, not an interview.
   Coverage of the elicitation stage is red (9 of 31 questions) until a real
   controller, pilot or ramp supervisor answers.
