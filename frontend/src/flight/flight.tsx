@@ -66,6 +66,7 @@ export function FlightTab(view: FlightView) {
       {proposal && (
         <PlanSummary
           proposal={proposal}
+          moves={s.moves}
           title={
             context === "no_legal_option"
               ? "Last attempt"

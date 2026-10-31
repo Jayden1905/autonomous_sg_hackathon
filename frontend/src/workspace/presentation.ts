@@ -62,13 +62,18 @@ export function sameProposal(a: Proposal, b: Proposal): boolean {
   return (
     a.arrival_min === b.arrival_min &&
     a.runway === b.runway &&
-    a.gate === b.gate
+    a.gate === b.gate &&
+    JSON.stringify([...(a.moves ?? [])].sort()) ===
+      JSON.stringify([...(b.moves ?? [])].sort())
   );
 }
 
 /** A mismatched evaluation must never certify the displayed proposal. */
 export function displayPlan(
-  view: Pick<FlightView, "proposal" | "evaluation" | "context">,
+  view: Pick<
+    FlightView,
+    "proposal" | "evaluation" | "context" | "awaitingProposal"
+  >,
 ) {
   const { proposal, evaluation, context } = view;
   const assessment =
@@ -91,6 +96,8 @@ export function displayPlan(
         ? "Last attempt · not a recommendation"
         : isFinal && !recommended
           ? "Awaiting matching feasible evaluation"
-          : contextLabel(context),
+          : view.awaitingProposal
+            ? "Previous proposal · Awaiting next turn"
+            : contextLabel(context),
   };
 }

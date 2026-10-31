@@ -38,6 +38,21 @@ Scenario changes reset the active run, transient responses, and proposal preview
 
 ## Airport canvas and tooltip
 
+Selecting a scenario focuses its own illustrative aircraft; scenario identity, not
+flight number, distinguishes alternative cases of the same flight. Clicking a
+label or aircraft opens that case. The scene caps these previews at nine aircraft,
+always including the selected case; every loaded case remains in the picker.
+These are independent what-if cases, not a concurrent live airport traffic map.
+
+Follow plan is on by default for each scenario. Frame meaningful gate/runway,
+arrival or agent-action changes and the final recommendation; do not pan for
+thinking, tool calls or repeated status messages. Keep the last completed proposal
+visible and labelled Previous proposal while the next turn is thinking. History
+previews follow recorded plans. No-legal-option returns focus to the scenario
+aircraft and removes recommendation emphasis. Manual orbit/pan/zoom pauses follow;
+the dock can resume it. Explicit selection always focuses its target. Reduced
+motion uses an immediate view change. Keep subjects clear of the inspector.
+
 Gate stand footprints and runway surfaces are selectable, with a quiet hover
 outline and equivalent keyboard-operable labels. Selection opens resource details
 inside the existing Flight inspector: gate windows, runway/taxiway state and

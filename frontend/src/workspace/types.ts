@@ -20,4 +20,7 @@ export interface FlightView {
   selection: Selection;
   onSelect: (selection: Selection) => void;
   comparison?: { proposal: Proposal; label: string } | null;
+  /** Increments on an explicit selection, including selecting the same object again. */
+  focusRequest?: number;
+  awaitingProposal?: boolean;
 }

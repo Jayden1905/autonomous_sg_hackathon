@@ -47,6 +47,10 @@ const layouts: Record<string, AirportLayout> = {
   "sample-weather-ORD": demoLayout,
   "sample-no-legal-option-ORD": demoLayout,
   "demo-storm-ORD-UA599": stormLayout,
+  "demo-storm-ORD-AA1453-moves": {
+    runways: stormLayout.runways,
+    gates: { A1: [-49, 0, 23], K4: [75, 0, 23] },
+  },
   "demo-storm-ORD-VX204-divert": stormLayout,
   "demo-hold-ORD-UA599-decision-time": stormLayout,
 };
@@ -70,6 +74,7 @@ export function App() {
   const [state, dispatch] = useReducer(runReducer, undefined, () => emptyRun());
   const [selected, setSelected] = useState<Attempt | null>(null);
   const [selection, setSelection] = useState<FlightView["selection"]>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const [tab, setTab] = useState<Tab>("Flight");
   const [inspector, setInspector] = useState(() => window.innerWidth >= 900);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -96,6 +101,8 @@ export function App() {
     (next: Scenario) => {
       reset();
       setScenario(next);
+      setFocusRequest((value) => value + 1);
+      setTab("Flight");
       setSelection({ kind: "flight", id: next.flight });
     },
     [reset],
@@ -221,6 +228,7 @@ export function App() {
   const restore = (entry: SavedRun) => {
     const id = reset();
     setScenario(entry.scenario);
+    setFocusRequest((value) => value + 1);
     setSelection({ kind: "flight", id: entry.scenario.flight });
     setScenarios((previous) =>
       previous.some((s) => s.scenario_id === entry.scenario.scenario_id)
@@ -286,10 +294,13 @@ export function App() {
         proposal: plan.proposal,
         evaluation: plan.evaluation,
         context: plan.context,
+        awaitingProposal: plan.awaitingProposal,
         comparison: planComparison(state, selected),
+        focusRequest,
         selection,
         onSelect: (next) => {
           setSelection(next);
+          if (next) setFocusRequest((value) => value + 1);
           const panel = document.getElementById("panel-Flight");
           if (panel) panel.scrollTop = 0;
           if (next) {
@@ -324,7 +335,11 @@ export function App() {
           <ScenarioPicker
             scenarios={scenarios}
             selectedId={scenario.scenario_id}
-            onSelect={chooseScenario}
+            onSelect={(next) =>
+              next.scenario_id === scenario.scenario_id
+                ? view?.onSelect({ kind: "flight", id: next.flight })
+                : chooseScenario(next)
+            }
             status={
               datasetIds.size
                 ? `Includes ${datasetIds.size} US DOT flights loaded so far, not the whole dataset.`
@@ -356,6 +371,8 @@ export function App() {
           >
             <AirportScene
               view={view}
+              scenarios={scenarios}
+              onChooseScenario={chooseScenario}
               layout={
                 layouts[view.scenario.scenario_id] ??
                 (datasetIds.has(view.scenario.scenario_id)
@@ -461,6 +478,7 @@ export function App() {
                   onLatest={() => setSelected(null)}
                   onSelect={view.onSelect}
                   scenario={view.scenario}
+                  moves={view.scenario.moves}
                 />
               )}
               {tab === "History" && (

@@ -1,5 +1,15 @@
 # Integrated airport workspace
 
+Scenario selection now focuses a distinct illustrative aircraft. The scene shows
+at most nine case previews, always including the active case. Follow plan frames
+changed resources, offered agent moves and final results; dragging/zooming pauses
+following, and the location icon resumes it. Repeated status messages do not move
+the camera. Reduced motion snaps to the target. Case previews are not live traffic.
+Run `npm run test:camera` for paced proposal updates, aircraft clicks, free-camera
+override, history, no-legal-option and mobile checks. This uses an explicit UI
+stream fixture; `test:e2e` separately checks the real backend with mock agents.
+
+
 All dropdown fields use `workspace/Select`, including weather, quality, resources,
 agent mode, turn limit and reasoning effort. It provides a portal listbox with
 viewport-aware placement, grouped options, keyboard/type-ahead interaction and

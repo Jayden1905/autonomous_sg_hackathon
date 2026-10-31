@@ -272,3 +272,49 @@
 .atmosphere[open] .disclosureArrow {
   transform: rotate(180deg);
 }
+
+.flightLabel {
+  pointer-events: auto;
+  border: 1px solid #ffffffaa;
+  border-radius: 4px;
+  background: #fffffff0;
+  padding: 4px 7px;
+  min-height: 32px;
+  color: var(--color-text);
+  font: 500 11px var(--font-family-ui);
+  cursor: pointer;
+  box-shadow: 0 1px 5px #00000015;
+}
+.flightLabel:hover {
+  color: var(--color-accent);
+}
+.planCaption {
+  position: absolute;
+  bottom: 90px;
+  left: 24px;
+  max-width: min(480px, calc(100% - 48px));
+  padding: 6px 10px;
+  background: #fffffff0;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
+  font-size: 11px;
+  pointer-events: none;
+}
+@media (max-width: 899px) {
+  .planCaption {
+    bottom: auto;
+    top: 96px;
+    left: 16px;
+    max-width: calc(100% - 32px);
+  }
+  .dock {
+    gap: 0;
+    padding: 6px;
+  }
+  .dock .separator {
+    margin: 0 4px;
+  }
+  .flightLabel {
+    min-height: 44px;
+  }
+}

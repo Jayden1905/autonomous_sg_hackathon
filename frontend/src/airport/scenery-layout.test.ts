@@ -1,6 +1,7 @@
 import { Box3, Matrix4, Vector3 } from "three";
 import { describe, expect, it } from "vitest";
 import { aircraftGeometry } from "./aircraft-model";
+import { scenarioSlots } from "./fleet";
 import { concourses, parkedAircraft } from "./scenery-layout";
 import { datasetLayout, demoLayout, stormLayout } from "./layout";
 import type { Point } from "./layout";
@@ -38,7 +39,7 @@ describe("aircraft clearance from the illustrative terminal", () => {
     expect(overlapsTerminal([-80, 0, -38], Math.PI)).toBe(true);
   });
   it("keeps every decorative parked aircraft outside the terminal", () => {
-    for (const { position, rotation } of parkedAircraft)
+    for (const { position, rotation } of [...parkedAircraft, ...scenarioSlots])
       expect(overlapsTerminal(position, rotation), `Stand ${position}`).toBe(
         false,
       );

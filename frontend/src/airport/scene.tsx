@@ -1,7 +1,7 @@
 import { Component, Suspense, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, Html } from "@react-three/drei";
 import {
   Focus,
   Minus,
@@ -14,12 +14,15 @@ import {
   Play,
   CloudRain,
   ChevronDown,
+  LocateFixed,
 } from "lucide-react";
-import type { FlightView } from "@/workspace";
+import type { FlightView, Scenario } from "@/workspace";
 import { IconButton, Select } from "@/workspace";
 import { Aircraft } from "./aircraft";
 import { AircraftShadows } from "./aircraft-shadows";
 import { Footprint, ResourceTarget } from "./resource-target";
+import { scenarioFleet } from "./fleet";
+import { planFocus } from "./plan-focus";
 import { parkedAircraft } from "./scenery-layout";
 import { Terminal } from "./terminal";
 import { Ground } from "./ground";
@@ -36,6 +39,14 @@ import { StaticBatch } from "./static-batch";
 import { scenarioWeather, sceneBudget, trafficRunway } from "./motion";
 import type { Quality, Weather, WeatherChoice } from "./motion";
 import { WebGLNodesHandler } from "three/addons/tsl/WebGLNodesHandler.js";
+
+// Stable initial props: scene/UI updates must not reset a user-controlled camera.
+const initialCamera = {
+  position: [140, 155, 180] as [number, number, number],
+  fov: 42,
+  near: 0.5,
+  far: 1800,
+};
 
 class RendererBoundary extends Component<
   { children: ReactNode },
@@ -69,6 +80,10 @@ function AirportContents({
   running,
   budget,
   onSlow,
+  fleet,
+  onChooseScenario,
+  following,
+  onExplore,
 }: {
   view: FlightView;
   layout: AirportLayout;
@@ -80,15 +95,23 @@ function AirportContents({
   running: boolean;
   budget: ReturnType<typeof sceneBudget>;
   onSlow: () => void;
+  fleet: ReturnType<typeof scenarioFleet>;
+  onChooseScenario?: (scenario: Scenario) => void;
+  following: boolean;
+  onExplore: () => void;
 }) {
   const clock = useRef(18);
-  const scene = resolveScene(view, layout);
+  const active = fleet.find(
+    (item) => item.scenario.scenario_id === view.scenario.scenario_id,
+  )!;
+  const scene = resolveScene(view, layout, active.position);
+  const cue = planFocus(view, layout, active.position);
   const { scenario, selection, onSelect } = view;
   const selectedFlight =
     selection?.kind === "flight" && selection.id === scenario.flight;
   const light = weatherLighting[weather];
   const runway = trafficRunway(scenario, layout);
-  const shadowKey = `${scenario.scenario_id}:${scene.aircraft.join(",")}:${budget.shadows}`;
+  const shadowKey = `${scenario.scenario_id}:${scene.aircraft.join(",")}:${budget.shadows}:${fleet.map((item) => item.scenario.scenario_id).join(";")}`;
   return (
     <>
       <SceneClockDriver
@@ -138,15 +161,65 @@ function AirportContents({
       />
       {parkedAircraft
         .filter(
-          ({ position: [x, , z] }) =>
-            z < 0 || Math.abs(x - scene.aircraft[0]) > 1,
+          ({ position: p }) =>
+            !fleet.some(
+              (item) =>
+                Math.abs(item.position[0] - p[0]) < 1 &&
+                Math.abs(item.position[2] - p[2]) < 1,
+            ) &&
+            !(
+              Math.abs(p[0] - scene.aircraft[0]) < 28 &&
+              Math.abs(p[2] - scene.aircraft[2]) < 30
+            ),
         )
         .map((aircraft) => (
           <Aircraft key={aircraft.position.join(",")} {...aircraft} />
         ))}
-
+      {fleet
+        .filter(
+          (item) =>
+            item.scenario.scenario_id !== scenario.scenario_id &&
+            !(
+              Math.abs(item.position[0] - scene.aircraft[0]) < 28 &&
+              Math.abs(item.position[2] - scene.aircraft[2]) < 30
+            ),
+        )
+        .map((item) => (
+          <group key={item.scenario.scenario_id}>
+            <Aircraft
+              position={item.position}
+              rotation={item.rotation}
+              scenarioId={item.scenario.scenario_id}
+              onSelect={
+                onChooseScenario
+                  ? () => onChooseScenario(item.scenario)
+                  : undefined
+              }
+            />
+            {onChooseScenario && (
+              <Html
+                portal={labels}
+                position={[item.position[0] - 10, 2, item.position[2] + 12]}
+                center
+                zIndexRange={[8, 1]}
+              >
+                <button
+                  className={styles.flightLabel}
+                  data-scenario-id={item.scenario.scenario_id}
+                  aria-label={`View ${item.scenario.flight} scenario: ${item.scenario.origin} to ${item.scenario.destination}`}
+                  title={`${item.scenario.flight} · Scenario preview · ${item.scenario.disruption}`}
+                  onClick={() => onChooseScenario(item.scenario)}
+                >
+                  {item.scenario.flight}
+                </button>
+              </Html>
+            )}
+          </group>
+        ))}
       <Aircraft
         position={scene.aircraft}
+        rotation={scene.gate ? 0 : active.rotation}
+        scenarioId={scenario.scenario_id}
         selected={selectedFlight}
         onSelect={() => onSelect({ kind: "flight", id: scenario.flight })}
       />
@@ -245,8 +318,19 @@ function AirportContents({
         />
       )}
       <AirportCamera
+        initialFocus={(view.focusRequest ?? 0) > 1}
         intent={intent}
-        target={scene.selectedAnchor ?? scene.aircraft}
+        target={
+          selection?.kind === "flight"
+            ? scene.aircraft
+            : (scene.selectedAnchor ?? null)
+        }
+        selectionKey={`${scenario.scenario_id}:${selection?.kind}:${selection?.id}:${view.focusRequest ?? 0}`}
+        selectionDistance={selection?.kind === "runway" ? 230 : 125}
+        cue={cue}
+        following={following}
+        onExplore={onExplore}
+        inspectorWidth={inspectorWidth}
         reducedMotion={reducedMotion}
       />
     </>
@@ -257,10 +341,14 @@ export function AirportScene({
   view,
   layout,
   inspectorWidth = 340,
+  scenarios,
+  onChooseScenario,
 }: {
   view: FlightView;
   layout: AirportLayout;
   inspectorWidth?: number;
+  scenarios?: Scenario[];
+  onChooseScenario?: (scenario: Scenario) => void;
 }) {
   // The label target must be stable while Canvas connects its event surface.
   // Drei's implicit target changes during that setup and recreates DOM roots,
@@ -273,6 +361,22 @@ export function AirportScene({
   const [reducedMotion, setReducedMotion] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const [followState, setFollowState] = useState({
+    scenarioId: view.scenario.scenario_id,
+    enabled: true,
+  });
+  const following =
+    followState.scenarioId !== view.scenario.scenario_id || followState.enabled;
+  const setFollowing = (value: boolean | ((previous: boolean) => boolean)) =>
+    setFollowState({
+      scenarioId: view.scenario.scenario_id,
+      enabled: typeof value === "function" ? value(following) : value,
+    });
+  const fleet = scenarioFleet(scenarios ?? [view.scenario], view.scenario);
+  const active = fleet.find(
+    (item) => item.scenario.scenario_id === view.scenario.scenario_id,
+  )!;
+  const cue = planFocus(view, layout, active.position);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(() => !document.hidden);
   const [compact, setCompact] = useState(() => window.innerWidth < 900);
@@ -312,8 +416,10 @@ export function AirportScene({
       ...resolveScene(view, layout).missing,
     ]),
   ];
-  const command = (action: CameraIntent["action"]) =>
+  const command = (action: CameraIntent["action"]) => {
+    setFollowing(false);
     setIntent((i) => ({ action, sequence: i.sequence + 1 }));
+  };
   return (
     <section
       className={styles.airport}
@@ -321,6 +427,8 @@ export function AirportScene({
       data-motion={running && !lost ? "playing" : "paused"}
       data-weather={weather}
       data-quality={budget.eco ? "eco" : "high"}
+      data-camera-follow={following ? "plan" : "free"}
+      data-plan-focus={cue.label}
     >
       <div ref={labels} className={styles.labels} />
       <RendererBoundary>
@@ -331,12 +439,7 @@ export function AirportScene({
             shadows="percentage"
             dpr={[1, budget.dpr]}
             frameloop="demand"
-            camera={{
-              position: [140, 155, 180],
-              fov: 42,
-              near: 0.5,
-              far: 1800,
-            }}
+            camera={initialCamera}
             fallback={
               <span>
                 Illustrative airport rendering. Use the Flight resource list for
@@ -365,6 +468,10 @@ export function AirportScene({
                 running={running}
                 budget={budget}
                 onSlow={() => setDegraded(true)}
+                fleet={fleet}
+                onChooseScenario={onChooseScenario}
+                following={following}
+                onExplore={() => setFollowing(false)}
               />
             </Suspense>
           </Canvas>
@@ -489,11 +596,20 @@ export function AirportScene({
           details.
         </div>
       )}
+      <div className={styles.planCaption} aria-live="polite">
+        {cue.label}
+      </div>
       <div className={styles.dock} role="toolbar" aria-label="Camera controls">
         <IconButton
           icon={RotateCcw}
           label="Reset airport view"
           onClick={() => command("home")}
+        />
+        <IconButton
+          icon={LocateFixed}
+          label={following ? "Pause plan following" : "Resume plan following"}
+          aria-pressed={following}
+          onClick={() => setFollowing((value) => !value)}
         />
         <span className={styles.separator} />
         <IconButton
@@ -527,8 +643,10 @@ export function AirportScene({
         />
       </div>
       <div className={styles.hint}>
-        <MousePointer2 size={12} /> Drag to orbit · Right-drag to pan · Scroll
-        to zoom
+        <MousePointer2 size={12} />{" "}
+        {following
+          ? "Following plan · Drag to explore"
+          : "Free view · Resume following in the dock"}
       </div>
     </section>
   );

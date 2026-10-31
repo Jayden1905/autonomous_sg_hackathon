@@ -11,22 +11,25 @@ export const Aircraft = memo(function Aircraft({
   selected = false,
   onSelect,
   moving = false,
+  scenarioId,
 }: {
   position: Point;
   rotation?: number;
   selected?: boolean;
   onSelect?: () => void;
   moving?: boolean;
+  scenarioId?: string;
 }) {
   const click = onSelect
     ? (event: ThreeEvent<MouseEvent>) => {
         event.stopPropagation();
-        onSelect();
+        if (event.delta <= 4) onSelect();
       }
     : undefined;
   return (
     <group
       name={moving ? "ambient-aircraft" : "parked-aircraft"}
+      userData={{ scenarioId }}
       position={position}
       rotation-y={rotation}
       onClick={click}

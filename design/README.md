@@ -96,7 +96,7 @@ Use sentence case. Keep airport codes and flight identifiers in their natural up
 
 ## Airport and selection
 
-Keep the camera elevated at an isometric-like angle with enough space around the terminal. Use subdued materials so overlays and the selected aircraft remain readable. Avoid pulsing runways, luminous route trails, exaggerated bloom, or automatic camera movement during negotiation.
+Keep the camera elevated at an isometric-like angle with enough space around the terminal. Use subdued materials so overlays and the selected aircraft remain readable. Avoid pulsing runways, luminous route trails, exaggerated bloom, or continuous camera sweeps. Bill requested camera following on 31 October: focus explicit selections and meaningful plan changes, with manual control taking priority.
 
 Selection uses a thin blue outline, a faint stand footprint, and one compact tooltip. A runway closure uses a small red cross and a short label. Keep labels readable against the scene with a neutral backing where needed.
 

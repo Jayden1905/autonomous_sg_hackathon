@@ -7,6 +7,7 @@ import {
   provenanceLabel,
   recordedFlight,
   relativeMinutes,
+  sameProposal,
 } from "./presentation";
 import type { Evaluation, Proposal, Scenario, ViewContext } from "./types";
 
@@ -24,6 +25,24 @@ const evaluation: Evaluation = {
 };
 
 describe("displayed proposal authority", () => {
+  it("requires the same agent moves before reusing an evaluation", () => {
+    expect(sameProposal(proposal, { ...proposal, moves: ["ground.tow"] })).toBe(
+      false,
+    );
+    expect(
+      sameProposal(
+        { ...proposal, moves: ["a", "b"] },
+        { ...proposal, moves: ["b", "a"] },
+      ),
+    ).toBe(true);
+    expect(
+      displayPlan({
+        proposal: { ...proposal, moves: ["ground.tow"] },
+        evaluation,
+        context: "consensus",
+      }).recommended,
+    ).toBe(false);
+  });
   it.each(["consensus", "fallback"] as ViewContext[])(
     "requires a matching feasible evaluation for %s",
     (context) => {

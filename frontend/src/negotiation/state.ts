@@ -144,6 +144,7 @@ export function selectedPlan(state: RunState, selected: Attempt | null) {
         ? (turn.counter_evaluations[selected.agent] ?? null)
         : turn.evaluation,
       context: "history" as const,
+      awaitingProposal: false,
       turn,
     };
   }
@@ -152,12 +153,21 @@ export function selectedPlan(state: RunState, selected: Attempt | null) {
       proposal: state.trace.final,
       evaluation: state.trace.final_evaluation,
       context: state.trace.outcome,
+      awaitingProposal: false,
       turn: state.trace.turns.at(-1),
     };
+  const previous =
+    state.status === "running" && !state.proposal
+      ? state.turns.at(-1)?.proposal
+      : null;
   return {
-    proposal: state.proposal,
-    evaluation: state.evaluation,
-    context: state.proposal ? ("proposal" as const) : ("scenario" as const),
+    proposal: state.proposal ?? previous ?? null,
+    evaluation: state.proposal ? state.evaluation : null,
+    context:
+      state.proposal || previous
+        ? ("proposal" as const)
+        : ("scenario" as const),
+    awaitingProposal: Boolean(previous),
     turn: undefined,
   };
 }

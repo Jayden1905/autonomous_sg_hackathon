@@ -213,3 +213,29 @@ describe("run state isolation and display", () => {
     expect(state.trace).toBeNull();
   });
 });
+
+it("keeps the previous preview without stale evaluation while the next turn thinks", () => {
+  const running = {
+    ...emptyRun(1),
+    status: "running" as const,
+    turn: 1,
+    proposal,
+    evaluation,
+    turns: [turn],
+  };
+  const thinking = runReducer(running, {
+    type: "event",
+    id: 1,
+    event: {
+      type: "thinking",
+      data: { turn: 2, agent: "ground", action: "propose" },
+    },
+  });
+  expect(thinking.proposal).toBeNull();
+  expect(selectedPlan(thinking, null)).toMatchObject({
+    proposal,
+    evaluation: null,
+    context: "proposal",
+    awaitingProposal: true,
+  });
+});

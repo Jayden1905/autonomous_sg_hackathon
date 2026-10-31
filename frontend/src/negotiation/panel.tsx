@@ -19,12 +19,14 @@ export function NegotiationPanel({
   onLatest,
   onSelect,
   scenario,
+  moves,
 }: {
   state: RunState;
   selected: Attempt | null;
   onLatest: () => void;
   onSelect?: FlightView["onSelect"];
   scenario?: Scenario;
+  moves?: FlightView["scenario"]["moves"];
 }) {
   const plan = selectedPlan(state, selected);
   const turn = plan.turn;
@@ -98,6 +100,7 @@ export function NegotiationPanel({
       {plan.proposal && (
         <PlanDetails
           proposal={plan.proposal}
+          moves={moves}
           comparison={planComparison(state, selected)}
           onSelect={onSelect}
           title={
@@ -110,7 +113,9 @@ export function NegotiationPanel({
                   ? state.trace.outcome === "fallback"
                     ? "Solver recommendation"
                     : "Agreed recommendation"
-                  : "Proposal preview"
+                  : plan.awaitingProposal
+                    ? "Previous proposal · Awaiting next turn"
+                    : "Proposal preview"
           }
         />
       )}
@@ -198,6 +203,7 @@ export function NegotiationPanel({
                       <>
                         <PlanDetails
                           proposal={result.response.counter}
+                          moves={moves}
                           title="Counterproposal"
                         />
                         <Rules evaluation={result.counter_evaluation ?? null} />

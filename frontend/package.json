@@ -13,7 +13,8 @@
     "test:interactions": "node scripts/interaction-e2e.mjs",
     "test:dropdowns": "node scripts/dropdown-e2e.mjs",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "test:camera": "node scripts/camera-e2e.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",

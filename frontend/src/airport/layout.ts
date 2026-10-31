@@ -34,7 +34,11 @@ export const datasetLayout: AirportLayout = {
   ),
 };
 
-export function resolveScene(view: FlightView, layout: AirportLayout) {
+export function resolveScene(
+  view: FlightView,
+  layout: AirportLayout,
+  idleAircraft: Point = [13, 0, 52],
+) {
   const { scenario, proposal, selection } = view;
   const plan = displayPlan(view);
   const gate =
@@ -67,7 +71,7 @@ export function resolveScene(view: FlightView, layout: AirportLayout) {
     aircraft:
       plan.emphasize && gate
         ? ([gate[0], 0, gate[2] + 16] as Point)
-        : ([13, 0, 52] as Point),
+        : idleAircraft,
     selectedAnchor,
   };
 }

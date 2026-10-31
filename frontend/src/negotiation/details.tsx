@@ -118,16 +118,19 @@ export function PlanDetails({
   title,
   comparison,
   onSelect,
+  moves,
 }: {
   proposal: Proposal;
   title: string;
   comparison?: FlightView["comparison"];
   onSelect?: FlightView["onSelect"];
+  moves?: FlightView["scenario"]["moves"];
 }) {
   return (
     <>
       <PlanSummary
         proposal={proposal}
+        moves={moves}
         title={title}
         comparison={comparison}
         onSelect={onSelect}

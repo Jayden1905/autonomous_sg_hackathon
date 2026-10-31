@@ -10,16 +10,33 @@ export function PlanSummary({
   title,
   comparison,
   onSelect,
+  moves,
 }: {
   proposal: Proposal;
   title: string;
   comparison?: FlightView["comparison"];
   onSelect?: FlightView["onSelect"];
+  moves?: FlightView["scenario"]["moves"];
 }) {
   const previous = comparison?.proposal;
   const fields = ["arrival_min", "runway", "gate"] as const;
+  const actionsChanged =
+    previous &&
+    JSON.stringify([...(previous.moves ?? [])].sort()) !==
+      JSON.stringify([...(proposal.moves ?? [])].sort());
+  const actionNames = (ids: string[] = []) =>
+    ids.length
+      ? ids
+          .map(
+            (id) =>
+              moves?.find((move) => move.id === id)?.label ??
+              `Unknown action: ${id}`,
+          )
+          .join("; ")
+      : "None";
   const count = previous
-    ? fields.filter((key) => previous[key] !== proposal[key]).length
+    ? fields.filter((key) => previous[key] !== proposal[key]).length +
+      Number(actionsChanged)
     : 0;
   return (
     <DataSection title={title} note="Relative to scheduled arrival">
@@ -80,6 +97,24 @@ export function PlanSummary({
           </DataRow>
         );
       })}
+      {proposal.moves?.length || previous?.moves?.length ? (
+        <DataRow label="Agent actions">
+          <span
+            className={styles.planValue}
+            data-changed={Boolean(actionsChanged)}
+          >
+            {actionsChanged && (
+              <>
+                <span className={styles.previousValue}>
+                  {actionNames(previous.moves)}
+                </span>
+                <ArrowRight size={13} aria-label="changes to" />
+              </>
+            )}
+            <span>{actionNames(proposal.moves)}</span>
+          </span>
+        </DataRow>
+      ) : null}
       {!comparison && (
         <p className={styles.comparisonNote}>No earlier proposal to compare.</p>
       )}

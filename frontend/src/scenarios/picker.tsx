@@ -89,7 +89,7 @@ export function ScenarioPicker({
         </label>
         <p className={styles.note}>
           Searching {scenarios.length} loaded scenarios. Times are relative to
-          scheduled arrival.
+          scheduled arrival. Choose a case to focus its illustrative aircraft.
         </p>
         {status && (
           <p className={styles.note} role="status">
