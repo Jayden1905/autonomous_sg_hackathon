@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from atc_negotiation.agents import Resources, make_agents
-from atc_negotiation.grounding import Grounder, Ledger
+from atc_negotiation.grounding import Grounder, Ledger, markers
 from atc_negotiation.guardrails import Guardrails, numbers
 from atc_negotiation.orchestrator import negotiate
 from atc_negotiation.rules import evaluate
@@ -100,6 +100,18 @@ def test_arithmetic_on_observed_numbers_is_allowed():
 
 def test_identifiers_are_not_numbers():
     assert numbers("Land UA1234 on 27R at gate B12 by t+38 [3]") == {38.0}
+
+
+def test_time_window_is_not_a_citation():
+    # the rule engine prints gate windows as t=[181, 269]; only the trailing [1] is a marker
+    assert markers("gate A1 free t=[181, 269], arrival t=149 [1]") == {1}
+    r = run("Gate B12 is free t=[0, 999] at arrival [1].", [("B12 free t=[0, 999]", "check_proposal")])
+    assert "G2" not in codes(r)
+
+
+def test_dataset_year_is_not_a_claim():
+    r = run("Taxi-in median is 13 min [1].", [("ORD 2015 taxi_in median 13", "metric:taxi_in")])
+    assert r.passed, r.violations
 
 
 def test_trust_levels():

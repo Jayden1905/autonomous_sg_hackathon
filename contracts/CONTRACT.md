@@ -114,7 +114,8 @@ that point at nothing, so every marker you receive resolves.
 Render: replace each `[n]` with a superscript link; hover or click shows
 `evidence[n-1].claim` and `citation.label` / `citation.text`, with
 `citation.url` as "open source". List the evidence underneath as footnotes.
-Regex for markers: `/\[(\d+(?:\s*,\s*\d+)*)\]/g`.
+Regex for markers: `/(?<!=)(?<!= )\[(\d+(?:\s*,\s*\d+)*)\]/g`. Brackets right after `=` are
+time windows from the rule engine (`free t=[181, 269]`), not citations; render them as text.
 
 Example from a real run (ATC proposal):
 

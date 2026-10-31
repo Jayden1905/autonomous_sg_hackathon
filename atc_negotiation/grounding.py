@@ -138,12 +138,13 @@ class Grounder:
         return out, problems
 
 
-_MARKER = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]")
+# Not after "=": "free t=[181, 269]" is a time window from the rule engine, not a citation.
+MARKER = re.compile(r"(?<!=)(?<!= )\[(\d+(?:\s*,\s*\d+)*)\]")
 
 
 def markers(text: str) -> set[int]:
     """[1], [2, 3] -> {1, 2, 3}"""
-    return {int(n) for group in _MARKER.findall(text) for n in group.split(",")}
+    return {int(n) for group in MARKER.findall(text) for n in group.split(",")}
 
 
 def check_markers(texts: list[tuple[str, str]], n_evidence: int) -> list[str]:

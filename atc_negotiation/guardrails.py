@@ -31,21 +31,20 @@ import itertools
 import re
 from dataclasses import dataclass
 
-from .grounding import Grounder, Ledger, check_markers, markers
+from .grounding import MARKER, Grounder, Ledger, check_markers, markers
 from .schemas import AgentResponse, Evidence, GuardrailReport, GuardrailViolation, Proposal, Scenario
 
 MIN_SAMPLE = 10
-# Numbers that carry no factual weight: list ordinals, the citation markers themselves are stripped first.
-_FREE_NUMBERS = {0.0, 1.0, 2.0, 3.0}
+# Numbers that carry no factual weight: list ordinals and the dataset year. Citation markers are stripped first.
+_FREE_NUMBERS = {0.0, 1.0, 2.0, 3.0, 2015.0}
 _NUM = re.compile(r"(?<![\w.])[-+]?\d+(?:,\d{3})*(?:\.\d+)?")
-_MARK = re.compile(r"\[\d+(?:\s*,\s*\d+)*\]")
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z(])")
 # Identifiers whose digits are names, not quantities: 27R, B12, UA1234, H>M, 2015 dataset year, t+38 is a number.
 _CODE = re.compile(r"\b(?:[A-Z]{1,3}\d+[A-Z]?|\d{1,2}[LRC])\b")
 
 
 def numbers(text: str) -> set[float]:
-    text = _CODE.sub(" ", _MARK.sub(" ", text))
+    text = _CODE.sub(" ", MARKER.sub(" ", text))
     return {float(m.replace(",", "")) for m in _NUM.findall(text)} - _FREE_NUMBERS
 
 
