@@ -75,9 +75,22 @@ def qualifying_rows(csv_path: Path, limit: int | None = None) -> Iterator[dict]:
                     return
 
 
+def scenario_id(row: dict) -> str:
+    """Unique per qualifying row: flight number, date and route, e.g. AA341-2015-01-01-AUS-DFW."""
+    return (f"{row['AIRLINE']}{row['FLIGHT_NUMBER']}-{row['YEAR']}-{int(row['MONTH']):02d}-"
+            f"{int(row['DAY']):02d}-{row['ORIGIN_AIRPORT']}-{row['DESTINATION_AIRPORT']}")
+
+
+def legacy_scenario_id(row: dict) -> str:
+    """The id before the route was added. Not unique; traces written before then still carry it."""
+    return f"{row['AIRLINE']}{row['FLIGHT_NUMBER']}-{row['YEAR']}-{int(row['MONTH']):02d}-{int(row['DAY']):02d}"
+
+
 def scenario_from_row(row: dict) -> Scenario:
     flight = f"{row['AIRLINE']}{row['FLIGHT_NUMBER']}"
     date = f"{row['YEAR']}-{int(row['MONTH']):02d}-{int(row['DAY']):02d}"
+    # The seed stays on flight|date so the synthetic fields of every row are unchanged; only the id
+    # gains the route, because one flight number can fly several legs a day.
     seed = int(hashlib.sha256(f"{flight}|{date}".encode()).hexdigest(), 16) % (2**32)
     rng = random.Random(seed)
 
@@ -118,7 +131,7 @@ def scenario_from_row(row: dict) -> Scenario:
     ]
 
     return Scenario(
-        scenario_id=f"{flight}-{date}",
+        scenario_id=scenario_id(row),
         flight=flight, airline=row["AIRLINE"], airline_name=airlines().get(row["AIRLINE"]),
         origin=row["ORIGIN_AIRPORT"], destination=row["DESTINATION_AIRPORT"],
         origin_info=airports().get(row["ORIGIN_AIRPORT"]), destination_info=dest_info,

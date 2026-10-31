@@ -75,3 +75,21 @@ def test_real_batch_file_if_present_reports_without_error():
     assert rep.n == 200 and len(rep.compared) >= 190
     s = rep.summary()
     assert s["measured"]["reduction_min"]["median"] is not None
+
+
+@needs_data
+def test_legacy_ids_join_by_occurrence_never_to_the_wrong_leg(tmp_path):
+    """Traces from before the route was added carry flight-date ids that several legs share.
+    The k-th such trace is the k-th row with that id (batch walks rows in order), so each leg
+    joins its own recorded outcome; an extra trace with no row left stays unmatched."""
+    import collections
+    from atc_negotiation import data
+    rows = list(data.qualifying_rows(FLIGHTS, limit=5000))
+    counts = collections.Counter(data.legacy_scenario_id(r) for r in data.qualifying_rows(FLIGHTS))
+    old = next(data.legacy_scenario_id(r) for r in rows if counts[data.legacy_scenario_id(r)] == 2)
+    legs = [r for r in data.qualifying_rows(FLIGHTS) if data.legacy_scenario_id(r) == old]
+    traces = tmp_path / "t.jsonl"
+    traces.write_text("\n".join(json.dumps(_fake_trace(old, 0)) for _ in range(3)))
+    rep = impact.build(traces, FLIGHTS)
+    assert len(rep.rows) == 2  # the third trace has no third leg
+    assert [r.recorded_arrival_delay for r in rep.rows] == [int(float(l["ARRIVAL_DELAY"])) for l in legs]

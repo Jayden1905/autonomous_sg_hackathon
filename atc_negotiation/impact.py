@@ -123,25 +123,43 @@ class Report:
         }
 
 
-def _scenarios_by_id(csv_path: Path, wanted: set[str]) -> dict[str, Scenario]:
-    """Rebuild scenarios for the trace ids from the same CSV (deterministic per row)."""
-    out: dict[str, Scenario] = {}
+def _scenarios_for(csv_path: Path, traces: list[NegotiationTrace]) -> list[Scenario | None]:
+    """Rebuild each trace's scenario from the same CSV (deterministic per row), in trace order.
+
+    Ids carry the route (data.scenario_id) and are unique. Traces written before that carry the
+    legacy flight-date id, which several legs can share. `atc batch` walks qualifying rows in file
+    order, so the k-th trace with a legacy id came from the k-th row with that id; match by that
+    occurrence. A legacy id with more traces than rows stays unmatched (None) rather than being
+    joined to another flight's recorded outcome."""
+    wanted = {t.scenario_id for t in traces}
+    by_id: dict[str, Scenario] = {}
+    legacy: dict[str, list[dict]] = {}
     for row in data.qualifying_rows(csv_path):
-        s = data.scenario_from_row(row)
-        if s.scenario_id in wanted:
-            out[s.scenario_id] = s
-            if len(out) == len(wanted):
-                break
+        sid = data.scenario_id(row)
+        if sid in wanted:
+            by_id[sid] = data.scenario_from_row(row)
+        old = data.legacy_scenario_id(row)
+        if old in wanted:
+            legacy.setdefault(old, []).append(row)
+    seen: dict[str, int] = {}
+    out: list[Scenario | None] = []
+    for t in traces:
+        if t.scenario_id in by_id:
+            out.append(by_id[t.scenario_id])
+            continue
+        k = seen.get(t.scenario_id, 0)
+        seen[t.scenario_id] = k + 1
+        rows = legacy.get(t.scenario_id, [])
+        out.append(data.scenario_from_row(rows[k]) if k < len(rows) else None)
     return out
 
 
 def build(traces_path: Path, csv_path: Path) -> Report:
     traces = [NegotiationTrace.model_validate_json(l) for l in traces_path.read_text().splitlines() if l.strip()]
-    scen = _scenarios_by_id(csv_path, {t.scenario_id for t in traces})
+    scen = _scenarios_for(csv_path, traces)
     agents = traces[0].model if traces else "unknown"
     rep = Report(n=len(traces), agents="mock" if agents == "mock" else f"real ({agents})")
-    for t in traces:
-        s = scen.get(t.scenario_id)
+    for t, s in zip(traces, scen):
         if s is None:
             continue
         rec_arr = int(float(s.source.get("ARRIVAL_DELAY", 0) or 0))
