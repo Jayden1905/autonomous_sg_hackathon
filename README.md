@@ -159,6 +159,8 @@ generated deterministically from the row (seeded by flight and date) and
 every scenario lists them in `synthetic_fields`. Treat the operational numbers
 as illustrative; the negotiation mechanics are what is being evaluated.
 
+**Limits now come from the organisers' constraints workbook** (`challenge2_operational_constraints.xlsx`, exported to `data/airport_capacity.csv`): wake separation (FAA JO 7110.65, simplified), 30 min final reserve with 45 min spare holding on arrival, and minimum turnaround per destination airport. The evaluation figures below were measured before this switch, and the hand-tuned demo scenarios that depended on the earlier ICAO wake table are marked xfail in the tests.
+
 `scenarios/sample_weather.json` is a hand-written scenario so the system runs
 before the dataset is downloaded.
 

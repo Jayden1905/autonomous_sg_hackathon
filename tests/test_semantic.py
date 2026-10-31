@@ -63,12 +63,12 @@ def test_lookup_returns_empty_for_unknown_so_the_tool_can_decline():
 
 
 def test_rules_py_reads_wake_table_from_the_model():
-    """One source of truth: rules.py constants == model.yaml params (ICAO 5.8.2 values)."""
+    """One source of truth: rules.py constants == model.yaml params (organisers' workbook values)."""
     table = default_engine().rule_params("atc.wake_separation")["table"]
     assert rules.WAKE_SEPARATION_S[(Cat.HEAVY, Cat.MEDIUM)] == table["H>M"] == 120
-    assert rules.WAKE_SEPARATION_S[(Cat.HEAVY, Cat.LIGHT)] == table["H>L"] == 180
-    assert rules.WAKE_SEPARATION_S[(Cat.MEDIUM, Cat.LIGHT)] == table["M>L"] == 180
-    assert rules.RADAR_MIN_S == table["default"]
+    assert rules.WAKE_SEPARATION_S[(Cat.HEAVY, Cat.LIGHT)] == table["H>L"] == 120
+    assert rules.WAKE_SEPARATION_S[(Cat.MEDIUM, Cat.LIGHT)] == table["M>L"] == 60
+    assert rules.RADAR_MIN_S == table["default"] == 60
     assert rules.MISSED_PAX_COST == default_engine().rule_params("pilot.connections")["cost_per_pax"]
 
 

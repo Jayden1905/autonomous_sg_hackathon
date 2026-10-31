@@ -44,7 +44,7 @@ export function PartyBriefs({ scenario: s }: { scenario: Scenario }) {
             {queue.length} other arrivals queued, {heavies} heav
             {heavies === 1 ? "y" : "ies"}
           </li>
-          <li>Wake spacing by ICAO category is non-negotiable</li>
+          <li>Wake spacing by category is non-negotiable</li>
           <Unknown>fuel on board · which gate the airline wants</Unknown>
           <Moves list={movesFor("atc")} />
         </Party>

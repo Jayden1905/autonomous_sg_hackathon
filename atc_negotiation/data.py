@@ -42,6 +42,25 @@ def airports(csv_path: Path = DATA_DIR / "airports.csv") -> dict[str, AirportInf
 
 
 @lru_cache(maxsize=1)
+def airport_capacity(csv_path: Path = DATA_DIR / "airport_capacity.csv") -> dict[str, dict]:
+    """Organisers' workbook, sheet airport_capacity, exported to CSV. Synthetic planning limits."""
+    if not csv_path.exists():
+        return {}
+    with csv_path.open(newline="") as f:
+        return {r["IATA_CODE"]: r for r in csv.DictReader(f)}
+
+
+def turnaround_for(iata: str) -> int:
+    cap = airport_capacity().get(iata)
+    return int(cap["min_turnaround_min"]) if cap and cap.get("min_turnaround_min") else TURNAROUND_MIN
+
+
+# Organisers' workbook: assumed spare fuel on arrival is 45 min of holding above final reserve.
+SPARE_HOLDING_MIN: int = int(default_engine().rule_params("pilot.final_reserve_fuel").get("spare_holding_on_arrival_min", 45))
+FINAL_RESERVE_MIN: int = int(default_engine().rule_params("pilot.final_reserve_fuel").get("value", 30))
+
+
+@lru_cache(maxsize=1)
 def airlines(csv_path: Path = DATA_DIR / "airlines.csv") -> dict[str, str]:
     if not csv_path.exists():
         return {}
@@ -142,11 +161,13 @@ def scenario_from_row(row: dict) -> Scenario:
         aircraft_category=category,
         # Endurance above touchdown at earliest_arrival; 30 of it is final reserve,
         # so holding capacity is 40-80 min. Below ~60 almost nothing is feasible.
-        fuel_endurance_min=rng.randint(70, 110),
+        # Organisers' workbook: 45 min of holding above the 30 min final reserve. The draw is kept so the
+        # seeded sequence, and every other synthetic value, stays as it was.
+        fuel_endurance_min=(rng.randint(70, 110), FINAL_RESERVE_MIN + SPARE_HOLDING_MIN)[1],
         connections=connections,
         runways=runways, gates=gates,
         crew_shift_ends_min=earliest + rng.randint(30, 90),
-        turnaround_min=TURNAROUND_MIN,
+        turnaround_min=turnaround_for(row["DESTINATION_AIRPORT"]),
         max_arrival_min=earliest + 180,  # window is relative to when it can first arrive
         source={k: row[k] for k in ("YEAR", "MONTH", "DAY", "AIRLINE", "FLIGHT_NUMBER", "TAIL_NUMBER",
                                     "ORIGIN_AIRPORT", "DESTINATION_AIRPORT", "SCHEDULED_DEPARTURE",

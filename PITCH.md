@@ -12,22 +12,21 @@ The organisers' clarification sets the demo. Show it in this order, on one row:
 3. **Consensus within 3 turns, or the fallback decides and says why.** Show the outcome line and, on fallback, `fallback_reason`.
 4. **Output.** The revised arrival time, runway and gate, with the full log: the History tab, then *Export* for the JSON trace.
 
-### Limits we state, against the organisers' workbook
+### Limits: the organisers' workbook
 
-The workbook (`data/challenge2_operational_constraints.xlsx`) arrived during the event. Its rules say any limit we change must be stated. Ours:
+The workbook (`data/challenge2_operational_constraints.xlsx`) arrived during the event. The rule engine now uses it. Its rules say any limit we change must be stated:
 
-| Limit | Workbook | Ours | Why |
-|---|---|---|---|
-| Final fuel reserve | 30 min | 30 min | Same |
-| Holding burn, narrowbody | 2,400 kg/h | 40 kg/min (2,400 kg/h) | Same |
-| Wake separation | FAA JO 7110.65, simplified (e.g. Heavy>Heavy 120 s, other pairs 60 s) | ICAO Doc 4444 §5.8.2 (Heavy>Medium 120 s, Heavy>Light 180 s, Medium>Light 180 s, other pairs 72 s) | Cited ICAO figures; the workbook allows sourced replacements |
-| Turnaround | 45 min large hub, 35 min elsewhere | 45 min everywhere | More conservative at smaller airports |
-| Ground crew | 8 h shift, overtime 1.5x | Shift end per scenario, overtime cost 1.5 per min | Same multiplier |
-| Gate change notice | 20 min before arrival | Not enforced | Next work |
-| Flight crew duty | 13 h | Not enforced | Next work |
-| Runways, gates per airport | 1–4 runways, 8–150 gates by size | 2 runways, 3 candidate gates per scenario | Only the gates in play for this flight |
+| Limit | Workbook | Ours |
+|---|---|---|
+| Wake separation | FAA JO 7110.65, simplified | Same, from the workbook |
+| Final fuel reserve, spare holding on arrival | 30 min, 45 min | Same, from the workbook |
+| Turnaround | 45 min large hub, 35 min elsewhere | Same, per destination airport |
+| Holding burn, narrowbody | 2,400 kg/h | Same (40 kg/min) |
+| Ground crew overtime | 1.5x after 8 h | Same multiplier |
+| Gate change notice 20 min, flight crew duty 13 h | Required | Not enforced yet; stated |
+| Runways, gates per airport | 1–4 runways, 8–150 gates | 2 runways, 3 candidate gates per scenario: only the ones in play |
 
-Wiring the workbook into the scenario builder is next work. We did not change the engine during the event, so every figure in the evaluation still matches the code that produced it.
+The evaluation tables were measured before the switch. Say so if asked.
 
 ---
 

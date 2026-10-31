@@ -342,14 +342,14 @@ rules:
     subjects: [Runway, WakeCategory, wake_gap]
     text: >-
       Minimum time between a leading arrival and the next on the same runway, by (leader, follower)
-      wake category. Pairs not listed use the radar minimum.
+      wake category, from the organisers' workbook. Pairs not listed use its "any other pair" minimum.
     params:
       unit: s
-      table: {H>M: 120, H>L: 180, M>L: 180, J>H: 120, J>M: 180, J>L: 240, H>H: 96, default: 72}
+      table: {J>H: 180, J>M: 180, J>L: 180, H>H: 120, H>M: 120, H>L: 120, M>L: 60, default: 60}
       derivation: >-
-        H>M, H>L, M>L, J>* are ICAO Doc 4444 §5.8.2 time-based arrival minima. H>H and default are
-        derived from the §8.7.3 distance minima (4 NM and 3 NM) at a 150 kt approach speed.
-    source: icao:4444:5.8.2
+        Organisers' constraints workbook, sheet wake_separation (simplified from FAA JO 7110.65), min_time_s.
+        FAA Super/Heavy/Large/Small map to J/H/M/L. Every pair not listed uses "any other pair": 60 s.
+    source: organisers:c2:constraints
     enforced_by: rules.atc_rules
   - id: atc.slot_window
     kind: constraint
@@ -378,7 +378,7 @@ rules:
     text: >-
       Fuel on landing must not drop below final reserve: 30 minutes at holding speed at 1,500 ft above
       the aerodrome for turbine aeroplanes. Holding that would eat into it is not an option.
-    params: {op: ">=", value: 30, unit: min, applies_to: turbine}
+    params: {op: ">=", value: 30, unit: min, applies_to: turbine, spare_holding_on_arrival_min: 45}
     source: easa:cat.op.mpa.181
     enforced_by: rules.pilot_rules
   - id: pilot.connections
@@ -428,11 +428,12 @@ rules:
     domain: ground
     subjects: [Turnaround]
     text: >-
-      Planning turnaround for a narrowbody is 45 min (Airbus quotes 35-45 for a full-service A320; legacy carriers
+      Minimum turnaround per destination airport from the organisers' workbook: 45 min at large hubs, 35 min
+      elsewhere; 45 min when the airport is not listed. (Airbus quotes 35-45 for a full-service A320; legacy carriers
       schedule 45-60). Not scored on its own: it sets Scenario.turnaround_min, and its cost reaches the plan through
       ground.crew_overtime (arrival + turnaround past the crew's shift end).
-    params: {value: 45, unit: min}
-    source: airbus:turnaround
+    params: {value: 45, unit: min, per_airport: data/airport_capacity.csv min_turnaround_min}
+    source: organisers:c2:constraints
     enforced_by: data.scenario_from_row
   - id: ground.crew_overtime
     kind: threshold
@@ -582,6 +583,20 @@ passages:
     kind: brief
     text: Demonstrate how agents negotiate revised arrival time, gate assignment, or flight plan adjustment in under 3 turns.
 
+  - id: organisers:c2:constraints
+    doc: Autonomous SG 2026 Challenge 2 organisers, challenge2_operational_constraints.xlsx
+    title: Operational constraints workbook (synthetic planning limits)
+    kind: brief
+    domain: atc
+    retrieved: "2026-10-31"
+    text: >-
+      SYNTHETIC planning limits scaled from each airport's traffic in flights.csv; not real airport data.
+      Per airport: active runways, gates, max runway ops per hour, minimum turnaround (45 min large hub,
+      35 min otherwise). Wake separation simplified from FAA JO 7110.65, min time: Super behind-pairs 180 s,
+      Heavy-Heavy/Large/Small 120 s, Large-Small 60 s, any other pair 60 s. Final fuel reserve 30 min of
+      holding; holding burn 2,400 kg/h narrowbody, 6,500 kg/h widebody; assumed spare fuel on arrival
+      45 min of holding. Flight crew max duty 13 h; ground crew shift 8 h, overtime 1.5x; gate change notice
+      at least 20 min before arrival. Any limit a team changes must be stated in its demo.
   - id: icao:4444:5.8.2
     doc: ICAO Doc 4444 PANS-ATM
     title: §5.8.2 Time-based wake turbulence separation minima, arriving aircraft
