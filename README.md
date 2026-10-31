@@ -220,6 +220,43 @@ favour, and the comparison says more about the synthetic congestion than about t
 agents. The measures the data can support are speed of coordination, connections
 protected, and honest refusals.
 
+### Like-for-like: flights delayed on arrival
+
+Our system resolves a disruption at the destination (runway, sequence, gate). Most rows
+record their delay at departure, which no arrival plan can change, so we also evaluated
+only rows where the recorded delay grew by at least 15 min after takeoff
+(`ARRIVAL_DELAY - DEPARTURE_DELAY >= 15`: 39,141 of 358,774 rows), sampled across months
+and destinations the same way.
+
+| Measure | 200 scripted | 20 real agents |
+|---|---|---|
+| Consensus | 194 (6 declined) | 20 of 20, all in 1 turn |
+| Recorded post-departure delay, 2015 | median 26 min | median 34 min |
+| Negotiated | median 5.5 min | median 29 min |
+| Median per-flight difference | **17 min better** (159 better, 33 worse) | **16 min better** (14 better, 6 worse) |
+| Passengers kept on connections | 91.4% | 84.3% |
+| Vetoed accepts / guardrail-blocked replies | 0 / — | 0 / 0 |
+
+Indicative, not measured savings: the 2015 baseline is real, our side runs on the
+synthetic airport. The real agents' plan cost more than the solver's in 9 of 20 rows
+(they waited for a preferred gate); every plan was legal.
+
+### Private moves: where negotiation finds what a solver can't
+
+Each organisation can hold options only it knows (`Scenario.moves`): Ground can tow a
+parked aircraft or call a standby crew, Pilot can absorb delay en route, ATC can
+re-sequence an arrival or reopen a runway. An agent is briefed on its own moves only;
+the rule engine applies a plan's moves and still checks every rule. The solver sees the
+shared picture only.
+
+`scenarios/demo_storm_aa1453_moves.json` (real AA1453 CLT-ORD, 8 May 2015; airport
+synthetic): no legal plan exists without moves, and no single owner's moves suffice.
+5 of 5 real-agent runs reached consensus in 2 turns (83-124 s): ATC offers to
+re-sequence a heavy and says the gate needs a ground move; Ground adds a tow. 2 of 5
+found the cheapest plan (t+56, cost 94.5), 3 landed a minute later (cost 97). Caveat: a
+solver given every party's private options would also find it; in practice those
+options are not shared up front. Moves exist only in this hand-built scenario so far.
+
 ### Known failure cases
 
 - `scenarios/demo_storm_vx204_divert.json`: minimum fuel plus a saturated runway. No
