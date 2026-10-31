@@ -181,10 +181,33 @@ export function FlightTab(view: FlightView) {
           </p>
         </DataSection>
       )}
+      {s.destination_capacity && (
+        <DataSection
+          title={`${s.destination} capacity`}
+          note="Organisers' workbook · synthetic planning limits"
+        >
+          <DataRow label="Size">{s.destination_capacity.size_class}</DataRow>
+          <DataRow label="Active runways">
+            {s.destination_capacity.active_runways}
+          </DataRow>
+          <DataRow label="Runway movements per hour">
+            {s.destination_capacity.max_runway_ops_per_hour}
+          </DataRow>
+          <DataRow label="Gates">
+            {s.destination_capacity.gates} ·{" "}
+            {s.destination_capacity.spare_gates_at_any_time} spare at any time
+          </DataRow>
+          <DataRow label="Minimum turnaround">
+            {s.destination_capacity.min_turnaround_min} min
+          </DataRow>
+        </DataSection>
+      )}
       <section className={styles.entities}>
         <h3>Airport resources</h3>
         <p>
           Choose a resource to inspect it in the scene.
+          {s.destination_capacity &&
+            ` Gates listed are the ${s.destination_capacity.spare_gates_at_any_time} spare ones ground can offer.`}
           {(synthetic("runways") || synthetic("gates")) &&
             " Runways and gates are synthetic, not this airport's real layout."}
         </p>

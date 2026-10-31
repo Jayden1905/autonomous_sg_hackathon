@@ -1,4 +1,11 @@
-import { Component, Suspense, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode, RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Html } from "@react-three/drei";
@@ -111,6 +118,16 @@ function AirportContents({
     selection?.kind === "flight" && selection.id === scenario.flight;
   const light = weatherLighting[weather];
   const runway = trafficRunway(scenario, layout);
+  // One strip per runway the scenario has (the workbook's active_runways), at its layout anchor.
+  const stripKey = scenario.runways
+    .map((r) => layout.runways[r.name]?.[2])
+    .filter((z): z is number => z !== undefined)
+    .sort((a, b) => b - a)
+    .join(",");
+  const strips = useMemo(
+    () => (stripKey ? stripKey.split(",").map(Number) : [-158, -218]),
+    [stripKey],
+  );
   const shadowKey = `${scenario.scenario_id}:${scene.aircraft.join(",")}:${budget.shadows}:${fleet.map((item) => item.scenario.scenario_id).join(";")}`;
   return (
     <>
@@ -144,7 +161,7 @@ function AirportContents({
         environmentRotation={[0, 1.5, 0]}
       />
       <SurfaceLibrary />
-      <Ground wet={weather !== "clear"} />
+      <Ground wet={weather !== "clear"} strips={strips} />
       <AircraftShadows revision={shadowKey} eco={budget.eco} />
       <StaticBatch>
         <Terminal />

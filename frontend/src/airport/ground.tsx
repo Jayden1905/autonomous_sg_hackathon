@@ -1,20 +1,24 @@
+import { useMemo } from "react";
 import { Line } from "@react-three/drei";
 import { Box, Blocks, materials } from "./geometry";
 import type { Block } from "./geometry";
 import { ApronMaterial } from "./apron-material";
 
-const dashes: Block[] = [];
-for (const z of [-158, -218])
-  for (let x = -240; x <= 240; x += 16)
-    dashes.push({ position: [x, 0.07, z], scale: [8, 0.04, 0.6] });
-const thresholds: Block[] = [];
-for (const z of [-158, -218])
-  for (const side of [-1, 1])
-    for (let i = -5; i <= 5; i++)
-      thresholds.push({
-        position: [side * 222, 0.08, z + i * 1.3],
-        scale: [15, 0.04, 0.7],
-      });
+function markings(strips: readonly number[]) {
+  const dashes: Block[] = [];
+  const thresholds: Block[] = [];
+  for (const z of strips) {
+    for (let x = -240; x <= 240; x += 16)
+      dashes.push({ position: [x, 0.07, z], scale: [8, 0.04, 0.6] });
+    for (const side of [-1, 1])
+      for (let i = -5; i <= 5; i++)
+        thresholds.push({
+          position: [side * 222, 0.08, z + i * 1.3],
+          scale: [15, 0.04, 0.7],
+        });
+  }
+  return { dashes, thresholds };
+}
 
 function ServiceVehicle({
   x,
@@ -54,7 +58,15 @@ function ServiceVehicle({
   );
 }
 
-export function Ground({ wet = false }: { wet?: boolean }) {
+/** `strips`: z of each runway to draw, one per runway in the scenario. */
+export function Ground({
+  wet = false,
+  strips = [-158, -218],
+}: {
+  wet?: boolean;
+  strips?: readonly number[];
+}) {
+  const { dashes, thresholds } = useMemo(() => markings(strips), [strips]);
   return (
     <group>
       <Box
@@ -67,7 +79,7 @@ export function Ground({ wet = false }: { wet?: boolean }) {
         <boxGeometry args={[1, 1, 1]} />
         <ApronMaterial wet={wet} />
       </mesh>
-      {[-158, -218].map((z) => (
+      {strips.map((z) => (
         <group key={z}>
           <Box
             position={[0, 0.025, z]}

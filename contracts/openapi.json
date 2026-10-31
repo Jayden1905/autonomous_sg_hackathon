@@ -815,6 +815,48 @@
         ],
         "title": "AircraftCategory"
       },
+      "AirportCapacity": {
+        "properties": {
+          "size_class": {
+            "type": "string",
+            "title": "Size Class",
+            "description": "'Large hub' | 'Medium hub' | 'Small hub' | 'Non-hub'"
+          },
+          "active_runways": {
+            "type": "integer",
+            "title": "Active Runways"
+          },
+          "gates": {
+            "type": "integer",
+            "title": "Gates",
+            "description": "Gates at the airport. Only spare_gates_at_any_time are free to offer"
+          },
+          "max_runway_ops_per_hour": {
+            "type": "integer",
+            "title": "Max Runway Ops Per Hour",
+            "description": "Movements per hour across all active runways"
+          },
+          "min_turnaround_min": {
+            "type": "integer",
+            "title": "Min Turnaround Min"
+          },
+          "spare_gates_at_any_time": {
+            "type": "integer",
+            "title": "Spare Gates At Any Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "size_class",
+          "active_runways",
+          "gates",
+          "max_runway_ops_per_hour",
+          "min_turnaround_min",
+          "spare_gates_at_any_time"
+        ],
+        "title": "AirportCapacity",
+        "description": "Organisers' constraints workbook, sheet airport_capacity. SYNTHETIC planning limits scaled from\ntraffic in flights.csv, not real airport data."
+      },
       "AirportInfo": {
         "properties": {
           "iata": {
@@ -3150,6 +3192,17 @@
               }
             ],
             "description": "null if the IATA code is not in airports.csv"
+          },
+          "destination_capacity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AirportCapacity"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The destination's row in the organisers' workbook; null if the airport is not listed"
           },
           "scheduled_arrival_hhmm": {
             "type": "string",

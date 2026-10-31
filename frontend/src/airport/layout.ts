@@ -7,10 +7,18 @@ export interface AirportLayout {
   runways: Record<string, Point>;
 }
 
+/** Illustrative runway strips, nearest the terminal first. The workbook allows up to 4. */
+export const runwayStrips = [-158, -218, -278, -338] as const;
+
 /** Explicit illustrative anchors, not an airport topology or inferred coordinates. */
 export const demoLayout: AirportLayout = {
   gates: { B12: [-49, 0, 23], B14: [13, 0, 23], C3: [75, 0, 23] },
-  runways: { "27L": [0, 0, -158], "27R": [0, 0, -218] },
+  runways: {
+    "27L": [0, 0, runwayStrips[0]],
+    "27R": [0, 0, runwayStrips[1]],
+    "27C": [0, 0, runwayStrips[2]],
+    "09R": [0, 0, runwayStrips[3]],
+  },
 };
 
 /** Anchors for the bundled UA599/VX204 storm demos and their illustrations. */
@@ -23,13 +31,20 @@ export const stormLayout: AirportLayout = {
 // the fixed gates), so they say nothing about the real airport.
 const datasetHeadings = ["04", "09", "13", "17", "22", "27", "31", "36"];
 
-/** Illustrative anchors for /dot/scenarios; keep separate from demoLayout. */
+const opposite = (heading: string) =>
+  String(((Number(heading) + 18 - 1) % 36) + 1).padStart(2, "0");
+
+/** Illustrative anchors for /dot/scenarios; keep separate from demoLayout.
+ * data.py names runways L, R, C on one heading, then L on the opposite heading,
+ * as many as the workbook's active_runways for the destination. */
 export const datasetLayout: AirportLayout = {
   gates: { A1: [-49, 0, 23], A4: [13, 0, 23], B7: [75, 0, 23] },
   runways: Object.fromEntries(
     datasetHeadings.flatMap((heading): [string, Point][] => [
-      [`${heading}L`, [0, 0, -158]],
-      [`${heading}R`, [0, 0, -218]],
+      [`${heading}L`, [0, 0, runwayStrips[0]]],
+      [`${heading}R`, [0, 0, runwayStrips[1]]],
+      [`${heading}C`, [0, 0, runwayStrips[2]]],
+      [`${opposite(heading)}L`, [0, 0, runwayStrips[3]]],
     ]),
   ),
 };

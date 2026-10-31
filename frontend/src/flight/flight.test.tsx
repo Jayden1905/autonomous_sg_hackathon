@@ -162,7 +162,7 @@ describe("Flight content", () => {
       screen.getByText(/held by the cockpit and the ramp/),
     ).toBeInTheDocument();
     // Runway state is public; gate windows are the ramp's.
-    expect(screen.getByText("× Closed")).toBeInTheDocument();
+    expect(screen.getAllByText("× Closed").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Window held by ramp").length).toBeGreaterThan(0);
     expect(screen.queryByText(/→/)).toBeNull();
   });

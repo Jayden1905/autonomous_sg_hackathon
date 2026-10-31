@@ -403,6 +403,34 @@ export interface components {
          */
         AircraftCategory: "L" | "M" | "H";
         /**
+         * AirportCapacity
+         * @description Organisers' constraints workbook, sheet airport_capacity. SYNTHETIC planning limits scaled from
+         *     traffic in flights.csv, not real airport data.
+         */
+        AirportCapacity: {
+            /**
+             * Size Class
+             * @description 'Large hub' | 'Medium hub' | 'Small hub' | 'Non-hub'
+             */
+            size_class: string;
+            /** Active Runways */
+            active_runways: number;
+            /**
+             * Gates
+             * @description Gates at the airport. Only spare_gates_at_any_time are free to offer
+             */
+            gates: number;
+            /**
+             * Max Runway Ops Per Hour
+             * @description Movements per hour across all active runways
+             */
+            max_runway_ops_per_hour: number;
+            /** Min Turnaround Min */
+            min_turnaround_min: number;
+            /** Spare Gates At Any Time */
+            spare_gates_at_any_time: number;
+        };
+        /**
          * AirportInfo
          * @description From the organisers' airports.csv. For labels and maps; the rules never read it.
          */
@@ -1562,6 +1590,8 @@ export interface components {
             origin_info?: components["schemas"]["AirportInfo"] | null;
             /** @description null if the IATA code is not in airports.csv */
             destination_info?: components["schemas"]["AirportInfo"] | null;
+            /** @description The destination's row in the organisers' workbook; null if the airport is not listed */
+            destination_capacity?: components["schemas"]["AirportCapacity"] | null;
             /** Scheduled Arrival Hhmm */
             scheduled_arrival_hhmm: string;
             /** Disruption */

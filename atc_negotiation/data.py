@@ -15,7 +15,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Iterator
 
-from .schemas import AirportInfo, AircraftCategory, Connection, Gate, Runway, RunwayArrival, Scenario
+from .schemas import AirportCapacity, AirportInfo, AircraftCategory, Connection, Gate, Runway, RunwayArrival, Scenario
 from .semantic import default_engine
 
 # Thresholds come from the semantic model, like every number in rules.py.
@@ -48,6 +48,17 @@ def airport_capacity(csv_path: Path = DATA_DIR / "airport_capacity.csv") -> dict
         return {}
     with csv_path.open(newline="") as f:
         return {r["IATA_CODE"]: r for r in csv.DictReader(f)}
+
+
+def capacity_for(iata: str) -> AirportCapacity | None:
+    cap = airport_capacity().get(iata)
+    if not cap:
+        return None
+    return AirportCapacity(
+        size_class=cap["size_class"], active_runways=int(cap["active_runways"]), gates=int(cap["gates"]),
+        max_runway_ops_per_hour=int(cap["max_runway_ops_per_hour"]),
+        min_turnaround_min=int(cap["min_turnaround_min"]),
+        spare_gates_at_any_time=int(cap["spare_gates_at_any_time"]))
 
 
 def turnaround_for(iata: str) -> int:
@@ -123,27 +134,50 @@ def scenario_from_row(row: dict) -> Scenario:
     dest_info = airports().get(row["DESTINATION_AIRPORT"])
     dest_label = dest_info.name if dest_info else row["DESTINATION_AIRPORT"]
     left, right = _runway_pair(rng)
+    cap = capacity_for(row["DESTINATION_AIRPORT"])
+    n_runways = cap.active_runways if cap else 2
+    # Spacing on a busy runway, from the workbook's movements per hour spread over its runways.
+    # The draws below keep the seeded sequence unchanged; only the step they feed is new.
+    per_runway = (cap.max_runway_ops_per_hour / n_runways) if cap else 20
+    step = max(2, round(60 / per_runway)) if cap else None
 
     if weather > WEATHER_DELAY_GT:
         disruption = (f"Thunderstorms at {dest_label}: {weather} min weather delay logged. "
                       f"Runway {left} closed, arrival rate reduced.")
         runways = [
             Runway(name=left, open=False),
-            Runway(name=right, arrivals=_traffic(rng, earliest, dense=True)),
+            Runway(name=right, arrivals=_traffic(rng, earliest, dense=True, step=step)),
         ]
     else:
         disruption = (f"Late inbound aircraft: {late_ac} min late-aircraft delay. "
                       f"Taxiway off {left} blocked by a towed aircraft.")
         runways = [
-            Runway(name=left, taxiway_blocked=True, arrivals=_traffic(rng, earliest)),
-            Runway(name=right, arrivals=_traffic(rng, earliest, dense=True)),
+            Runway(name=left, taxiway_blocked=True, arrivals=_traffic(rng, earliest, step=step)),
+            Runway(name=right, arrivals=_traffic(rng, earliest, dense=True, step=step)),
         ]
-
+    heading = int(left[:2])
+    opposite = f"{(heading + 18 - 1) % 36 + 1:02d}"
+    extra = [f"{heading:02d}C", f"{opposite}L", f"{opposite}R"]
+    if n_runways >= 3:
+        runways.append(Runway(name=extra[0], open=weather <= WEATHER_DELAY_GT,
+                              arrivals=_traffic(rng_extra(seed, 1), earliest, dense=True, step=step)))
+    if n_runways >= 4:
+        # A crosswind pair is out of use for arrivals in this wind; listed so the airport is whole.
+        runways.append(Runway(name=extra[1], open=False))
+    if n_runways == 1:
+        runways = [r for r in runways if r.name == right]
+        runways[0].name = left
+        disruption = disruption.replace(f"Runway {left} closed, arrival rate reduced.",
+                                        "Arrival rate reduced on its only runway.").replace(
+            f"Taxiway off {left} blocked by a towed aircraft.", "Taxiway blocked by a towed aircraft.")
     gates = [
         Gate(name="A1", free_from_min=earliest + rng.randint(10, 40), free_until_min=earliest + 120),
         Gate(name="A4", free_from_min=earliest - 10, free_until_min=earliest + rng.randint(5, 25)),
         Gate(name="B7", free_from_min=earliest + rng.randint(40, 70), free_until_min=earliest + 200),
     ]
+    # The workbook's spare gates at any time (2 or 3) are the only ones ground can offer.
+    if cap:
+        gates = gates[:cap.spare_gates_at_any_time]
     connections = [
         Connection(passengers=rng.randint(8, 30), departs_min=earliest + rng.randint(45, 90)),
         Connection(passengers=rng.randint(4, 15), departs_min=earliest + rng.randint(90, 150)),
@@ -154,6 +188,7 @@ def scenario_from_row(row: dict) -> Scenario:
         flight=flight, airline=row["AIRLINE"], airline_name=airlines().get(row["AIRLINE"]),
         origin=row["ORIGIN_AIRPORT"], destination=row["DESTINATION_AIRPORT"],
         origin_info=airports().get(row["ORIGIN_AIRPORT"]), destination_info=dest_info,
+        destination_capacity=cap,
         scheduled_arrival_hhmm=f"{sched[:2]}:{sched[2:]}",
         disruption=disruption,
         weather_delay_min=weather, late_aircraft_delay_min=late_ac,
@@ -177,10 +212,16 @@ def scenario_from_row(row: dict) -> Scenario:
     )
 
 
-def _traffic(rng: random.Random, earliest: int, dense: bool = False) -> list[RunwayArrival]:
+def rng_extra(seed: int, n: int) -> random.Random:
+    """A separate stream for runways added from the workbook, so the original draws are untouched."""
+    return random.Random(seed * 31 + n)
+
+
+def _traffic(rng: random.Random, earliest: int, dense: bool = False, step: int | None = None) -> list[RunwayArrival]:
     # Dense = ~3 min spacing (180 s): insertable only where the wake table allows,
-    # which is what makes the ATC agent's slot choice non-trivial.
-    step = 3 if dense else 5
+    # which is what makes the ATC agent's slot choice non-trivial. With the workbook, a busy
+    # runway's spacing comes from its movements per hour instead.
+    step = step if step is not None else (3 if dense else 5)
     out, t = [], earliest - 6
     while t < earliest + 30:
         out.append(RunwayArrival(time_min=t, category=rng.choices(list(AircraftCategory), weights=[1, 6, 3])[0]))

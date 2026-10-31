@@ -83,6 +83,18 @@ class AirportInfo(BaseModel):
     longitude: float
 
 
+class AirportCapacity(BaseModel):
+    """Organisers' constraints workbook, sheet airport_capacity. SYNTHETIC planning limits scaled from
+    traffic in flights.csv, not real airport data."""
+
+    size_class: str = Field(description="'Large hub' | 'Medium hub' | 'Small hub' | 'Non-hub'")
+    active_runways: int
+    gates: int = Field(description="Gates at the airport. Only spare_gates_at_any_time are free to offer")
+    max_runway_ops_per_hour: int = Field(description="Movements per hour across all active runways")
+    min_turnaround_min: int
+    spare_gates_at_any_time: int
+
+
 class Scenario(BaseModel):
     scenario_id: str
     flight: str
@@ -92,6 +104,8 @@ class Scenario(BaseModel):
     destination: str
     origin_info: AirportInfo | None = Field(default=None, description="null if the IATA code is not in airports.csv")
     destination_info: AirportInfo | None = Field(default=None, description="null if the IATA code is not in airports.csv")
+    destination_capacity: AirportCapacity | None = Field(default=None, description=(
+        "The destination's row in the organisers' workbook; null if the airport is not listed"))
     scheduled_arrival_hhmm: str
     disruption: str
     weather_delay_min: int = 0

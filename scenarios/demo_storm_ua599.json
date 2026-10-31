@@ -23,6 +23,14 @@
     "latitude": 41.9796,
     "longitude": -87.90446
   },
+  "destination_capacity": {
+    "size_class": "Large hub",
+    "active_runways": 4,
+    "gates": 150,
+    "max_runway_ops_per_hour": 90,
+    "min_turnaround_min": 45,
+    "spare_gates_at_any_time": 3
+  },
   "scheduled_arrival_hhmm": "17:55",
   "disruption": "Thunderstorm over O'Hare, 8 May 2015. Runway 27L closed; every arrival is sequenced onto 27R behind a stream of heavies. UA599 left Boston 52 min late on weather and can reach ORD at t+52 at the earliest. The gate it was planned for (C9) is needed again at t+72.",
   "weather_delay_min": 52,
@@ -96,6 +104,18 @@
           "category": "L"
         }
       ]
+    },
+    {
+      "name": "27C",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "09R",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
     }
   ],
   "gates": [

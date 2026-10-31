@@ -37,12 +37,12 @@ describe("illustrative scene adapter", () => {
   it("does not map unknown names onto another resource", () => {
     const next = {
       ...view,
-      proposal: { ...view.proposal!, gate: "UNKNOWN", runway: "09R" },
+      proposal: { ...view.proposal!, gate: "UNKNOWN", runway: "99X" },
     };
     expect(resolveScene(next, demoLayout)).toMatchObject({
       gate: undefined,
       runway: undefined,
-      missing: ["Gate UNKNOWN", "Runway 09R"],
+      missing: ["Gate UNKNOWN", "Runway 99X"],
     });
   });
   it("does not reuse a layout ID absent from the selected scenario", () => {

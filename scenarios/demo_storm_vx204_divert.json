@@ -23,6 +23,14 @@
     "latitude": 41.9796,
     "longitude": -87.90446
   },
+  "destination_capacity": {
+    "size_class": "Large hub",
+    "active_runways": 4,
+    "gates": 150,
+    "max_runway_ops_per_hour": 90,
+    "min_turnaround_min": 45,
+    "spare_gates_at_any_time": 3
+  },
   "scheduled_arrival_hhmm": "18:00",
   "disruption": "Same thunderstorm, minutes later. VX204 left San Francisco on time but has burned its contingency fuel on the long leg. With 27L closed, 27R is saturated with heavies re-sequenced off the closed runway. No slot it can legally wait for exists: the correct answer is to divert, and the system must say so.",
   "weather_delay_min": 45,
@@ -83,6 +91,18 @@
           "category": "H"
         }
       ]
+    },
+    {
+      "name": "27C",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "09R",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
     }
   ],
   "gates": [
