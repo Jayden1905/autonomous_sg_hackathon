@@ -2,8 +2,8 @@ import { useId, useRef } from "react";
 import { Check, AlertTriangle } from "lucide-react";
 import { apiUrl } from "@/api";
 import type { Schemas } from "@/api";
-import { DataRow, DataSection, relativeMinutes } from "@/workspace";
-import type { Evaluation, Proposal } from "@/workspace";
+import { PlanSummary } from "@/workspace";
+import type { Evaluation, Proposal, FlightView } from "@/workspace";
 
 type Evidence = NonNullable<Proposal["evidence"]>[number];
 export function safeSourceUrl(value: string | null | undefined) {
@@ -116,19 +116,22 @@ export function Guardrail({ report }: { report: Proposal["guardrail"] }) {
 export function PlanDetails({
   proposal,
   title,
+  comparison,
+  onSelect,
 }: {
   proposal: Proposal;
   title: string;
+  comparison?: FlightView["comparison"];
+  onSelect?: FlightView["onSelect"];
 }) {
   return (
     <>
-      <DataSection title={title} note="Relative to scheduled arrival">
-        <DataRow label="Arrival">
-          {relativeMinutes(proposal.arrival_min)}
-        </DataRow>
-        <DataRow label="Runway">{proposal.runway}</DataRow>
-        <DataRow label="Gate">{proposal.gate}</DataRow>
-      </DataSection>
+      <PlanSummary
+        proposal={proposal}
+        title={title}
+        comparison={comparison}
+        onSelect={onSelect}
+      />
       <CitedText text={proposal.rationale} evidence={proposal.evidence} />
       <Guardrail report={proposal.guardrail} />
     </>

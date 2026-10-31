@@ -10,6 +10,20 @@
   inset: 0;
   pointer-events: none;
 }
+.gate small,
+.runway small {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 400;
+}
+.gate:hover,
+.runway:hover {
+  outline: 1px solid var(--color-accent);
+}
+.gate[aria-pressed="true"],
+.runway[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px white;
+}
 .caption {
   position: absolute;
   left: var(--space-6);
@@ -115,7 +129,8 @@
   font: 500 11px var(--font-family-ui);
   cursor: pointer;
 }
-.activeGate {
+.gate.activeGate,
+.runway.activeGate {
   background: var(--color-accent);
 }
 .runway {
@@ -199,19 +214,13 @@
   line-height: 18px;
 }
 .sceneOptions label {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 152px;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
-.sceneOptions select {
-  border: 1px solid var(--color-control-border);
-  border-radius: var(--radius-control);
-  padding: 6px;
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-}
+
 .motionButton {
   display: flex;
   align-items: center;
@@ -254,4 +263,12 @@
   .tooltip {
     display: none;
   }
+}
+
+.disclosureArrow {
+  margin-left: auto;
+  color: var(--color-text-secondary);
+}
+.atmosphere[open] .disclosureArrow {
+  transform: rotate(180deg);
 }

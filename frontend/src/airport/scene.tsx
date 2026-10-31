@@ -1,7 +1,7 @@
 import { Component, Suspense, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, Lightformer, Html, Line } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import {
   Focus,
   Minus,
@@ -13,23 +13,29 @@ import {
   Pause,
   Play,
   CloudRain,
+  ChevronDown,
 } from "lucide-react";
 import type { FlightView } from "@/workspace";
-import { IconButton } from "@/workspace";
+import { IconButton, Select } from "@/workspace";
 import { Aircraft } from "./aircraft";
+import { AircraftShadows } from "./aircraft-shadows";
+import { Footprint, ResourceTarget } from "./resource-target";
+import { parkedAircraft } from "./scenery-layout";
 import { Terminal } from "./terminal";
 import { Ground } from "./ground";
+import { SurfaceLibrary } from "./surface-library";
 import { AirportCamera } from "./camera";
 import type { CameraIntent } from "./camera";
 import { AircraftTooltip } from "./tooltip";
 import { resolveScene, unmappedResources } from "./layout";
-import type { AirportLayout, Point } from "./layout";
+import type { AirportLayout } from "./layout";
 import styles from "./airport.module.css";
 import { AirportTraffic, SceneClockDriver } from "./life";
-import { Rain, Puddles, weatherLighting } from "./weather";
+import { Rain, weatherLighting } from "./weather";
 import { StaticBatch } from "./static-batch";
 import { scenarioWeather, sceneBudget, trafficRunway } from "./motion";
 import type { Quality, Weather, WeatherChoice } from "./motion";
+import { WebGLNodesHandler } from "three/addons/tsl/WebGLNodesHandler.js";
 
 class RendererBoundary extends Component<
   { children: ReactNode },
@@ -49,42 +55,6 @@ function RendererUnavailable() {
       <strong>3D view unavailable</strong>
       <p>Use the Flight tab’s resource list to inspect the scenario.</p>
     </div>
-  );
-}
-
-function Footprint({
-  position,
-  width = 28,
-  depth = 39,
-}: {
-  position: Point;
-  width?: number;
-  depth?: number;
-}) {
-  const [x, , z] = position;
-  return (
-    <group>
-      <mesh position={[x, 0.12, z]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[width, depth]} />
-        <meshBasicMaterial
-          color="#2453ff"
-          transparent
-          opacity={0.1}
-          depthWrite={false}
-        />
-      </mesh>
-      <Line
-        points={[
-          [x - width / 2, 0.15, z - depth / 2],
-          [x + width / 2, 0.15, z - depth / 2],
-          [x + width / 2, 0.15, z + depth / 2],
-          [x - width / 2, 0.15, z + depth / 2],
-          [x - width / 2, 0.15, z - depth / 2],
-        ]}
-        color="#2453ff"
-        lineWidth={1.4}
-      />
-    </group>
   );
 }
 
@@ -130,39 +100,29 @@ function AirportContents({
       />
       <color attach="background" args={[light.background]} />
       <fog attach="fog" args={[light.fog, light.near, light.far]} />
-      <hemisphereLight args={["#e3edf5", "#827e6c", light.ambient]} />
+      <hemisphereLight args={["#d2dce4", "#464840", light.ambient]} />
       <directionalLight
-        position={[-100, 200, 60]}
+        position={[-120, 150, 65]}
         intensity={light.sun}
         color="#fff4e4"
         castShadow
         shadow-mapSize={[budget.shadows, budget.shadows]}
-        shadow-camera-left={-240}
-        shadow-camera-right={240}
-        shadow-camera-top={240}
-        shadow-camera-bottom={-240}
+        shadow-camera-left={-180}
+        shadow-camera-right={180}
+        shadow-camera-top={180}
+        shadow-camera-bottom={-180}
         shadow-camera-far={550}
         shadow-normalBias={0.1}
         shadow-bias={-0.0001}
       />
-      <Environment resolution={128} frames={1}>
-        <Lightformer
-          form="rect"
-          intensity={2}
-          scale={[400, 400, 1]}
-          position={[0, 200, 0]}
-          rotation-x={Math.PI / 2}
-        />
-        <Lightformer
-          form="rect"
-          intensity={1}
-          scale={[200, 100, 1]}
-          position={[-200, 80, 0]}
-          rotation-y={Math.PI / 2}
-        />
-      </Environment>
+      <Environment
+        files="/materials/daylight.hdr"
+        environmentIntensity={weather === "clear" ? 0.6 : 0.4}
+        environmentRotation={[0, 1.5, 0]}
+      />
+      <SurfaceLibrary />
       <Ground wet={weather !== "clear"} />
-      <Puddles wet={weather !== "clear"} />
+      <AircraftShadows revision={shadowKey} eco={budget.eco} />
       <StaticBatch>
         <Terminal />
       </StaticBatch>
@@ -176,18 +136,14 @@ function AirportContents({
         count={budget.rain}
         reducedMotion={reducedMotion}
       />
-      {[-80, -49, -18, 44, 75]
-        .filter((x) => Math.abs(x - scene.aircraft[0]) > 1)
-        .map((x) => (
-          <Aircraft key={`south-${x}`} position={[x, 0, 39]} />
+      {parkedAircraft
+        .filter(
+          ({ position: [x, , z] }) =>
+            z < 0 || Math.abs(x - scene.aircraft[0]) > 1,
+        )
+        .map((aircraft) => (
+          <Aircraft key={aircraft.position.join(",")} {...aircraft} />
         ))}
-      {[-80, -18, 44, 75].map((x) => (
-        <Aircraft
-          key={`north-${x}`}
-          position={[x, 0, -38]}
-          rotation={Math.PI}
-        />
-      ))}
 
       <Aircraft
         position={scene.aircraft}
@@ -200,67 +156,86 @@ function AirportContents({
       {scene.runway && (
         <Footprint position={scene.runway} width={490} depth={24} />
       )}
-      {scene.selectedAnchor && (
-        <Footprint
-          position={scene.selectedAnchor}
-          width={selection?.kind === "runway" ? 490 : 28}
-          depth={selection?.kind === "runway" ? 24 : 38}
-        />
-      )}
-      {scenario.gates.map(
-        (g) =>
-          layout.gates[g.name] && (
-            <Html
-              key={g.name}
-              portal={labels}
-              position={[
-                layout.gates[g.name][0] + 12,
-                1,
-                layout.gates[g.name][2] + 30,
-              ]}
-              center
-              zIndexRange={[9, 1]}
-            >
-              <button
-                className={`${styles.gate} ${view.proposal?.gate === g.name && scene.emphasize ? styles.activeGate : ""}`}
-                aria-label={`Select gate ${g.name}`}
-                onClick={() => onSelect({ kind: "gate", id: g.name })}
-              >
-                {g.name}
-              </button>
-            </Html>
-          ),
-      )}
-      {scenario.runways.map(
-        (r) =>
-          layout.runways[r.name] && (
-            <Html
-              key={r.name}
-              portal={labels}
-              position={[
-                layout.runways[r.name][0] - 60,
-                2,
-                layout.runways[r.name][2],
-              ]}
-              center
-              zIndexRange={[9, 1]}
-            >
-              <button
-                className={styles.runway}
-                aria-label={`Select runway ${r.name}`}
-                onClick={() => onSelect({ kind: "runway", id: r.name })}
-              >
-                {!r.open && <span className={styles.cross}>×</span>}
-                {r.name}
-                {!r.open
-                  ? " closed"
-                  : r.taxiway_blocked
-                    ? " · taxiway blocked"
-                    : ""}
-              </button>
-            </Html>
-          ),
-      )}
+      {scene.emphasize &&
+        view.comparison &&
+        (() => {
+          const before = view.comparison.proposal;
+          const gate =
+            before.gate !== view.proposal?.gate &&
+            scenario.gates.some((g) => g.name === before.gate)
+              ? layout.gates[before.gate]
+              : undefined;
+          const runway =
+            before.runway !== view.proposal?.runway &&
+            scenario.runways.some((r) => r.name === before.runway)
+              ? layout.runways[before.runway]
+              : undefined;
+          return (
+            <>
+              {gate && (
+                <Footprint position={[gate[0], 0, gate[2] + 15]} previous />
+              )}
+              {runway && (
+                <Footprint position={runway} width={490} depth={24} previous />
+              )}
+            </>
+          );
+        })()}
+      {scenario.gates.map((g) => {
+        const anchor = layout.gates[g.name];
+        if (!anchor) return null;
+        return (
+          <ResourceTarget
+            key={`gate-${g.name}`}
+            kind="gate"
+            id={g.name}
+            position={[anchor[0], 0, anchor[2] + 15]}
+            labelPosition={[anchor[0] + 12, 1, anchor[2] + 30]}
+            width={28}
+            depth={39}
+            portal={labels}
+            selected={selection?.kind === "gate" && selection.id === g.name}
+            proposed={scene.emphasize && view.proposal?.gate === g.name}
+            previous={
+              scene.emphasize &&
+              view.comparison?.proposal.gate === g.name &&
+              view.proposal?.gate !== g.name
+            }
+            onSelect={onSelect}
+          />
+        );
+      })}
+      {scenario.runways.map((r) => {
+        const anchor = layout.runways[r.name];
+        if (!anchor) return null;
+        return (
+          <ResourceTarget
+            key={`runway-${r.name}`}
+            kind="runway"
+            id={r.name}
+            position={anchor}
+            labelPosition={[anchor[0] - 60, 2, anchor[2]]}
+            width={490}
+            depth={24}
+            portal={labels}
+            selected={selection?.kind === "runway" && selection.id === r.name}
+            proposed={scene.emphasize && view.proposal?.runway === r.name}
+            previous={
+              scene.emphasize &&
+              view.comparison?.proposal.runway === r.name &&
+              view.proposal?.runway !== r.name
+            }
+            status={
+              !r.open
+                ? "closed"
+                : r.taxiway_blocked
+                  ? "taxiway blocked"
+                  : undefined
+            }
+            onSelect={onSelect}
+          />
+        );
+      })}
       {selectedFlight && (
         <AircraftTooltip
           view={view}
@@ -369,6 +344,7 @@ export function AirportScene({
               </span>
             }
             onCreated={({ gl }) => {
+              gl.setNodesHandler(new WebGLNodesHandler());
               gl.domElement.addEventListener(
                 "webglcontextlost",
                 () => setLost(true),
@@ -417,27 +393,43 @@ export function AirportScene({
               ? "Rain"
               : "Clear"}
           {!running && " · Paused"}
+          <ChevronDown size={14} className={styles.disclosureArrow} />
         </summary>
         <div className={styles.sceneOptions}>
           <h3>Airport atmosphere</h3>
           <p>
-            Illustrative traffic and weather. The selected flight stays a plan
+            Preview weather and motion. The selected flight stays a plan
             preview.
           </p>
           <label>
             Weather
-            <select
-              aria-label="Scene weather"
+            <Select
+              label="Scene weather"
               value={weatherChoice}
-              onChange={(e) =>
-                setWeatherChoice(e.target.value as WeatherChoice)
-              }
-            >
-              <option value="scenario">From scenario</option>
-              <option value="clear">Clear</option>
-              <option value="rain">Rain</option>
-              <option value="storm">Storm</option>
-            </select>
+              onChange={(value) => setWeatherChoice(value as WeatherChoice)}
+              options={[
+                {
+                  value: "scenario",
+                  label: "From scenario",
+                  description: "Use the disruption's weather preset",
+                },
+                {
+                  value: "clear",
+                  label: "Clear",
+                  description: "Dry apron and clear visibility",
+                },
+                {
+                  value: "rain",
+                  label: "Rain",
+                  description: "Rainfall and damp surfaces",
+                },
+                {
+                  value: "storm",
+                  label: "Storm",
+                  description: "Heavier rain and reduced visibility",
+                },
+              ]}
+            />
           </label>
           <p>
             {weatherChoice === "scenario"
@@ -446,17 +438,28 @@ export function AirportScene({
           </p>
           <label>
             Quality
-            <select
-              aria-label="Scene quality"
+            <Select
+              label="Scene quality"
               value={quality}
-              onChange={(e) => {
-                setQuality(e.target.value as Quality);
-              }}
-            >
-              <option value="auto">Auto</option>
-              <option value="eco">Eco</option>
-              <option value="high">High</option>
-            </select>
+              onChange={(value) => setQuality(value as Quality)}
+              options={[
+                {
+                  value: "auto",
+                  label: "Auto",
+                  description: "Adjust to this device",
+                },
+                {
+                  value: "eco",
+                  label: "Eco",
+                  description: "Lighter rain and resolution",
+                },
+                {
+                  value: "high",
+                  label: "High",
+                  description: "Detailed rain and shadows",
+                },
+              ]}
+            />
           </label>
           <p>
             {budget.eco

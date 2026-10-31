@@ -19,4 +19,5 @@ export interface FlightView {
   context: ViewContext;
   selection: Selection;
   onSelect: (selection: Selection) => void;
+  comparison?: { proposal: Proposal; label: string } | null;
 }

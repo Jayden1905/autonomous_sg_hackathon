@@ -24,6 +24,14 @@ A detailed, desaturated 3D airport fills the workspace. A slim white toolbar and
 
 Keep the airport as shown in the approved image: realistic terminal geometry, jet bridges, white aircraft, concrete apron, restrained markings, and soft daylight. Preserve its depth and detail. Do not replace it with white block geometry, a flat map, or a nighttime neon scene as the default.
 
+For scene materials, use the shared photographic concrete maps with subtle normal
+and roughness detail, fine slab joints, grey metal roof seams and reflective dark
+glazing. Keep weathering and wet patches restrained; avoid oversized noise or a
+uniform glossy floor. Ground parked aircraft with soft contact shadows. Roof
+equipment should have louvres and ducts rather than plain cubes alone. Use the
+local CC0 assets documented in `frontend/public/materials/README.md`; share loaded
+maps and batch fixed equipment. Preserve demand rendering and the Eco budget.
+
 The interface uses neutral text, careful alignment, fine dividers, and small controls. Blue marks selection. Green marks a confirmed pass or agreement. Red marks a failed hard constraint. Operational information should be easy to read without competing with the scene.
 
 ## Workspace composition

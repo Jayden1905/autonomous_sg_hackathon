@@ -1,0 +1,32 @@
+[
+  {
+    "file": "concrete-color.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_diff_1k.jpg",
+    "bytes": 776097,
+    "md5": "1cfee53d2f82fa59726ab7ae6a2e8c09"
+  },
+  {
+    "file": "concrete-normal.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_nor_gl_1k.jpg",
+    "bytes": 192757,
+    "md5": "c2065fd81f571f4e39163ea5661128fb"
+  },
+  {
+    "file": "concrete-roughness.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_rough_1k.jpg",
+    "bytes": 318550,
+    "md5": "653d60d0db1872a49138455cf31c8326"
+  },
+  {
+    "file": "asphalt-color.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_02/asphalt_02_diff_1k.jpg",
+    "bytes": 731707,
+    "md5": "fa19772d4817754c3efab708c651f5a8"
+  },
+  {
+    "file": "daylight.hdr",
+    "source": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr",
+    "bytes": 1435119,
+    "md5": "c69498687e876bf68d2a8b8a62234eb9"
+  }
+]

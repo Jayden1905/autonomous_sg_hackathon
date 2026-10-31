@@ -26,6 +26,7 @@ export const Aircraft = memo(function Aircraft({
     : undefined;
   return (
     <group
+      name={moving ? "ambient-aircraft" : "parked-aircraft"}
       position={position}
       rotation-y={rotation}
       onClick={click}

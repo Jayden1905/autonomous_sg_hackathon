@@ -1,5 +1,6 @@
 import { Check, AlertTriangle } from "lucide-react";
 import { contextLabel } from "@/workspace";
+import type { FlightView } from "@/workspace";
 import {
   CitedText,
   Guardrail,
@@ -7,17 +8,19 @@ import {
   Rules,
   ToolActivity,
 } from "./details";
-import { responseLabel, selectedPlan } from "./state";
+import { responseLabel, selectedPlan, planComparison } from "./state";
 import type { Attempt, RunState } from "./state";
 
 export function NegotiationPanel({
   state,
   selected,
   onLatest,
+  onSelect,
 }: {
   state: RunState;
   selected: Attempt | null;
   onLatest: () => void;
+  onSelect?: FlightView["onSelect"];
 }) {
   const plan = selectedPlan(state, selected);
   const turn = plan.turn;
@@ -88,6 +91,8 @@ export function NegotiationPanel({
       {plan.proposal && (
         <PlanDetails
           proposal={plan.proposal}
+          comparison={planComparison(state, selected)}
+          onSelect={onSelect}
           title={
             selected
               ? "Historical proposal"

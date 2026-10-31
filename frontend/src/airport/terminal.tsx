@@ -1,6 +1,7 @@
 import { Box, Blocks, materials } from "./geometry";
 import type { Block } from "./geometry";
 import type { Point } from "./layout";
+import { concourses, northStandXs } from "./scenery-layout";
 
 function Concourse({
   position,
@@ -14,7 +15,9 @@ function Concourse({
   const frames: Block[] = [],
     lights: Block[] = [],
     vents: Block[] = [],
-    seams: Block[] = [];
+    seams: Block[] = [],
+    grilles: Block[] = [],
+    ducts: Block[] = [];
   for (let x = -length / 2 + 2; x < length / 2; x += 3)
     for (const side of [-1, 1]) {
       frames.push({ position: [x, 5.8, side * 8.12], scale: [0.16, 6, 0.16] });
@@ -26,6 +29,13 @@ function Concourse({
     }
   for (let x = -length / 2 + 6; x < length / 2; x += 12) {
     vents.push({ position: [x, 9.6, 1], scale: [3.2, 0.9, 2.5] });
+    // Small louvres and duct runs give equipment depth; StaticBatch merges them.
+    for (let fin = -3; fin <= 3; fin++)
+      grilles.push({
+        position: [x + fin * 0.36, 10.07, 1],
+        scale: [0.13, 0.06, 1.95],
+      });
+    ducts.push({ position: [x + 2.5, 9.42, 1], scale: [2, 0.45, 0.75] });
     seams.push({ position: [x, 9.16, 0], scale: [0.09, 0.06, 17] });
   }
   return (
@@ -41,6 +51,8 @@ function Concourse({
         material="edge"
       />
       <Blocks blocks={vents} material="concrete" />
+      <Blocks blocks={grilles} material="dark" />
+      <Blocks blocks={ducts} material="edge" />
       <Blocks blocks={seams} material="edge" />
       {[-1, 1].map((side) => (
         <group key={`end-${side}`} position={[(side * length) / 2, 0, 0]}>
@@ -162,15 +174,14 @@ function Tower() {
 export const Terminal = memo(function Terminal() {
   return (
     <group>
-      <Concourse position={[0, 0, 0]} length={206} />
-      <Concourse position={[-71, 0, -43]} length={86} rotation={Math.PI / 2} />
-      <Concourse position={[-25, 0, -83]} length={210} />
-      <Concourse position={[-108, 0, 47]} length={94} rotation={Math.PI / 2} />
+      {concourses.map((concourse, index) => (
+        <Concourse key={index} {...concourse} />
+      ))}
       <Tower />
       {[-80, -49, -18, 13, 44, 75].map((x) => (
         <JetBridge key={x} position={[x - 6, 0, 9]} />
       ))}
-      {[-80, -49, -18, 13, 44, 75].map((x) => (
+      {northStandXs.map((x) => (
         <JetBridge key={x} position={[x + 6, 0, -9]} rotation={Math.PI} />
       ))}
       {[-65, -32, 1, 34, 67].map((x) => (

@@ -1,0 +1,116 @@
+.trigger,
+.option {
+  -webkit-tap-highlight-color: transparent;
+}
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--font-size-body)/var(--line-height-body) var(--font-family-ui);
+  text-align: left;
+  cursor: pointer;
+}
+.value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trigger > svg {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+.trigger[aria-expanded="true"] {
+  border-color: var(--color-accent);
+}
+.trigger[aria-expanded="true"] > svg {
+  transform: rotate(180deg);
+}
+.trigger:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.menu {
+  position: fixed;
+  z-index: calc(var(--layer-modal) + 10);
+  box-sizing: border-box;
+  padding: 5px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-floating);
+  font: var(--font-size-body)/var(--line-height-body) var(--font-family-ui);
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px;
+  min-height: 36px;
+  box-sizing: border-box;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+.option[data-active="true"] {
+  background: var(--color-surface-subtle);
+}
+.option[aria-selected="true"] {
+  color: var(--color-accent);
+}
+.option[aria-selected="true"][data-active="true"] {
+  background: var(--color-selection-fill);
+}
+.option[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.check {
+  display: flex;
+  width: 14px;
+  flex-shrink: 0;
+}
+.optionText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.optionText small {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+.meta {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  flex-shrink: 0;
+}
+.group {
+  padding: 8px 8px 4px 30px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+@media (pointer: coarse) {
+  .trigger,
+  .option {
+    min-height: var(--size-target-touch);
+  }
+}

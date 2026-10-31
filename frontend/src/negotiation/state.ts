@@ -1,5 +1,6 @@
 import type { Events, StreamEvent } from "@/api";
 import type { Evaluation, Proposal, Trace } from "@/workspace";
+import { sameProposal } from "@/workspace";
 
 export interface RunState {
   id: number;
@@ -159,6 +160,33 @@ export function selectedPlan(state: RunState, selected: Attempt | null) {
     context: state.proposal ? ("proposal" as const) : ("scenario" as const),
     turn: undefined,
   };
+}
+
+export function planComparison(state: RunState, selected: Attempt | null) {
+  const plan = selectedPlan(state, selected);
+  if (!plan.proposal) return null;
+  if (selected?.agent && plan.turn?.responses[selected.agent]?.counter)
+    return {
+      proposal: plan.turn.proposal,
+      label: `Compared with turn ${plan.turn.turn} proposal`,
+    };
+  const turns = state.trace?.turns ?? state.turns;
+  const last = turns.at(-1);
+  // A final result often repeats the last turn. Do not compare it with itself.
+  const limit =
+    selected?.turn ??
+    (state.trace
+      ? last && sameProposal(last.proposal, plan.proposal)
+        ? last.turn
+        : Infinity
+      : state.turn);
+  const previous = turns.filter((turn) => turn.turn < limit).at(-1);
+  return previous
+    ? {
+        proposal: previous.proposal,
+        label: `Compared with turn ${previous.turn}`,
+      }
+    : null;
 }
 
 export function responseLabel(

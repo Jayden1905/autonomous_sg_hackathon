@@ -59,14 +59,17 @@ try {
   await page
     .getByRole("button", { name: "Select gate B6", exact: true })
     .click();
+  await inspector
+    .getByRole("heading", { name: "Gate B6", exact: true })
+    .waitFor();
   assert.equal(
-    await inspector
-      .getByRole("button", { name: /^Gate B6/ })
+    await page
+      .getByRole("button", { name: "Select gate B6", exact: true })
       .getAttribute("aria-pressed"),
     "true",
   );
   await inspector
-    .getByRole("button", { name: "UA599 Flight", exact: true })
+    .getByRole("button", { name: "Back to flight", exact: true })
     .click();
   await run("Consensus reached");
   assert.match(await inspector.textContent(), /B6/);
@@ -93,7 +96,8 @@ try {
 
   await choose("UA1234");
   await inspector.locator(".run-settings > summary").click();
-  await page.getByRole("combobox", { name: "Maximum turns" }).selectOption("1");
+  await page.getByRole("combobox", { name: "Maximum turns" }).click();
+  await page.getByRole("option", { name: "1 turn", exact: true }).click();
   await inspector.locator(".run-settings > summary").click();
   await run("Fallback plan");
   await inspector.getByText("Solver recommendation", { exact: true }).waitFor();

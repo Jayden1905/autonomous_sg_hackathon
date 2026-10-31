@@ -25,7 +25,7 @@ import {
 import type { AirportLayout } from "@/airport";
 import { FlightTab } from "@/flight";
 import { ScenarioPicker } from "@/scenarios";
-import { IconButton, contextLabel } from "@/workspace";
+import { IconButton, contextLabel, Select } from "@/workspace";
 import type { FlightView, Scenario, Trace } from "@/workspace";
 import { getJson, negotiate } from "@/api";
 import type { Schemas } from "@/api";
@@ -35,6 +35,7 @@ import {
   emptyRun,
   runReducer,
   selectedPlan,
+  planComparison,
 } from "@/negotiation";
 import type { Attempt } from "@/negotiation";
 
@@ -285,9 +286,12 @@ export function App() {
         proposal: plan.proposal,
         evaluation: plan.evaluation,
         context: plan.context,
+        comparison: planComparison(state, selected),
         selection,
         onSelect: (next) => {
           setSelection(next);
+          const panel = document.getElementById("panel-Flight");
+          if (panel) panel.scrollTop = 0;
           if (next) {
             setInspector(true);
             setTab("Flight");
@@ -442,6 +446,7 @@ export function App() {
               ))}
             </div>
             <div
+              key={tab}
               className="inspector-content"
               id={`panel-${tab}`}
               role="tabpanel"
@@ -454,6 +459,7 @@ export function App() {
                   state={state}
                   selected={selected}
                   onLatest={() => setSelected(null)}
+                  onSelect={view.onSelect}
                 />
               )}
               {tab === "History" && (
@@ -478,49 +484,55 @@ export function App() {
                 </summary>
                 <label>
                   Agent mode
-                  <select
-                    aria-label="Agent mode"
+                  <Select
+                    label="Agent mode"
                     disabled={running}
                     value={mock ? "mock" : "live"}
-                    onChange={(e) => setMock(e.target.value === "mock")}
-                  >
-                    <option value="mock">Mock agents</option>
-                    <option value="live">Live AI</option>
-                  </select>
+                    onChange={(value) => setMock(value === "mock")}
+                    options={[
+                      {
+                        value: "mock",
+                        label: "Mock agents",
+                        description: "Scripted agents · no model calls",
+                      },
+                      {
+                        value: "live",
+                        label: "Live AI",
+                        description: "Use the server's model credentials",
+                      },
+                    ]}
+                  />
                 </label>
                 <label>
                   Maximum turns
-                  <select
-                    aria-label="Maximum turns"
+                  <Select
+                    label="Maximum turns"
                     disabled={running}
-                    value={maxTurns}
-                    onChange={(e) => setMaxTurns(Number(e.target.value))}
-                  >
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
+                    value={String(maxTurns)}
+                    onChange={(value) => setMaxTurns(Number(value))}
+                    options={[1, 2, 3, 4, 5, 6].map((n) => ({
+                      value: String(n),
+                      label: `${n} ${n === 1 ? "turn" : "turns"}`,
+                    }))}
+                  />
                 </label>
                 {!mock && (
                   <>
                     <label>
                       Reasoning effort
-                      <select
-                        aria-label="Reasoning effort"
+                      <Select
+                        label="Reasoning effort"
                         disabled={running}
                         value={effort}
-                        onChange={(e) =>
-                          setEffort(e.target.value as typeof effort)
-                        }
-                      >
-                        {(
-                          ["low", "medium", "high", "xhigh", "max"] as const
-                        ).map((e) => (
-                          <option key={e}>{e}</option>
-                        ))}
-                      </select>
+                        onChange={(value) => setEffort(value as typeof effort)}
+                        options={[
+                          { value: "low", label: "Low" },
+                          { value: "medium", label: "Medium" },
+                          { value: "high", label: "High" },
+                          { value: "xhigh", label: "Extra high" },
+                          { value: "max", label: "Maximum" },
+                        ]}
+                      />
                     </label>
                     <p>
                       Live AI uses the server’s model credentials and may take

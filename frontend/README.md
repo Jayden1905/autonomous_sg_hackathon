@@ -1,5 +1,49 @@
 # Integrated airport workspace
 
+All dropdown fields use `workspace/Select`, including weather, quality, resources,
+agent mode, turn limit and reasoning effort. It provides a portal listbox with
+viewport-aware placement, grouped options, keyboard/type-ahead interaction and
+touch targets. No extra UI library is required. Run `npm run test:dropdowns` for
+desktop/touch selection, keyboard dismissal, resource focus and menu bounds.
+
+### Resource inspection and plan changes
+
+Click a gate's stand footprint or a runway surface (or focus its label and press
+Enter) to inspect it in the existing Flight panel. The panel shows scenario gate
+windows, runway/taxiway state and scheduled arrival slots. Back to flight returns
+to the flight overview. The resource selector also works for unmapped resources;
+inspection does not assign them to the flight.
+
+Flight and Negotiation summaries compare actual recorded proposals. Changed
+values show previous → displayed, with a relative arrival delta and the comparison
+turn. Both resource values are clickable. Scene labels distinguish Plan and
+Previous; previous resource footprints are muted and dashed. No-legal-option
+outcomes suppress plan emphasis, while manual resource inspection remains available.
+
+Apron, roof, asphalt and verge materials use TSL `MeshStandardNodeMaterial` with
+the installed r187 `WebGLNodesHandler`, keeping the existing WebGL renderer and
+GLSL rain. Shared photographic concrete maps supply colour, normal and roughness
+detail; world-space slab joints and dampness add scale. Roof seams, metal/glass
+environment reflections, runway wear and muted verge variation keep the scene
+close to the approved material direction. Small rooftop louvres and ducts join
+the existing static batches. No screen-space reflection or continuous AO pass.
+
+Five locally hosted 1K maps total about 3.3 MiB; see
+[asset provenance and CC0 licence](public/materials/README.md). The daylight HDR
+is used for environment lighting, not as a background. Aircraft contact shadows
+are baked in three offscreen passes only when layout, selected-aircraft position
+or quality changes, then reused as one plane. Targets are 256px in Eco and 512px
+in High. Moving traffic never leaves baked silhouettes behind. Materials have
+no animation/time uniforms; weather only updates the apron moisture uniform.
+The compatibility handler adds about 90 kB gzip to the lazy scene bundle; it
+does not enter the initial application bundle. No renderer or dependency upgrade.
+See the [Three.js compatibility API](https://threejs.org/docs/pages/WebGLRenderer.html#WebGLRenderer.setNodesHandler).
+
+`npm run test:interactions` checks actual mesh clicks, keyboard labels, resource
+details, recorded comparisons, no-option emphasis and mobile layout against Vite
+and the API. Negotiation transitions in this suite use an explicit UI fixture;
+`npm run test:e2e` separately verifies the real backend with mock agents.
+
 Bill's application shell connects Daniel's airport, Flight tab and scenario picker to Jayden's API. The root URL runs real backend negotiations; it does not load recorded traces. Mock agents are the default and require no API key or dataset.
 
 Start two terminals from the repository root:
@@ -40,7 +84,8 @@ The renderer uses:
 - Terminal and jet-bridge geometry baked into static material batches at mount,
   including their existing instanced details. The original components remain editable.
 - A single GPU-driven line batch for rain (700 drops in Eco, 2,200 in High).
-- One instanced puddle batch and a damp apron material; no screen-space reflections.
+- Photographic apron detail with TSL dampness; no separate puddle meshes.
+- One cached contact-shadow plane beneath parked aircraft; no per-frame AO pass.
 - Cached static shadow maps, refreshed when the displayed aircraft/layout changes.
   Decorative moving aircraft do not cast expensive dynamic shadows.
 - Demand rendering with background updates capped at 24 fps in Eco or 30 fps in
@@ -51,8 +96,9 @@ The renderer uses:
 
 These are rendering budgets, not guaranteed FPS on every GPU. Dev-only canvas data
 attributes expose sampled FPS, draw calls and scene time for the browser checks.
-The desktop storm check measured about 190 draw calls after static batching, versus 737
-in the initial animated version (about 74% fewer). That is a draw-call comparison,
+The material-upgrade desktop storm check measured 190 draw calls (188 in Eco rain),
+versus 737 in the initial animated version (about 74% fewer). The paused and
+hidden-tab checks both recorded zero additional idle draws. That is a draw-call comparison,
 not a hardware FPS promise; the automated browser uses software WebGL.
 
 Run `npm run test:motion` with the API and Vite servers running. It checks moving
@@ -155,7 +201,7 @@ Gate windows are shown relative to scheduled arrival rather than converted into 
 - Model composition reference: [A Minimalist Airport Diorama by agung.ihackstuff](https://sketchfab.com/3d-models/a-minimalist-airport-diorama-5aba9366cbf54255bb17b7fef10d1ab1).
 - Geometry in this implementation is newly authored procedural geometry. The Sketchfab asset is not downloaded, bundled or represented as a licensed source asset. Its modular terminal/aircraft/jetway composition is the reference. The result is an illustrative web scene, not a photorealistic replica of the approved image or an accurate airport topology.
 
-Terminal bays, glazing, rounded concourse ends, jet bridges, aircraft and service vehicles reuse components and materials. Repeated facade/roof details use instancing. Concrete texture is deterministic and local. The aircraft uses a shaped fuselage, swept wings, engines and landing gear. Scenery aircraft and vehicles are decorative, with no operational identity. The selected aircraft is interactive.
+Terminal bays, glazing, rounded concourse ends, jet bridges, aircraft and service vehicles reuse components and materials. Repeated facade/roof details use instancing. Concrete uses shared local photographic maps with procedural world-space joints and wetness. The aircraft uses a shaped fuselage, swept wings, engines and landing gear. Scenery aircraft and vehicles are decorative, with no operational identity. The selected aircraft is interactive.
 
 ## Verification and fixture provenance
 

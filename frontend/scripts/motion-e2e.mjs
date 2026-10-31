@@ -37,14 +37,12 @@ await page.addInitScript(() => {
 });
 const scene = page.getByRole("region", { name: "Illustrative 3D airport" });
 const canvas = page.locator("canvas");
-const options = scene
-  .locator("details")
-  .filter({
-    has: page.getByRole("combobox", {
-      name: "Scene weather",
-      includeHidden: true,
-    }),
-  });
+const options = scene.locator("details").filter({
+  has: page.getByRole("combobox", {
+    name: "Scene weather",
+    includeHidden: true,
+  }),
+});
 const wait = (ms) => page.waitForTimeout(ms);
 try {
   await page.goto(process.env.E2E_URL || "http://127.0.0.1:5173");
@@ -57,9 +55,8 @@ try {
   assert.equal(await scene.getAttribute("data-weather"), "storm");
   assert.equal(await scene.getAttribute("data-motion"), "playing");
   await options.locator("summary").click();
-  await page
-    .getByRole("combobox", { name: "Scene quality" })
-    .selectOption("high");
+  await page.getByRole("combobox", { name: "Scene quality" }).click();
+  await page.getByRole("option", { name: "High", exact: true }).click();
   await options.locator("summary").press("Escape");
   await wait(1500);
   const time = Number(await canvas.getAttribute("data-scene-time"));
@@ -72,9 +69,8 @@ try {
   );
 
   await options.locator("summary").click();
-  await page
-    .getByRole("combobox", { name: "Scene weather" })
-    .selectOption("clear");
+  await page.getByRole("combobox", { name: "Scene weather" }).click();
+  await page.getByRole("option", { name: "Clear", exact: true }).click();
   await page
     .getByRole("button", { name: "Pause scene motion", exact: true })
     .click();
@@ -91,12 +87,10 @@ try {
   await page.screenshot({ path: join(output, "clear-paused.png") });
 
   await options.locator("summary").click();
-  await page
-    .getByRole("combobox", { name: "Scene weather" })
-    .selectOption("rain");
-  await page
-    .getByRole("combobox", { name: "Scene quality" })
-    .selectOption("eco");
+  await page.getByRole("combobox", { name: "Scene weather" }).click();
+  await page.getByRole("option", { name: "Rain", exact: true }).click();
+  await page.getByRole("combobox", { name: "Scene quality" }).click();
+  await page.getByRole("option", { name: "Eco", exact: true }).click();
   await page
     .getByRole("button", { name: "Resume scene motion", exact: true })
     .click();

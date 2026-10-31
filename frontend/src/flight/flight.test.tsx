@@ -17,6 +17,36 @@ const view: FlightView = {
   onSelect: () => {},
 };
 describe("Flight content", () => {
+  it("opens focused gate details with an explicit return to the flight", () => {
+    const onSelect = vi.fn();
+    render(
+      <FlightTab
+        {...view}
+        selection={{ kind: "gate", id: "B12" }}
+        onSelect={onSelect}
+      />,
+    );
+    expect(
+      screen.getByRole("heading", { name: "Gate B12" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Free from")).toBeInTheDocument();
+    expect(screen.queryByText("Flight constraints")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back to flight" }));
+    expect(onSelect).toHaveBeenCalledWith({
+      kind: "flight",
+      id: view.scenario.flight,
+    });
+  });
+  it("shows a runway closure even when its taxiway is not blocked", () => {
+    render(<FlightTab {...view} selection={{ kind: "runway", id: "27L" }} />);
+    expect(
+      screen.getByRole("heading", { name: "Runway 27L" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Closed", { selector: "dd" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Scheduled arrivals" }),
+    ).toBeInTheDocument();
+  });
   it("shows sourced constraints and connection totals without inventing telemetry", () => {
     render(<FlightTab {...view} />);
     expect(screen.getByText("25 min")).toBeInTheDocument();

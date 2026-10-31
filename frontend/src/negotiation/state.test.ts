@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { Evaluation, Proposal, Trace } from "@/workspace";
-import { emptyRun, runReducer, selectedPlan, responseLabel } from "./state";
+import {
+  emptyRun,
+  runReducer,
+  selectedPlan,
+  responseLabel,
+  planComparison,
+} from "./state";
 
 const proposal: Proposal = {
   arrival_min: 28,
@@ -32,6 +38,58 @@ const trace: Trace = {
   final: proposal,
   final_evaluation: evaluation,
 };
+
+describe("recorded plan comparisons", () => {
+  const revised = { ...proposal, gate: "C3", arrival_min: 34 };
+  const next = { ...turn, turn: 2, proposal: revised };
+  it("compares a streamed proposal with the previous completed turn", () => {
+    expect(
+      planComparison(
+        { ...emptyRun(), turn: 2, proposal: revised, turns: [turn] },
+        null,
+      ),
+    ).toEqual({ proposal, label: "Compared with turn 1" });
+  });
+  it("skips the repeated final turn, but preserves a different solver result", () => {
+    const state = {
+      ...emptyRun(),
+      trace: { ...trace, turns: [turn, next], final: revised },
+    };
+    expect(planComparison(state, null)?.proposal).toBe(proposal);
+    expect(
+      planComparison(
+        {
+          ...state,
+          trace: { ...state.trace, final: { ...revised, arrival_min: 40 } },
+        },
+        null,
+      )?.proposal,
+    ).toBe(revised);
+  });
+  it("compares a historical counter against its own turn, never a later plan", () => {
+    const counterTurn = {
+      ...turn,
+      responses: {
+        ground: {
+          verdict: "counter" as const,
+          summary: "Move gate",
+          counter: revised,
+        },
+      },
+    };
+    const state = { ...emptyRun(), turns: [counterTurn, next] };
+    expect(planComparison(state, { turn: 1, agent: "ground" })?.proposal).toBe(
+      proposal,
+    );
+    expect(planComparison(state, { turn: 1 })).toBeNull();
+  });
+  it("does not invent a baseline for a new or reset run", () => {
+    expect(
+      planComparison({ ...emptyRun(), turn: 1, proposal }, null),
+    ).toBeNull();
+    expect(planComparison(emptyRun(), null)).toBeNull();
+  });
+});
 
 describe("run state isolation and display", () => {
   it("clears the previous turn while the next proposer is still thinking", () => {

@@ -1,7 +1,6 @@
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Object3D } from "three";
-import type { InstancedMesh, ShaderMaterial } from "three";
+import type { ShaderMaterial } from "three";
 import type { SceneClock } from "./life";
 import type { Weather } from "./motion";
 
@@ -104,58 +103,23 @@ export const weatherLighting = {
     fog: "#9ba2a3",
     near: 500,
     far: 1300,
-    sun: 2,
-    ambient: 0.9,
+    sun: 2.8,
+    ambient: 0.28,
   },
   rain: {
     background: "#7d8a93",
     fog: "#8999a6",
     near: 320,
     far: 1000,
-    sun: 1.15,
-    ambient: 1.15,
+    sun: 1.9,
+    ambient: 0.32,
   },
   storm: {
     background: "#697a88",
     fog: "#7b8f9f",
-    near: 240,
-    far: 850,
-    sun: 0.7,
-    ambient: 1.1,
+    near: 400,
+    far: 1200,
+    sun: 1.35,
+    ambient: 0.36,
   },
 };
-
-export function Puddles({ wet }: { wet: boolean }) {
-  const mesh = useRef<InstancedMesh>(null);
-  useLayoutEffect(() => {
-    if (!mesh.current) return;
-    const object = new Object3D();
-    for (let i = 0; i < 18; i++) {
-      object.position.set(-220 + ((i * 73) % 440), 0.06, 64 + ((i * 19) % 45));
-      object.rotation.set(-Math.PI / 2, 0, i * 0.7);
-      object.scale.set(3 + (i % 4) * 2, 1.4 + (i % 3), 1);
-      object.updateMatrix();
-      mesh.current.setMatrixAt(i, object.matrix);
-    }
-    mesh.current.instanceMatrix.needsUpdate = true;
-    mesh.current.computeBoundingSphere();
-  }, []);
-  return (
-    <instancedMesh
-      ref={mesh}
-      args={[undefined, undefined, 18]}
-      visible={wet}
-      raycast={() => {}}
-    >
-      <circleGeometry args={[1, 20]} />
-      <meshStandardMaterial
-        color="#627d8e"
-        transparent
-        opacity={0.34}
-        roughness={0.18}
-        metalness={0.45}
-        depthWrite={false}
-      />
-    </instancedMesh>
-  );
-}

@@ -6,9 +6,11 @@ import {
   provenanceLabel,
   recordedFlight,
   relativeMinutes,
+  PlanSummary,
 } from "@/workspace";
 import type { FlightView, Scenario } from "@/workspace";
 import styles from "./flight.module.css";
+import { ResourceDetails } from "./resource";
 
 function Airport({
   code,
@@ -35,6 +37,8 @@ export function FlightTab(view: FlightView) {
   // A hand-written sample is labelled once above; marking rows would tag every value.
   const synthetic = (field: keyof Scenario) =>
     record && s.synthetic_fields?.includes(field) ? "Synthetic" : undefined;
+  if (selection && selection.kind !== "flight")
+    return <ResourceDetails {...view} />;
   return (
     <div className={styles.flight}>
       <div className={styles.route}>
@@ -53,6 +57,20 @@ export function FlightTab(view: FlightView) {
           </small>
         )}
       </section>
+      {proposal && (
+        <PlanSummary
+          proposal={proposal}
+          title={
+            context === "no_legal_option"
+              ? "Last attempt"
+              : plan.recommended
+                ? "Recommended arrival"
+                : "Displayed proposal"
+          }
+          comparison={view.comparison}
+          onSelect={onSelect}
+        />
+      )}
       {record && (
         <DataSection
           title="DOT flight record"
@@ -71,23 +89,6 @@ export function FlightTab(view: FlightView) {
           <DataRow label="Late-aircraft delay">
             {s.late_aircraft_delay_min} min
           </DataRow>
-        </DataSection>
-      )}
-      {proposal && (
-        <DataSection
-          title={
-            context === "no_legal_option"
-              ? "Last attempt"
-              : plan.recommended
-                ? "Recommended arrival"
-                : "Displayed proposal"
-          }
-        >
-          <DataRow label="Arrival">
-            {relativeMinutes(proposal.arrival_min)}
-          </DataRow>
-          <DataRow label="Runway">{proposal.runway}</DataRow>
-          <DataRow label="Gate">{proposal.gate}</DataRow>
         </DataSection>
       )}
       <p

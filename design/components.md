@@ -4,6 +4,18 @@ Read [the visual direction](README.md) first. This is a specification, not imple
 
 ## Shared primitives
 
+All select fields use the shared `Select` from `@/workspace`: a neutral trigger,
+small chevron, white floating list, subtle hover and a blue selected checkmark.
+Group resource options into Runways and Gates; show closure as a text annotation,
+not a red selection fill or a disabled inspection target. Weather and quality
+options may include one short explanation. Keep control widths aligned per panel.
+
+Menus render outside scrolling panels, choose above/below placement to fit the
+viewport, and scroll internally when needed. Support arrows, Home/End, type-ahead,
+Enter/Space, Escape, Tab and outside-click dismissal. Escape closes the list before
+its containing disclosure. Keep focus on the trigger and use 44px touch targets.
+Use this primitive for scene settings, resource selection and run settings.
+
 | Primitive | Specification |
 | --- | --- |
 | Floating panel | White, 10px radius, one fine border and subtle shadow; 20px padding; accessible title and close action |
@@ -25,6 +37,21 @@ The current API has no server-side scenario search endpoint. Initial search can 
 Scenario changes reset the active run, transient responses, and proposal preview together. Ignore late events from a previous run. Preserve completed traces only if history explicitly identifies their scenario.
 
 ## Airport canvas and tooltip
+
+Gate stand footprints and runway surfaces are selectable, with a quiet hover
+outline and equivalent keyboard-operable labels. Selection opens resource details
+inside the existing Flight inspector: gate windows, runway/taxiway state and
+scheduled arrival slots. Provide a Back to flight action and resource selector.
+Inspecting a resource never assigns it or changes the backend scenario. Keep closed
+and unmapped resources available through the inspector's accessible list.
+
+Proposal summaries show previous → displayed arrival, runway and gate when there
+is an earlier recorded proposal. Label the comparison turn. A historical counter
+compares with its own turn's proposal; a repeated final plan compares with the
+preceding turn. Never infer an initial assignment from narrative text or scenery.
+Both old and new resource values open inspection. Current plan footprints are
+blue; changed previous resources use muted dashed outlines and a Previous label.
+Suppress both plan footprints for `no_legal_option`; manual inspection still works.
 
 Map entities to scenario runway/gate identifiers through a presentation adapter. Selection opens the same inspector used by the scenario list. A compact aircraft tooltip shows flight identity, route, and the selected proposal's arrival/runway/gate if one exists.
 

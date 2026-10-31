@@ -1,6 +1,7 @@
 import { Line } from "@react-three/drei";
 import { Box, Blocks, materials } from "./geometry";
 import type { Block } from "./geometry";
+import { ApronMaterial } from "./apron-material";
 
 const dashes: Block[] = [];
 for (const z of [-158, -218])
@@ -64,12 +65,7 @@ export function Ground({ wet = false }: { wet?: boolean }) {
       />
       <mesh position={[0, -0.04, 20]} scale={[1200, 0.08, 300]} receiveShadow>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial
-          color={wet ? "#62727c" : "#727a7b"}
-          roughness={wet ? 0.34 : 0.96}
-          metalness={wet ? 0.16 : 0}
-          map={materials.apron.map}
-        />
+        <ApronMaterial wet={wet} />
       </mesh>
       {[-158, -218].map((z) => (
         <group key={z}>
