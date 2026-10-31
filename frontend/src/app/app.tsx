@@ -16,7 +16,12 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { AirportScene, demoLayout } from "@/airport";
+import {
+  AirportScene,
+  datasetLayout,
+  demoLayout,
+  stormLayout,
+} from "@/airport";
 import type { AirportLayout } from "@/airport";
 import { FlightTab } from "@/flight";
 import { ScenarioPicker } from "@/scenarios";
@@ -36,16 +41,13 @@ import type { Attempt } from "@/negotiation";
 const tabs = ["Flight", "Negotiation", "History"] as const;
 type Tab = (typeof tabs)[number];
 type SavedRun = { scenario: Scenario; trace: Trace; id: number };
-// Explicit presentation anchors for the bundled storm demos; never inferred from array order.
-const stormLayout: AirportLayout = {
-  runways: demoLayout.runways,
-  gates: { B6: [13, 0, 23], C9: [75, 0, 23] },
-};
+// Explicit presentation anchors per bundled scenario; never inferred from array order.
 const layouts: Record<string, AirportLayout> = {
   "sample-weather-ORD": demoLayout,
   "sample-no-legal-option-ORD": demoLayout,
   "demo-storm-ORD-UA599": stormLayout,
   "demo-storm-ORD-VX204-divert": stormLayout,
+  "demo-hold-ORD-UA599-decision-time": stormLayout,
 };
 const unmappedLayout: AirportLayout = { gates: {}, runways: {} };
 
@@ -61,6 +63,9 @@ export function App() {
   const [datasetOffset, setDatasetOffset] = useState(0);
   const [datasetEnd, setDatasetEnd] = useState(false);
   const [datasetError, setDatasetError] = useState<string | null>(null);
+  const [datasetIds, setDatasetIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
   const [state, dispatch] = useReducer(runReducer, undefined, () => emptyRun());
   const [selected, setSelected] = useState<Attempt | null>(null);
   const [selection, setSelection] = useState<FlightView["selection"]>(null);
@@ -129,6 +134,7 @@ export function App() {
         setDatasetOffset(0);
         setDatasetEnd(false);
         setDatasetError(null);
+        setDatasetIds(new Set());
         setLoading(false);
       })
       .catch((error) => {
@@ -238,6 +244,9 @@ export function App() {
           (s) => !previous.some((p) => p.scenario_id === s.scenario_id),
         ),
       ]);
+      setDatasetIds(
+        (ids) => new Set([...ids, ...more.map((s) => s.scenario_id)]),
+      );
       setDatasetOffset((offset) => offset + more.length);
       setDatasetEnd(more.length < 20);
     } catch (error) {
@@ -312,6 +321,11 @@ export function App() {
             scenarios={scenarios}
             selectedId={scenario.scenario_id}
             onSelect={chooseScenario}
+            status={
+              datasetIds.size
+                ? `Includes ${datasetIds.size} US DOT flights loaded so far, not the whole dataset.`
+                : undefined
+            }
           />
         )}
         <div className="toolbar-end">
@@ -338,7 +352,12 @@ export function App() {
           >
             <AirportScene
               view={view}
-              layout={layouts[view.scenario.scenario_id] ?? unmappedLayout}
+              layout={
+                layouts[view.scenario.scenario_id] ??
+                (datasetIds.has(view.scenario.scenario_id)
+                  ? datasetLayout
+                  : unmappedLayout)
+              }
               inspectorWidth={
                 inspector && viewport >= 900
                   ? viewport >= 1280

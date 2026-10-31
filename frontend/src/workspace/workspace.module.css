@@ -37,6 +37,10 @@
 .row dt {
   color: var(--color-text-secondary);
 }
+.row dt small {
+  display: block;
+  font-size: var(--font-size-caption);
+}
 .row dd {
   margin: 0;
   text-align: right;

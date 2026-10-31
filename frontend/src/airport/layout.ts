@@ -13,6 +13,27 @@ export const demoLayout: AirportLayout = {
   runways: { "27L": [0, 0, -158], "27R": [0, 0, -218] },
 };
 
+/** Anchors for the bundled UA599/VX204 storm demos and their illustrations. */
+export const stormLayout: AirportLayout = {
+  gates: { B6: [13, 0, 23], C9: [75, 0, 23] },
+  runways: demoLayout.runways,
+};
+
+// The backend invents these names for /dot/scenarios (data.py: _runway_pair and
+// the fixed gates), so they say nothing about the real airport.
+const datasetHeadings = ["04", "09", "13", "17", "22", "27", "31", "36"];
+
+/** Illustrative anchors for /dot/scenarios; keep separate from demoLayout. */
+export const datasetLayout: AirportLayout = {
+  gates: { A1: [-49, 0, 23], A4: [13, 0, 23], B7: [75, 0, 23] },
+  runways: Object.fromEntries(
+    datasetHeadings.flatMap((heading): [string, Point][] => [
+      [`${heading}L`, [0, 0, -158]],
+      [`${heading}R`, [0, 0, -218]],
+    ]),
+  ),
+};
+
 export function resolveScene(view: FlightView, layout: AirportLayout) {
   const { scenario, proposal, selection } = view;
   const plan = displayPlan(view);

@@ -3,35 +3,76 @@ import {
   DataRow,
   DataSection,
   displayPlan,
+  provenanceLabel,
+  recordedFlight,
   relativeMinutes,
 } from "@/workspace";
-import type { FlightView } from "@/workspace";
+import type { FlightView, Scenario } from "@/workspace";
 import styles from "./flight.module.css";
+
+function Airport({
+  code,
+  info,
+}: {
+  code: string;
+  info: Scenario["origin_info"];
+}) {
+  return (
+    <div>
+      <strong>{info ? <abbr title={info.name}>{code}</abbr> : code}</strong>
+      <span>
+        {info ? `${info.city}, ${info.state}` : "Airport metadata unavailable"}
+      </span>
+    </div>
+  );
+}
 
 export function FlightTab(view: FlightView) {
   const { scenario: s, proposal, context, selection, onSelect } = view;
   const plan = displayPlan(view);
   const margin = s.fuel_endurance_min - s.final_reserve_min;
+  const record = recordedFlight(s);
+  // A hand-written sample is labelled once above; marking rows would tag every value.
+  const synthetic = (field: keyof Scenario) =>
+    record && s.synthetic_fields?.includes(field) ? "Synthetic" : undefined;
   return (
     <div className={styles.flight}>
       <div className={styles.route}>
-        <div>
-          <strong>{s.origin}</strong>
-          <span>{s.origin_info?.city ?? "Airport metadata unavailable"}</span>
-        </div>
+        <Airport code={s.origin} info={s.origin_info} />
         <ArrowRight size={18} />
-        <div>
-          <strong>{s.destination}</strong>
-          <span>
-            {s.destination_info?.city ?? "Airport metadata unavailable"}
-          </span>
-        </div>
+        <Airport code={s.destination} info={s.destination_info} />
       </div>
       <p className={styles.airline}>{s.airline_name ?? s.airline}</p>
+      <p className={styles.source}>{provenanceLabel(s)}</p>
       <section className={styles.disruption}>
         <h3>Disruption</h3>
         <p>{s.disruption}</p>
+        {synthetic("disruption") && (
+          <small>
+            Synthetic description. Delay minutes come from the DOT record.
+          </small>
+        )}
       </section>
+      {record && (
+        <DataSection
+          title="DOT flight record"
+          note="US DOT 2015 data · arrival relative to schedule"
+        >
+          <DataRow label="Date">{record.date}</DataRow>
+          <DataRow label="Scheduled arrival">
+            {s.scheduled_arrival_hhmm} local
+          </DataRow>
+          <DataRow label="Actual arrival">
+            {record.arrivalDelayMin === null
+              ? "Unavailable"
+              : relativeMinutes(record.arrivalDelayMin)}
+          </DataRow>
+          <DataRow label="Weather delay">{s.weather_delay_min} min</DataRow>
+          <DataRow label="Late-aircraft delay">
+            {s.late_aircraft_delay_min} min
+          </DataRow>
+        </DataSection>
+      )}
       {proposal && (
         <DataSection
           title={
@@ -80,26 +121,39 @@ export function FlightTab(view: FlightView) {
         title="Flight constraints"
         note="Times relative to scheduled arrival"
       >
-        <DataRow label="Earliest arrival">
+        <DataRow
+          label="Earliest arrival"
+          note={synthetic("earliest_arrival_min")}
+        >
           {relativeMinutes(s.earliest_arrival_min)}
         </DataRow>
         <DataRow
           label={margin < 0 ? "Fuel reserve deficit" : "Holding budget"}
           tone={margin < 0 ? "danger" : undefined}
+          note={synthetic("fuel_endurance_min")}
         >
           {Math.abs(margin)} min
         </DataRow>
-        <DataRow label="Connecting passengers">
+        <DataRow label="Connecting passengers" note={synthetic("connections")}>
           {(s.connections ?? []).reduce((n, c) => n + c.passengers, 0)}
         </DataRow>
-        <DataRow label="Crew shift ends">
+        <DataRow
+          label="Crew shift ends"
+          note={synthetic("crew_shift_ends_min")}
+        >
           {relativeMinutes(s.crew_shift_ends_min)}
         </DataRow>
-        <DataRow label="Turnaround">{s.turnaround_min} min</DataRow>
+        <DataRow label="Turnaround" note={synthetic("turnaround_min")}>
+          {s.turnaround_min} min
+        </DataRow>
       </DataSection>
       <section className={styles.entities}>
         <h3>Airport resources</h3>
-        <p>Choose a resource to inspect it in the scene.</p>
+        <p>
+          Choose a resource to inspect it in the scene.
+          {(synthetic("runways") || synthetic("gates")) &&
+            " Runways and gates are synthetic, not this airport's real layout."}
+        </p>
         <button
           className={styles.entity}
           onClick={() => onSelect({ kind: "flight", id: s.flight })}

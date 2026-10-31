@@ -3,6 +3,7 @@ import { afterEach, describe, it, expect, vi } from "vitest";
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import type { FlightView, Scenario } from "@/workspace";
+import storm from "../../../scenarios/demo_storm_ua599.json";
 import weather from "../../../scenarios/sample_weather.json";
 import { FlightTab } from "./flight";
 
@@ -98,5 +99,29 @@ describe("Flight content", () => {
       screen.getByText("everything: hand-written demo scenario"),
     ).toBeVisible();
     expect(screen.getByText(/Geometry, aircraft placement/)).toBeVisible();
+  });
+  it("separates a DOT flight's recorded facts from its synthetic values", () => {
+    render(<FlightTab {...view} scenario={storm as Scenario} />);
+    const row = (label: string) => screen.getByText(label).closest("div")!;
+    expect(screen.getByText("US DOT flight · 8 May 2015")).toBeInTheDocument();
+    expect(row("Scheduled arrival")).toHaveTextContent("17:55 local");
+    expect(row("Actual arrival")).toHaveTextContent("+88 min");
+    expect(row("Holding budget")).toHaveTextContent("Synthetic");
+    expect(row("Connecting passengers")).toHaveTextContent("Synthetic");
+    expect(row("Earliest arrival")).not.toHaveTextContent("Synthetic");
+    expect(
+      screen.getByText(/Runways and gates are synthetic/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTitle("Gen. Edward Lawrence Logan International Airport"),
+    ).toHaveTextContent("BOS");
+  });
+  it("labels a hand-written sample once instead of marking every value", () => {
+    render(<FlightTab {...view} />);
+    expect(
+      screen.getByText("Hand-written sample · not from the dataset"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("DOT flight record")).not.toBeInTheDocument();
+    expect(screen.queryByText("Synthetic")).not.toBeInTheDocument();
   });
 });

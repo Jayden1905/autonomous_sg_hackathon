@@ -56,7 +56,7 @@ npm test
 npm run build
 ```
 
-Daniel's original component preview remains at `http://127.0.0.1:5173/preview.html` during development. It works without the backend or external model/font/HDRI downloads. The bottom-left **Review states** control loads recorded backend fixtures for consensus, fallback and no legal option. **Load mock result** loads a recording; it does not start a negotiation or issue an airport command.
+Daniel's original component preview remains at `http://127.0.0.1:5173/preview.html` during development. It works without the backend or external model/font/HDRI downloads, using the bundled `scenarios/*.json`. The bottom-left **Review states** control loads recorded backend fixtures for consensus, fallback and no legal option. **Load mock result** loads a recording; it does not start a negotiation or issue an airport command. Recordings exist for the hand-written samples only, so the button is disabled for other flights.
 
 ## Scope and integration with Bill
 
@@ -66,7 +66,7 @@ The frontend setup and interface below are proposed integration defaults, not a 
 
 | Public module | Exports / responsibility |
 | --- | --- |
-| `@/airport` | `AirportScene`, `AirportLayout`, `demoLayout`: renderer, camera controls, illustrative anchor mapping, tooltip and scene selection |
+| `@/airport` | `AirportScene`, `AirportLayout`, `demoLayout`, `stormLayout`, `datasetLayout`: renderer, camera controls, illustrative anchor mapping, tooltip and scene selection |
 | `@/flight` | `FlightTab`: inspector content only; accepts the shared `FlightView` |
 | `@/scenarios` | `ScenarioPicker`: searches only supplied scenarios; emits the selected `Scenario` |
 | `@/workspace` | Generated contract aliases, `FlightView`, display semantics, and small reusable controls/data rows |
@@ -100,7 +100,9 @@ On scenario changes, Bill must reset proposal, evaluation, selection and histori
 
 ## Mapping and decision semantics
 
-`AirportLayout` explicitly maps resource IDs to presentation anchors. `demoLayout` covers the two original bundled ORD scenarios. It does not infer geography from an airport code or assign unfamiliar IDs by array position. Pass an explicit layout for another scenario. Unmapped names remain in the Flight resource list and an on-canvas notice; Focus is disabled for unmapped gate/runway selections.
+`AirportLayout` explicitly maps resource IDs to presentation anchors. `demoLayout` covers the hand-written ORD samples and `stormLayout` the bundled UA599/VX204 demos. `datasetLayout` covers the runway pairs and gates A1/A4/B7 that the backend generates for `/dot/scenarios`; those names are synthetic, not the real airport's, and the app applies this layout only to scenarios it loaded from that endpoint. No layout infers geography from an airport code or assigns unfamiliar IDs by array position. Pass an explicit layout for another scenario. Unmapped names remain in the Flight resource list and an on-canvas notice; Focus is disabled for unmapped gate/runway selections.
+
+Every scenario is labelled by provenance: a **US DOT flight** with its date when `source` holds the DOT row, otherwise a **hand-written sample · not from the dataset**. The Flight tab shows the DOT record (date, scheduled arrival in local time, actual arrival, delay causes) and marks each value listed in `synthetic_fields` as **Synthetic**. The disruption label names every delay cause the scenario logs rather than assuming weather.
 
 Before a proposal, the aircraft has a neutral illustrative location, with earliest arrival and unassigned runway/gate text. A proposal preview may emphasize its mapped resources, but does not imply an actual landing or occupied gate. `consensus` and `fallback` receive recommendation styling only with a matching, feasible backend evaluation. `no_legal_option` never receives plan emphasis; an inspected final value is labelled **Last attempt · not a recommendation**, with human-decision text and failed hard rules. Manual resource selection remains possible and separate from plan emphasis.
 

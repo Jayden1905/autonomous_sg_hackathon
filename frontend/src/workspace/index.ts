@@ -7,5 +7,12 @@ export type {
   ViewContext,
   FlightView,
 } from "./types";
-export { relativeMinutes, contextLabel, displayPlan } from "./presentation";
+export {
+  relativeMinutes,
+  contextLabel,
+  displayPlan,
+  recordedFlight,
+  provenanceLabel,
+  disruptionLabel,
+} from "./presentation";
 export { IconButton, DataRow, DataSection } from "./controls";
