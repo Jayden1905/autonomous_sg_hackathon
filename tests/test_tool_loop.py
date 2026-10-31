@@ -295,3 +295,39 @@ def test_mock_replies_are_cited():
         assert markers(t.proposal.rationale) and all(e.citation for e in t.proposal.evidence)
         for r in t.responses.values():
             assert markers(r.summary) and all(e.citation and e.grounded for e in r.evidence)
+
+
+MOVES = Path(__file__).parent.parent / "scenarios" / "demo_storm_aa1453_moves.json"
+
+
+def test_each_agent_sees_only_its_own_moves_until_one_is_on_the_table():
+    from atc_negotiation.agents import _scenario_brief
+    s = Scenario.model_validate_json(MOVES.read_text())
+    atc, ground = _scenario_brief(s, "atc"), _scenario_brief(s, "ground")
+    assert "atc.resequence_heavy" in atc and "ground.tow_a1" not in atc and "pilot.absorb_en_route" not in atc
+    assert "ground.tow_a1" in ground and "atc.resequence_heavy" not in ground
+    tr = negotiate(s, make_agents(mock=True, resources=Resources()), max_turns=1)
+    tabled = Proposal(arrival_min=55, runway="27R", gate="A1", moves=["ground.tow_a1"], rationale="")
+    later = _scenario_brief(s, "atc", [tr.turns[0].model_copy(update={"proposal": tabled})])
+    assert "Moves other agents have put on the table:\n- ground.tow_a1" in later
+
+
+def test_scripted_agents_combine_moves_from_two_owners():
+    s = Scenario.model_validate_json(MOVES.read_text())
+    tr = negotiate(s, make_agents(mock=True, resources=Resources()))
+    assert tr.outcome == "consensus" and tr.final_evaluation.feasible
+    assert {m.split(".")[0] for m in tr.final.moves} >= {"ground", "atc"}
+    assert "moves ground.tow_a1" in history_brief(tr.turns)
+
+
+def test_a_plan_with_moves_must_be_checked_with_those_moves():
+    s = Scenario.model_validate_json(MOVES.read_text())
+    tb = Toolbox(scenario=s, sql=None, lookup=None)
+    tb.run("check_proposal", {"arrival_min": 56, "runway": "27R", "gate": "A1", "moves": []})
+    agent = LLMAgent("atc", Resources(), client=SimpleNamespace(), depth=Depth(min_metrics=0, min_lookups=0))
+    plan = Proposal(arrival_min=56, runway="27R", gate="A1", moves=["ground.tow_a1", "atc.resequence_heavy"],
+                    rationale="")
+    assert any("check_proposal the exact plan" in g for g in agent._depth_gaps(plan, tb))
+    tb.run("check_proposal", {"arrival_min": 56, "runway": "27R", "gate": "A1",
+                              "moves": ["atc.resequence_heavy", "ground.tow_a1"]})
+    assert agent._depth_gaps(plan, tb) == []

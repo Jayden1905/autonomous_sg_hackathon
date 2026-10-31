@@ -2208,6 +2208,121 @@
         ],
         "title": "Metric"
       },
+      "Move": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "e.g. 'ground.tow_a1'"
+          },
+          "owner": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Owner"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "e.g. 'Tow the aircraft off A1 early'"
+          },
+          "effect": {
+            "$ref": "#/components/schemas/MoveEffect"
+          },
+          "cost": {
+            "type": "number",
+            "title": "Cost",
+            "description": "Soft cost, same units as the rule engine's other costs"
+          },
+          "private": {
+            "type": "boolean",
+            "title": "Private",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "owner",
+          "label",
+          "effect",
+          "cost"
+        ],
+        "title": "Move",
+        "description": "An option only one organisation holds, e.g. Ground can tow an aircraft off a gate early.\n\nEach agent's brief lists only its own moves; the others learn of a move when a plan uses it.\nThe rule engine applies a plan's moves, then checks every rule as usual: no move relaxes a hard rule."
+      },
+      "MoveEffect": {
+        "properties": {
+          "gate_free_from": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Free From",
+            "description": "{\"gate\": \"A1\", \"free_from_min\": 40}"
+          },
+          "crew_shift_ends_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crew Shift Ends Min"
+          },
+          "fuel_gain_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Gain Min",
+            "description": "Extra endurance at arrival from absorbing delay en route (speed reduction) instead of holding"
+          },
+          "arrival_moved": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival Moved",
+            "description": "{\"runway\": \"27R\", \"from_min\": 61, \"to_min\": 75}"
+          },
+          "runway_opens": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runway Opens",
+            "description": "{\"runway\": \"27L\", \"open_from_min\": 70}"
+          }
+        },
+        "type": "object",
+        "title": "MoveEffect",
+        "description": "What a move changes in the scenario before the rules run. Exactly one field is set."
+      },
       "NegotiateRequest": {
         "properties": {
           "scenario": {
@@ -2431,6 +2546,14 @@
             "type": "string",
             "title": "Gate"
           },
+          "moves": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Moves",
+            "description": "Ids of Scenario.moves this plan relies on. The rule engine applies them before checking"
+          },
           "rationale": {
             "type": "string",
             "title": "Rationale",
@@ -2479,6 +2602,14 @@
           "gate": {
             "type": "string",
             "title": "Gate"
+          },
+          "moves": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Moves",
+            "description": "Ids of Scenario.moves this plan relies on. The rule engine applies them before checking"
           },
           "rationale": {
             "type": "string",
@@ -3089,6 +3220,14 @@
             "type": "integer",
             "title": "Max Arrival Min",
             "default": 180
+          },
+          "moves": {
+            "items": {
+              "$ref": "#/components/schemas/Move"
+            },
+            "type": "array",
+            "title": "Moves",
+            "description": "Options each organisation holds privately; a plan may use them via Proposal.moves"
           },
           "source": {
             "additionalProperties": true,

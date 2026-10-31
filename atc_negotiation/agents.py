@@ -25,6 +25,7 @@ sees the same event shapes, but no LLM.
 
 from __future__ import annotations
 
+import itertools
 import os
 from dataclasses import dataclass, field
 from typing import Callable, Protocol
@@ -35,11 +36,12 @@ from . import fallback
 from .grounding import Grounder, Ledger
 from .guardrails import Guardrails, holders_of
 from .metrics import MetricCatalog, build_catalog
+from .rules import evaluate
 from .schemas import (AgentResponse, Evaluation, Evidence, GuardrailReport, Proposal, RunStats, Scenario, ToolCall,
                       TurnRecord, Verdict)
 from .sqlengine import SqlEngine, dataset_available
 from .sqlengine import default_engine as default_sql_engine
-from .tools import SUBMIT_PROPOSAL, SUBMIT_RESPONSE, Toolbox, ToolOutcome, evaluation_brief, tool_defs
+from .tools import SUBMIT_PROPOSAL, SUBMIT_RESPONSE, Toolbox, ToolOutcome, evaluation_brief, plan_key, tool_defs
 
 DEFAULT_MODEL = os.environ.get("ATC_MODEL", "claude-opus-5-5")
 # Effort per LLM call. "low" keeps a full 3-turn negotiation to a few minutes; raise for quality runs.
@@ -63,6 +65,17 @@ Protocol:
 - Read the negotiation so far and answer the other agents' objections, not
   just the plan.
 - Finish every action by calling submit_proposal or submit_response exactly once.
+
+Moves (when the scenario lists "Your private moves"):
+- A move is an option only your organisation holds (tow an aircraft off a gate,
+  slow the cruise, swap the landing order). The others do not know your moves
+  until a plan uses one. Each has a cost to your domain.
+- A plan lists the move ids it relies on in `moves`. The rule engine applies
+  them, then checks every rule as usual: no move relaxes a safety rule.
+- When the plan on the table fails and slot, runway and gate alone cannot fix
+  it, offer one of your moves in a counter, or ask the owner of the constraint
+  in your objection. Use another agent's move only once it is on the table.
+- Offer a move only when it is needed; prefer the cheapest set that works.
 
 Grounding (the semantic model below is the vocabulary of this negotiation):
 - Speak in the model's terms: its concepts, metric names and rule ids.
@@ -182,8 +195,28 @@ class Agent(Protocol):
     def respond(self, s: Scenario, p: Proposal, ev: Evaluation, ctx: ActionContext) -> AgentResponse: ...
 
 
-def _scenario_brief(s: Scenario) -> str:
-    return s.model_dump_json(indent=1, exclude={"origin_info", "destination_info"})
+def _scenario_brief(s: Scenario, role: str, history: list[TurnRecord] = ()) -> str:
+    """The shared picture, plus this agent's own moves and any move another agent has used in a plan."""
+    text = s.model_dump_json(indent=1, exclude={"origin_info", "destination_info", "moves"})
+    own = [m for m in s.moves if m.owner == role or not m.private]
+    used = {i for t in history for p in [t.proposal, *(r.counter for r in t.responses.values() if r.counter)]
+            for i in p.moves}
+    shared = [m for m in s.moves if m.id in used and m not in own]
+    if own:
+        text += "\n\nYour private moves (the other agents don't know these until a plan uses one):\n"
+        text += "\n".join(_move_line(m) for m in own)
+    if shared:
+        text += "\n\nMoves other agents have put on the table:\n" + "\n".join(_move_line(m) for m in shared)
+    return text
+
+
+def _move_line(m) -> str:
+    effect = ", ".join(f"{k}={v}" for k, v in m.effect.model_dump(exclude_none=True).items())
+    return f"- {m.id} ({m.owner}): {m.label}. Effect: {effect}. Cost {m.cost:g}"
+
+
+def _plan(p: Proposal) -> str:
+    return f"t+{p.arrival_min}, rwy {p.runway}, gate {p.gate}" + (f", moves {', '.join(p.moves)}" if p.moves else "")
 
 
 def history_brief(history: list[TurnRecord]) -> str:
@@ -192,7 +225,7 @@ def history_brief(history: list[TurnRecord]) -> str:
     lines = ["Negotiation so far:"]
     for t in history:
         p = t.proposal
-        lines.append(f"Turn {t.turn}: {t.proposer} proposed t+{p.arrival_min}, rwy {p.runway}, gate {p.gate} "
+        lines.append(f"Turn {t.turn}: {t.proposer} proposed {_plan(p)} "
                      f"({'feasible' if t.evaluation.feasible else 'INFEASIBLE'}, cost {t.evaluation.cost:g}). "
                      f"Rationale: {p.rationale}")
         lines += [f"  [{e.id}] {e.claim} ({e.source}{'' if e.grounded else ', UNVERIFIED'})" for e in p.evidence]
@@ -201,7 +234,7 @@ def history_brief(history: list[TurnRecord]) -> str:
             if r.counter:
                 c = r.counter
                 ce = t.counter_evaluations.get(name)
-                line += (f", counter t+{c.arrival_min}, rwy {c.runway}, gate {c.gate}"
+                line += (f", counter {_plan(c)}"
                          + (f" ({'feasible' if ce.feasible else 'INFEASIBLE'}, cost {ce.cost:g})" if ce else ""))
             lines.append(line + (f": {r.summary}" if r.summary else ""))
             lines += [f"    objection: {o}" for o in r.objections]
@@ -245,7 +278,7 @@ class LLMAgent:
         self.system = "\n\n".join(x for x in (SHARED_RULES, ROLE_PROMPTS[name], data, _semantic_brief(name)) if x)
 
     def propose(self, s: Scenario, feedback: Evaluation | None, ctx: ActionContext) -> Proposal:
-        task = "Propose a revised arrival slot, runway and gate."
+        task = "Propose a revised arrival slot, runway and gate (and any of your moves the plan needs)."
         if feedback is not None:
             task = (f"Your last proposal was rejected. Rule engine output:\n{evaluation_brief(feedback)}\n\n"
                     + task)
@@ -270,7 +303,7 @@ class LLMAgent:
         repairs = 0
         tools = tool_defs(terminal, self.resources.catalog if self.resources.sql else None)
         messages: list[dict] = [{"role": "user", "content": (
-            f"Scenario:\n{_scenario_brief(s)}\n\n{history_brief(ctx.history)}\n\n{task}\n\n"
+            f"Scenario:\n{_scenario_brief(s, self.name, ctx.history)}\n\n{history_brief(ctx.history)}\n\n{task}\n\n"
             f"You have at most {self.max_steps} steps; finish with {terminal['name']}.")}]
 
         for step in range(1, self.max_steps + 1):
@@ -327,9 +360,8 @@ class LLMAgent:
         if toolbox.lookup is not None and led.lookups < d.min_lookups:
             gaps.append(f"lookup_concept at least {d.min_lookups} rule or concept your decision rests on")
         plan = answer if isinstance(answer, Proposal) else answer.counter
-        if d.check_submitted_plan and plan is not None and \
-                (plan.arrival_min, plan.runway, plan.gate) not in led.plans_checked:
-            gaps.append(f"check_proposal the exact plan you submit (t+{plan.arrival_min}, {plan.runway}, {plan.gate})")
+        if d.check_submitted_plan and plan is not None and plan_key(plan) not in led.plans_checked:
+            gaps.append(f"check_proposal the exact plan you submit ({_plan(plan)})")
         return gaps
 
     @staticmethod
@@ -422,11 +454,11 @@ class MockAgent:
             plan = Proposal(arrival_min=s.earliest_arrival_min, runway=s.runways[0].name,
                             gate=s.gates[0].name, rationale="Earliest slot, first runway and gate.")
         else:
-            best = fallback.solve(s)
+            best = _mock_best(s, self.name, ctx.history)
             plan = best.proposal.model_copy() if best else Proposal(
                 arrival_min=s.earliest_arrival_min, runway=s.runways[0].name, gate=s.gates[0].name,
                 rationale="No feasible option found.")
-        self._run(tb, ctx, "check_proposal", plan.model_dump(include={"arrival_min", "runway", "gate"}))
+        self._run(tb, ctx, "check_proposal", plan.model_dump(include={"arrival_min", "runway", "gate", "moves"}))
         plan.evidence = [Evidence(claim=f"Earliest possible arrival is t+{s.earliest_arrival_min}",
                                   source="scenario:earliest_arrival_min"),
                          Evidence(claim="The rule engine checked this plan", source="check_proposal"), *evidence]
@@ -441,9 +473,8 @@ class MockAgent:
         tb.ledger.saw("task", evaluation_brief(ev))
         own = [r for r in ev.results if r.domain == self.name and (not r.passed or r.cost)]
         own_cost = sum(r.cost for r in own)
-        best = fallback.solve(s)
-        same = best is not None and best.proposal.model_dump(include={"arrival_min", "runway", "gate"}) \
-            == p.model_dump(include={"arrival_min", "runway", "gate"})
+        best = _mock_best(s, self.name, [*ctx.history, _on_table(p)])
+        same = best is not None and plan_key(best.proposal) == plan_key(p)
         if ev.feasible and (own_cost == 0 or same):
             r = AgentResponse(verdict=Verdict.ACCEPT,
                               summary=("The plan is feasible and costs my domain nothing [1]." if own_cost == 0 else
@@ -454,7 +485,7 @@ class MockAgent:
             return r
         counter = None
         if best is not None:
-            self._run(tb, ctx, "check_proposal", best.proposal.model_dump(include={"arrival_min", "runway", "gate"}))
+            self._run(tb, ctx, "check_proposal", best.proposal.model_dump(include={"arrival_min", "runway", "gate", "moves"}))
             counter = best.proposal.model_copy(update={
                 "rationale": f"{best.proposal.rationale.rstrip('.')} [1].",
                 "evidence": [Evidence(claim=f"Rule engine: feasible, soft cost {best.cost:g}",
@@ -500,6 +531,34 @@ class MockAgent:
         ctx.record(_tool_call(ctx, self.name, 1, tool, args, out))
         ctx.stats.tool_calls += 1
         return out
+
+
+def _on_table(p: Proposal) -> TurnRecord:
+    """The plan being answered, as a history entry, so its moves count as on the table."""
+    return TurnRecord.model_construct(proposal=p, responses={})
+
+
+def _mock_best(s: Scenario, role: str, history) -> Evaluation | None:
+    """Scripted agent's plan: the solver's answer, using only moves this agent can see (its own, and
+    any already on the table). When nothing is legal with those, it puts forward the plan with its own
+    moves that fails the fewest hard rules, so the others learn the move exists. No moves: the solver."""
+    if not s.moves:
+        return fallback.solve(s)
+    used = {i for t in history for q in [t.proposal, *(r.counter for r in t.responses.values() if r.counter)]
+            for i in q.moves}
+    visible = [m.id for m in s.moves if m.owner == role or not m.private or m.id in used]
+    best, best_key = None, None
+    for k in range(len(visible) + 1):
+        for subset in itertools.combinations(visible, k):
+            for t in range(s.earliest_arrival_min, s.max_arrival_min + 1):
+                for rwy in s.runways:
+                    for gate in s.gates:
+                        ev = evaluate(s, Proposal(arrival_min=t, runway=rwy.name, gate=gate.name, moves=list(subset),
+                                                  rationale="Cheapest option with the moves on the table."))
+                        key = (not ev.feasible, len(ev.hard_failures), ev.cost)
+                        if best_key is None or key < best_key:
+                            best, best_key = ev, key
+    return best if best is not None and (best.feasible or best.proposal.moves) else None
 
 
 def make_agents(mock: bool = False, model: str = DEFAULT_MODEL, resources: Resources | None = None,

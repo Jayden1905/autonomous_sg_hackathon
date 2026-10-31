@@ -176,5 +176,89 @@ def ground_rules(s: Scenario, p: Proposal) -> list[RuleResult]:
     return out
 
 
+# ── agent moves: actions an agent can offer beyond choosing slot, runway and gate ──
+# A move changes the situation (frees a gate early, extends a shift, re-sequences an arrival,
+# reopens a runway, absorbs delay en route so less is burned holding). evaluate() applies the plan's moves to a copy
+# of the scenario and then runs every rule above unchanged: a move can create room, it can
+# never relax a safety rule. Each move costs what its owner says it costs.
+MOVE_KINDS = ("gate_free_from", "crew_shift_ends_min", "fuel_gain_min", "arrival_moved", "runway_opens")
+
+
+def _field(obj, name, default=None):
+    """Read a field from a pydantic model or a dict, so moves work before and after schema fields exist."""
+    if isinstance(obj, dict):
+        return obj.get(name, default)
+    return getattr(obj, name, default)
+
+
+def apply_moves(s: Scenario, move_ids: list[str]) -> tuple[Scenario, list[RuleResult], dict[str, int]]:
+    """The scenario as it would be after the moves, one result per move (known? what it costs), and
+    the reopening time of any runway a move reopened."""
+    catalogue = {_field(m, "id"): m for m in (_field(s, "moves", None) or [])}
+    s2 = s.model_copy(deep=True)
+    results: list[RuleResult] = []
+    reopens: dict[str, int] = {}
+    for mid in move_ids:
+        m = catalogue.get(mid)
+        if m is None:
+            # Charge it to the role its id names (moves are '<role>.<name>'); ATC owns the plan otherwise.
+            role = mid.split(".", 1)[0] if mid.split(".", 1)[0] in ("atc", "pilot", "ground") else "atc"
+            results.append(_rr("plan.move_known", domain=role, passed=False, hard=True,
+                               detail=f"move {mid!r} is not available in this situation"))
+            continue
+        owner, label = _field(m, "owner", "shared"), _field(m, "label", mid)
+        e = _field(m, "effect", {}) or {}
+        note = _apply_effect(s2, e, reopens)
+        results.append(_rr("plan.move_known", domain=owner, passed=True, hard=True,
+                           detail=f"{owner} move {mid}: {label}"))
+        results.append(_rr("plan.move_cost", domain=owner, passed=True, hard=False,
+                           detail=f"{owner} move {mid}: {label}; {note}",
+                           cost=float(_field(m, "cost", 0.0) or 0.0)))
+    return s2, results, reopens
+
+
+def _apply_effect(s: Scenario, e, reopens: dict[str, int]) -> str:
+    if (g := _field(e, "gate_free_from")) is not None:
+        gate = next((x for x in s.gates if x.name == g["gate"]), None)
+        if gate is not None:
+            gate.free_from_min = int(g["free_from_min"])
+            return f"gate {gate.name} free from t={gate.free_from_min}"
+    if (t := _field(e, "crew_shift_ends_min")) is not None:
+        s.crew_shift_ends_min = int(t)
+        return f"crew shift extended to t={s.crew_shift_ends_min}"
+    if (f := _field(e, "fuel_gain_min")) is not None:
+        # Absorbing delay en route at reduced speed burns less than holding: more endurance at arrival.
+        s.fuel_endurance_min += max(0, int(f))
+        return f"delay absorbed en route at reduced speed: +{max(0, int(f))} min endurance (final reserve unchanged)"
+    if (a := _field(e, "arrival_moved")) is not None:
+        rwy = next((r for r in s.runways if r.name == a["runway"]), None)
+        hit = rwy and next((x for x in rwy.arrivals if x.time_min == int(a["from_min"])), None)
+        if hit:
+            hit.time_min = int(a["to_min"])
+            return f"{hit.category.name.lower()} on {rwy.name} re-sequenced from t={a['from_min']} to t={a['to_min']}"
+    if (o := _field(e, "runway_opens")) is not None:
+        rwy = next((r for r in s.runways if r.name == o["runway"]), None)
+        if rwy is not None:
+            reopens[rwy.name] = int(o["open_from_min"])
+            rwy.open = True
+            return f"runway {rwy.name} reopened from t={o['open_from_min']}"
+    return "no effect"
+
+
+def _runway_reopen_rules(p: Proposal, reopens: dict[str, int]) -> list[RuleResult]:
+    """A reopened runway is only usable from its reopening time."""
+    t = reopens.get(p.runway)
+    if t is None:
+        return []
+    return [_rr("atc.runway_open", domain="atc", passed=p.arrival_min >= t, hard=True,
+                detail=f"{p.runway} reopens at t={t}, arrival t={p.arrival_min}")]
+
+
 def evaluate(s: Scenario, p: Proposal) -> Evaluation:
-    return Evaluation(proposal=p, results=atc_rules(s, p) + pilot_rules(s, p) + ground_rules(s, p))
+    move_ids = list(_field(p, "moves", None) or [])
+    move_results: list[RuleResult] = []
+    reopens: dict[str, int] = {}
+    if move_ids:
+        s, move_results, reopens = apply_moves(s, move_ids)
+    return Evaluation(proposal=p, results=move_results + atc_rules(s, p) + _runway_reopen_rules(p, reopens)
+                      + pilot_rules(s, p) + ground_rules(s, p))

@@ -444,6 +444,29 @@ rules:
     source: brief:c2:ground
     enforced_by: rules.ground_rules
 
+  # Plan: moves an agent offers beyond slot, runway and gate
+  - id: plan.move_known
+    kind: constraint
+    hard: true
+    domain: shared
+    subjects: [ArrivalSlot]
+    text: >-
+      A plan may only rely on moves that exist in this situation (tow a parked aircraft, extend a crew
+      shift, absorb delay en route, re-sequence an arrival, reopen a runway). A move changes the situation
+      the rules are checked against; it never relaxes a safety rule.
+    source: brief:c2:description
+    enforced_by: rules.evaluate
+  - id: plan.move_cost
+    kind: threshold
+    hard: false
+    domain: shared
+    subjects: [ArrivalSlot]
+    text: >-
+      Each move costs what its owner says it costs (a tug crew, standby crew overtime, a re-sequenced
+      flight's delay). The cost is the owner's, and is added to the plan.
+    source: brief:c2:want
+    enforced_by: rules.evaluate
+
   # Data
   - id: data.disruption_filter
     kind: constraint

@@ -55,6 +55,9 @@ _PLAN_PROPS = {
     "arrival_min": {"type": "integer", "description": "Minutes after scheduled arrival"},
     "runway": {"type": "string"},
     "gate": {"type": "string"},
+    "moves": {"type": "array", "items": {"type": "string"}, "description": (
+        "Ids of moves the plan relies on: yours from 'Your private moves', or ones another agent has put on "
+        "the table. Empty if none. The rule engine applies them, then checks every rule as usual")},
 }
 _PROPOSAL_PROPS = {
     **_PLAN_PROPS,
@@ -208,7 +211,7 @@ class Toolbox:
     def _check(self, args: dict) -> ToolOutcome:
         ev = evaluate(self.scenario, Proposal(**args, rationale="draft"))
         self.ledger.checked_plan = True
-        self.ledger.plans_checked.add((args["arrival_min"], args["runway"], args["gate"]))
+        self.ledger.plans_checked.add(plan_key(Proposal(**args, rationale="draft")))
         text = evaluation_brief(ev, self.semantic)
         self.ledger.saw("check_proposal", text)
         return ToolOutcome(text, model_refs=rule_refs(ev.results))
@@ -232,6 +235,11 @@ class Toolbox:
             elif term in self.semantic.passage_by_id:
                 refs.append(f"passage:{term}")
         return ToolOutcome(hit, model_refs=refs)
+
+
+def plan_key(p: Proposal) -> tuple:
+    """What makes two plans the same plan: slot, runway, gate and the moves it uses."""
+    return p.arrival_min, p.runway, p.gate, tuple(sorted(set(p.moves)))
 
 
 def evaluation_brief(ev, semantic=None) -> str:

@@ -1,0 +1,201 @@
+{
+  "scenario_id": "demo-storm-ORD-AA1453-moves",
+  "flight": "AA1453",
+  "airline": "AA",
+  "airline_name": "American Airlines Inc.",
+  "origin": "CLT",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "CLT",
+    "name": "Charlotte Douglas International Airport",
+    "city": "Charlotte",
+    "state": "NC",
+    "country": "USA",
+    "latitude": 35.21401,
+    "longitude": -80.94313
+  },
+  "destination_info": {
+    "iata": "ORD",
+    "name": "Chicago O'Hare International Airport",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "latitude": 41.9796,
+    "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "17:23",
+  "disruption": "Thunderstorm over O'Hare, 8 May 2015. Runway 27L closed; arrivals re-sequenced onto 27R behind a stream of heavies. AA1453 left Charlotte 48 min late on weather and is low on fuel. Its gate A1 is still occupied by a parked aircraft, and the only other gate (K4) is needed again before it could get there. No slot, runway and gate works on its own: something has to give, and each organisation holds options only it knows about.",
+  "weather_delay_min": 48,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 48,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 52,
+  "final_reserve_min": 30,
+  "connections": [
+    {
+      "passengers": 31,
+      "departs_min": 95,
+      "min_connect_min": 35
+    },
+    {
+      "passengers": 9,
+      "departs_min": 140,
+      "min_connect_min": 35
+    }
+  ],
+  "runways": [
+    {
+      "name": "27L",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "27R",
+      "open": true,
+      "taxiway_blocked": false,
+      "arrivals": [
+        {
+          "time_min": 48,
+          "category": "H"
+        },
+        {
+          "time_min": 51,
+          "category": "M"
+        },
+        {
+          "time_min": 54,
+          "category": "H"
+        },
+        {
+          "time_min": 57,
+          "category": "H"
+        },
+        {
+          "time_min": 60,
+          "category": "M"
+        },
+        {
+          "time_min": 63,
+          "category": "H"
+        },
+        {
+          "time_min": 66,
+          "category": "H"
+        },
+        {
+          "time_min": 69,
+          "category": "M"
+        },
+        {
+          "time_min": 78,
+          "category": "H"
+        },
+        {
+          "time_min": 82,
+          "category": "M"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "name": "A1",
+      "free_from_min": 75,
+      "free_until_min": 200
+    },
+    {
+      "name": "K4",
+      "free_from_min": 20,
+      "free_until_min": 50
+    }
+  ],
+  "crew_shift_ends_min": 100,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "moves": [
+    {
+      "id": "ground.tow_a1",
+      "owner": "ground",
+      "label": "Tow the parked aircraft off gate A1 early (tug crew)",
+      "effect": {
+        "gate_free_from": {
+          "gate": "A1",
+          "free_from_min": 45
+        }
+      },
+      "cost": 15
+    },
+    {
+      "id": "ground.standby_crew",
+      "owner": "ground",
+      "label": "Call in the standby ramp crew to extend the shift",
+      "effect": {
+        "crew_shift_ends_min": 140
+      },
+      "cost": 20
+    },
+    {
+      "id": "pilot.absorb_en_route",
+      "owner": "pilot",
+      "label": "Absorb 14 min of delay en route at reduced speed instead of holding",
+      "effect": {
+        "fuel_gain_min": 14
+      },
+      "cost": 5
+    },
+    {
+      "id": "atc.resequence_heavy",
+      "owner": "atc",
+      "label": "Re-sequence the heavy due at t+57 to t+75, behind this flight",
+      "effect": {
+        "arrival_moved": {
+          "runway": "27R",
+          "from_min": 57,
+          "to_min": 75
+        }
+      },
+      "cost": 22
+    },
+    {
+      "id": "atc.reopen_27l",
+      "owner": "atc",
+      "label": "Reopen 27L after runway inspection",
+      "effect": {
+        "runway_opens": {
+          "runway": "27L",
+          "open_from_min": 95
+        }
+      },
+      "cost": 10
+    }
+  ],
+  "source": {
+    "YEAR": "2015",
+    "MONTH": "5",
+    "DAY": "8",
+    "AIRLINE": "AA",
+    "FLIGHT_NUMBER": "1453",
+    "ORIGIN_AIRPORT": "CLT",
+    "DESTINATION_AIRPORT": "ORD",
+    "SCHEDULED_ARRIVAL": "1723",
+    "DEPARTURE_DELAY": "48",
+    "ARRIVAL_DELAY": "103",
+    "WEATHER_DELAY": "48",
+    "LATE_AIRCRAFT_DELAY": "0",
+    "AIR_SYSTEM_DELAY": "55",
+    "TAXI_IN": "22"
+  },
+  "synthetic_fields": [
+    "disruption",
+    "aircraft_category",
+    "fuel_endurance_min",
+    "connections",
+    "runways",
+    "gates",
+    "crew_shift_ends_min",
+    "turnaround_min",
+    "moves",
+    "demo: flight, date, schedule and delays are the real DOT row; the airport layout and each organisation's private moves are hand-set so that no single organisation can resolve it alone"
+  ]
+}

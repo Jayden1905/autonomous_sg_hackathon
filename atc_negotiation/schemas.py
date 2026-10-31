@@ -46,6 +46,31 @@ class Connection(BaseModel):
     min_connect_min: int = 35
 
 
+class MoveEffect(BaseModel):
+    """What a move changes in the scenario before the rules run. Exactly one field is set."""
+
+    gate_free_from: dict | None = Field(default=None, description='{"gate": "A1", "free_from_min": 40}')
+    crew_shift_ends_min: int | None = None
+    fuel_gain_min: int | None = Field(default=None, description=(
+        "Extra endurance at arrival from absorbing delay en route (speed reduction) instead of holding"))
+    arrival_moved: dict | None = Field(default=None, description='{"runway": "27R", "from_min": 61, "to_min": 75}')
+    runway_opens: dict | None = Field(default=None, description='{"runway": "27L", "open_from_min": 70}')
+
+
+class Move(BaseModel):
+    """An option only one organisation holds, e.g. Ground can tow an aircraft off a gate early.
+
+    Each agent's brief lists only its own moves; the others learn of a move when a plan uses it.
+    The rule engine applies a plan's moves, then checks every rule as usual: no move relaxes a hard rule."""
+
+    id: str = Field(description="e.g. 'ground.tow_a1'")
+    owner: Literal["atc", "pilot", "ground"]
+    label: str = Field(description="e.g. 'Tow the aircraft off A1 early'")
+    effect: MoveEffect
+    cost: float = Field(description="Soft cost, same units as the rule engine's other costs")
+    private: bool = True
+
+
 class AirportInfo(BaseModel):
     """From the organisers' airports.csv. For labels and maps; the rules never read it."""
 
@@ -81,6 +106,8 @@ class Scenario(BaseModel):
     crew_shift_ends_min: int
     turnaround_min: int = 45
     max_arrival_min: int = 180  # beyond this the sector hands the flight to a diversion plan
+    moves: list[Move] = Field(default_factory=list, description=(
+        "Options each organisation holds privately; a plan may use them via Proposal.moves"))
     source: dict = Field(default_factory=dict)  # raw DOT row, if any
     synthetic_fields: list[str] = Field(default_factory=list)
 
@@ -136,6 +163,8 @@ class Proposal(BaseModel):
     arrival_min: int = Field(description="Revised arrival, minutes after scheduled arrival")
     runway: str
     gate: str
+    moves: list[str] = Field(default_factory=list, description=(
+        "Ids of Scenario.moves this plan relies on. The rule engine applies them before checking"))
     rationale: str = Field(description="One or two sentences, plain language, with [n] citation markers")
     evidence: list[Evidence] = Field(default_factory=list,
                                      description="Claims the plan relies on, each with its model source. Empty "

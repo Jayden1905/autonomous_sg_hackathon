@@ -1075,6 +1075,75 @@ export interface components {
              */
             status: "confirmed" | "proposed" | "rejected";
         };
+        /**
+         * Move
+         * @description An option only one organisation holds, e.g. Ground can tow an aircraft off a gate early.
+         *
+         *     Each agent's brief lists only its own moves; the others learn of a move when a plan uses it.
+         *     The rule engine applies a plan's moves, then checks every rule as usual: no move relaxes a hard rule.
+         */
+        Move: {
+            /**
+             * Id
+             * @description e.g. 'ground.tow_a1'
+             */
+            id: string;
+            /**
+             * Owner
+             * @enum {string}
+             */
+            owner: "atc" | "pilot" | "ground";
+            /**
+             * Label
+             * @description e.g. 'Tow the aircraft off A1 early'
+             */
+            label: string;
+            effect: components["schemas"]["MoveEffect"];
+            /**
+             * Cost
+             * @description Soft cost, same units as the rule engine's other costs
+             */
+            cost: number;
+            /**
+             * Private
+             * @default true
+             */
+            private: boolean;
+        };
+        /**
+         * MoveEffect
+         * @description What a move changes in the scenario before the rules run. Exactly one field is set.
+         */
+        MoveEffect: {
+            /**
+             * Gate Free From
+             * @description {"gate": "A1", "free_from_min": 40}
+             */
+            gate_free_from?: {
+                [key: string]: unknown;
+            } | null;
+            /** Crew Shift Ends Min */
+            crew_shift_ends_min?: number | null;
+            /**
+             * Fuel Gain Min
+             * @description Extra endurance at arrival from absorbing delay en route (speed reduction) instead of holding
+             */
+            fuel_gain_min?: number | null;
+            /**
+             * Arrival Moved
+             * @description {"runway": "27R", "from_min": 61, "to_min": 75}
+             */
+            arrival_moved?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Runway Opens
+             * @description {"runway": "27L", "open_from_min": 70}
+             */
+            runway_opens?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** NegotiateRequest */
         NegotiateRequest: {
             scenario: components["schemas"]["Scenario"];
@@ -1192,6 +1261,11 @@ export interface components {
             /** Gate */
             gate: string;
             /**
+             * Moves
+             * @description Ids of Scenario.moves this plan relies on. The rule engine applies them before checking
+             */
+            moves?: string[];
+            /**
              * Rationale
              * @description One or two sentences, plain language, with [n] citation markers
              */
@@ -1215,6 +1289,11 @@ export interface components {
             runway: string;
             /** Gate */
             gate: string;
+            /**
+             * Moves
+             * @description Ids of Scenario.moves this plan relies on. The rule engine applies them before checking
+             */
+            moves?: string[];
             /**
              * Rationale
              * @description One or two sentences, plain language, with [n] citation markers
@@ -1526,6 +1605,11 @@ export interface components {
              * @default 180
              */
             max_arrival_min: number;
+            /**
+             * Moves
+             * @description Options each organisation holds privately; a plan may use them via Proposal.moves
+             */
+            moves?: components["schemas"]["Move"][];
             /** Source */
             source?: {
                 [key: string]: unknown;

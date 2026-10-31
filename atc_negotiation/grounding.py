@@ -37,7 +37,7 @@ class Ledger:
 
     metrics_queried: set[str] = field(default_factory=set)
     checked_plan: bool = False
-    plans_checked: set[tuple[int, str, str]] = field(default_factory=set)  # (arrival_min, runway, gate)
+    plans_checked: set[tuple] = field(default_factory=set)  # tools.plan_key: (arrival_min, runway, gate, moves)
     lookups: int = 0
     # What the agent was shown this action, by source key ("metric:taxi_in", "check_proposal",
     # "lookup:<term>", "task"). guardrails.py checks the numbers in claims against these.

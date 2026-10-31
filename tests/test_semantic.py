@@ -93,6 +93,10 @@ def test_rules_py_and_model_agree_both_ways():
     for p in (Proposal(arrival_min=40, runway="27R", gate="B12", rationale=""),
               Proposal(arrival_min=40, runway="nope", gate="nope", rationale="")):
         emitted |= {r.rule_id for r in rules.evaluate(s, p).results}
+    # Moves emit plan.* rules; exercise them on the scenario that has moves.
+    sm = Scenario.model_validate_json((ROOT / "scenarios" / "demo_storm_aa1453_moves.json").read_text())
+    emitted |= {r.rule_id for r in rules.evaluate(sm, Proposal(
+        arrival_min=56, runway="27R", gate="A1", rationale="", moves=["ground.tow_a1"])).results}
     eng = default_engine()
     declared = {r.id for r in eng.model.rules if (r.enforced_by or "").startswith("rules.")}
     assert emitted - set(eng.rule_by_id) == set(), "emitted but not in model.yaml"

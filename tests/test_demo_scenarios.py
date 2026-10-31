@@ -71,3 +71,63 @@ def test_demo_scenarios_keep_the_real_dot_row(name):
     s = _load(name)
     assert s.source["YEAR"] == "2015" and s.source["ARRIVAL_DELAY"]
     assert s.synthetic_fields, "hand-set fields must be labelled"
+
+
+# ── demo_storm_aa1453_moves: private moves, negotiated across organisations ──
+
+def _best_with(s: Scenario, moves: list[str]):
+    best = None
+    for t in range(s.earliest_arrival_min, s.max_arrival_min + 1):
+        for r in s.runways:
+            for g in s.gates:
+                ev = evaluate(s, Proposal(arrival_min=t, runway=r.name, gate=g.name, rationale="", moves=moves))
+                if ev.feasible and (best is None or ev.cost < best.cost):
+                    best = ev
+    return best
+
+
+@pytest.fixture
+def aa1453() -> Scenario:
+    return _load("demo_storm_aa1453_moves")
+
+
+def test_aa1453_nothing_legal_on_the_shared_picture(aa1453):
+    """The solver sees slot, runway and gate only: it finds nothing. Private options must be negotiated."""
+    assert fallback.solve(aa1453) is None
+    assert _feasible(aa1453) == []
+
+
+def test_aa1453_no_single_organisation_can_resolve_it(aa1453):
+    import itertools
+    for owner in ("atc", "pilot", "ground"):
+        own = [m.id for m in aa1453.moves if m.owner == owner]
+        for k in range(1, len(own) + 1):
+            for combo in itertools.combinations(own, k):
+                assert _best_with(aa1453, list(combo)) is None, (owner, combo)
+
+
+def test_aa1453_ground_and_atc_together_beat_ground_and_pilot(aa1453):
+    gp = _best_with(aa1453, ["ground.tow_a1", "pilot.absorb_en_route"])
+    ga = _best_with(aa1453, ["ground.tow_a1", "atc.resequence_heavy"])
+    assert gp is not None and ga is not None
+    assert ga.proposal.arrival_min < gp.proposal.arrival_min and ga.cost < gp.cost
+    missed = next(r for r in ga.results if r.rule_id == "pilot.connections")
+    assert missed.cost == 0  # every connecting passenger makes it
+
+
+def test_moves_never_relax_a_safety_rule(aa1453):
+    """Absorbing delay en route adds endurance; final reserve itself is still enforced."""
+    ev = evaluate(aa1453, Proposal(arrival_min=aa1453.max_arrival_min, runway="27R", gate="A1", rationale="",
+                                   moves=["ground.tow_a1", "pilot.absorb_en_route"]))
+    assert any(r.rule_id == "pilot.final_reserve_fuel" and not r.passed for r in ev.results)
+
+
+def test_unknown_move_is_a_hard_fail(aa1453):
+    ev = evaluate(aa1453, Proposal(arrival_min=56, runway="27R", gate="A1", rationale="", moves=["ground.teleport"]))
+    assert any(r.rule_id == "plan.move_known" and not r.passed for r in ev.results)
+    assert not ev.feasible
+
+
+def test_reopened_runway_only_usable_from_reopen_time(aa1453):
+    early = evaluate(aa1453, Proposal(arrival_min=80, runway="27L", gate="A1", rationale="", moves=["atc.reopen_27l"]))
+    assert any(r.rule_id == "atc.runway_open" and not r.passed for r in early.results)

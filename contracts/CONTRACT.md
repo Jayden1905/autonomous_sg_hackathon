@@ -311,6 +311,24 @@ include them, so `mock` mode exercises the same shapes.
 Runway names are synthetic and vary per scenario (`09L/09R`, `27L/27R`, …);
 read them from `runways[].name`, never hardcode.
 
+### Moves (private options each organisation holds)
+
+`Scenario.moves[]` lists options only one organisation holds, e.g. Ground can tow a parked
+aircraft off a gate early, or ATC can re-sequence another arrival. Each `Move` has `id`,
+`owner` (`atc | pilot | ground`), `label`, `effect` (exactly one field set) and `cost`.
+Each agent is briefed only on its own moves; the others learn of one when a plan uses it.
+
+A plan names the moves it relies on in `Proposal.moves` (ids; `[]` for none, including
+counters). The rule engine applies them, then checks every rule as usual: no move relaxes
+a hard rule. Each move shows up in the evaluation as a `plan.move_cost` result (domain =
+owner). The deterministic solver never uses moves: it only sees the shared picture.
+
+What to render: next to a plan, a chip per move id, labelled from `scenario.moves`
+(`label`, coloured by `owner`). In the timeline, the first turn a move id appears is
+the moment that organisation put its private option on the table.
+`scenarios/demo_storm_aa1453_moves.json` (`GET /scenarios/demo-storm-ORD-AA1453-moves`)
+has no legal plan without moves and needs moves from two owners.
+
 ## Rule names
 
 **Key the UI on `rule_id`**, not `rule`: ids are stable semantic-model ids that
@@ -331,6 +349,8 @@ carry a suffix such as ` (operator)`.
 | `ground.gate_available` | `gate_available` | ground | yes | gate not free at arrival time |
 | `ground.gate_overrun` | `gate_overrun` | ground | no | turnaround holds the gate past its free window; cost per minute |
 | `ground.crew_overtime` | `crew_overtime` | ground | no | cost = 1.5 × overtime minutes |
+| `plan.move_known` | `move_known` | move's owner | yes | one per move used; fails if the scenario doesn't offer that id |
+| `plan.move_cost` | `move_cost` | move's owner | no | one per move used; detail names the move and what it changed; cost = `Move.cost` |
 | `operator.*` | `<name> (operator)` | any | varies | rules captured from operators (semantic/elicitation.yaml), e.g. `operator.pilot.divert_buffer`, `operator.ground.gate_board_buffer`. The set can grow; render them generically and label them "operator knowledge" |
 
 ## Minimal client
