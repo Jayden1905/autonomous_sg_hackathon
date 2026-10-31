@@ -10,13 +10,14 @@ REPO := https://github.com/Jayden1905/autonomous_sg_hackathon.git
 # Token goes through a credential helper, not the URL, so it never shows in `ps`.
 GIT  := git -c credential.helper='!f(){ echo username=x-access-token; echo password=$$GITHUB_TOKEN; }; f'
 
-.PHONY: help setup data semantic test demo demo-mock demo-check serve contracts push pull sync status log
+.PHONY: help setup data semantic test demo demo-mock demo-check serve web contracts push pull sync status log
 
 help:
 	@echo "Demo (local laptop):"
 	@echo "  make setup      create .venv and install deps (uv)"
 	@echo "  make demo-check preflight: uv, deps, API key, dataset, model, mock run, port"
 	@echo "  make serve      start the API on http://localhost:8000  (then open /semantic/ and /docs)"
+	@echo "  make web        start the frontend on http://127.0.0.1:5173  (needs make serve running)"
 	@echo "  make demo       real agents on the UA599 storm scenario, in the terminal"
 	@echo "  make demo-mock  same with scripted agents, no API key, under a second"
 	@echo ""
@@ -76,6 +77,11 @@ demo-check:
 
 serve:
 	@uv run uvicorn atc_negotiation.api:app --reload --reload-include '*.yaml' --port 8000
+
+# Installs dependencies on the first run so a fresh checkout needs only this.
+web:
+	@test -d frontend/node_modules || (cd frontend && npm ci)
+	@cd frontend && npm run dev
 
 contracts:
 	@uv run python -c "import json; from atc_negotiation.api import app; \
