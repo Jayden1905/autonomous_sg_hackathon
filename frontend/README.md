@@ -25,6 +25,47 @@ The Vite development/preview server proxies `/api` to `http://127.0.0.1:8000`. F
 
 ## Bill's modules and checks
 
+### Animated airport
+
+The **Scene** control below the airport caption changes weather, pauses motion and
+selects Auto/Eco/High quality. The default weather is a visual preset inferred from
+the disruption text. Decorative traffic follows taxi/departure/arrival paths and
+an airborne circuit; it has no backend flight identity. A selected flight remains
+a proposal preview. Closed, blocked and unmapped runways are excluded from the
+decorative runway loop. Weather overrides do not modify scenario constraints.
+
+The renderer uses:
+
+- Four shared material/geometry meshes per aircraft, retaining the original shapes.
+- Terminal and jet-bridge geometry baked into static material batches at mount,
+  including their existing instanced details. The original components remain editable.
+- A single GPU-driven line batch for rain (700 drops in Eco, 2,200 in High).
+- One instanced puddle batch and a damp apron material; no screen-space reflections.
+- Cached static shadow maps, refreshed when the displayed aircraft/layout changes.
+  Decorative moving aircraft do not cast expensive dynamic shadows.
+- Demand rendering with background updates capped at 24 fps in Eco or 30 fps in
+  High. Camera interaction can request extra frames. Auto starts in Eco on narrow
+  screens and falls back after sustained low rendering throughput.
+- No per-frame React state updates. Reduced motion and hidden tabs stop ambient
+  updates; pausing leaves camera/selection controls usable.
+
+These are rendering budgets, not guaranteed FPS on every GPU. Dev-only canvas data
+attributes expose sampled FPS, draw calls and scene time for the browser checks.
+The desktop storm check measured about 190 draw calls after static batching, versus 737
+in the initial animated version (about 74% fewer). That is a draw-call comparison,
+not a hardware FPS promise; the automated browser uses software WebGL.
+
+Run `npm run test:motion` with the API and Vite servers running. It checks moving
+scene time, presets, quality, reduced motion, mobile and zero idle draw calls after
+pause/visibility changes. `npm run test:e2e` still checks the negotiation workflow.
+
+Implementation references: [R3F demand rendering](https://r3f.docs.pmnd.rs/advanced/scaling-performance),
+[R3F frame-loop guidance](https://r3f.docs.pmnd.rs/advanced/pitfalls),
+[Three.js ShaderMaterial](https://threejs.org/docs/pages/ShaderMaterial.html),
+and [Three.js instancing](https://threejs.org/docs/pages/InstancedMesh.html).
+
+### Application modules
+
 - `src/app`: shell, scenario/run ownership, session history, inspector and run settings.
 - `src/api`: typed HTTP client and POST SSE reader using generated contracts.
 - `src/negotiation`: run reducer, agent replies, scoped evidence, rule/tool disclosures and comparison.

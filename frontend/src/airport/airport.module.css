@@ -145,7 +145,7 @@
 }
 .mapping {
   position: absolute;
-  top: var(--space-8);
+  top: 90px;
   left: var(--space-6);
   max-width: 320px;
   background: var(--color-surface);
@@ -153,6 +153,75 @@
   padding: var(--space-3);
   margin-top: var(--space-6);
   font-size: var(--font-size-caption);
+}
+.atmosphere {
+  position: absolute;
+  top: 48px;
+  left: var(--space-6);
+  z-index: 22;
+  font-size: var(--font-size-caption);
+}
+.atmosphere > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  min-height: 34px;
+  padding: 4px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-floating);
+  cursor: pointer;
+}
+.atmosphere > summary::-webkit-details-marker {
+  display: none;
+}
+.sceneOptions {
+  width: 270px;
+  max-height: calc(100dvh - 210px);
+  overflow-y: auto;
+  margin-top: 8px;
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-floating);
+}
+.sceneOptions h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.sceneOptions p {
+  color: var(--color-text-secondary);
+  margin: 8px 0 16px;
+  line-height: 18px;
+}
+.sceneOptions label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sceneOptions select {
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  padding: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+.motionButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  min-height: 36px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 .unavailable {
   position: absolute;
@@ -165,6 +234,13 @@
   padding: var(--space-6);
 }
 @media (max-width: 899px) {
+  .atmosphere {
+    left: var(--space-4);
+    top: 40px;
+  }
+  .atmosphere > summary {
+    min-height: 44px;
+  }
   .caption {
     left: var(--space-4);
     top: var(--space-3);

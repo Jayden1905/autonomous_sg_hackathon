@@ -53,7 +53,7 @@ function ServiceVehicle({
   );
 }
 
-export function Ground() {
+export function Ground({ wet = false }: { wet?: boolean }) {
   return (
     <group>
       <Box
@@ -62,12 +62,15 @@ export function Ground() {
         material="grass"
         castShadow={false}
       />
-      <Box
-        position={[0, -0.04, 20]}
-        scale={[1200, 0.08, 300]}
-        material="apron"
-        castShadow={false}
-      />
+      <mesh position={[0, -0.04, 20]} scale={[1200, 0.08, 300]} receiveShadow>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial
+          color={wet ? "#62727c" : "#727a7b"}
+          roughness={wet ? 0.34 : 0.96}
+          metalness={wet ? 0.16 : 0}
+          map={materials.apron.map}
+        />
+      </mesh>
       {[-158, -218].map((z) => (
         <group key={z}>
           <Box
@@ -92,6 +95,18 @@ export function Ground() {
         scale={[550, 0.04, 15]}
         material="asphalt"
       />
+      <Box
+        position={[282, 0.025, -48]}
+        scale={[16, 0.04, 340]}
+        material="asphalt"
+        castShadow={false}
+      />
+      <Box
+        position={[245, 0.025, -218]}
+        scale={[90, 0.04, 16]}
+        material="asphalt"
+        castShadow={false}
+      />
       {[-120, 0, 160].map((x) => (
         <Box
           key={x}
@@ -110,12 +125,11 @@ export function Ground() {
       />
       <Line
         points={[
-          [-270, 0.09, 81],
-          [145, 0.09, 81],
-          [173, 0.09, 56],
-          [173, 0.09, -94],
-          [160, 0.09, -113],
-          [160, 0.09, -218],
+          [-550, 0.09, 122],
+          [235, 0.09, 122],
+          [282, 0.09, 45],
+          [282, 0.09, -218],
+          [210, 0.09, -218],
         ]}
         color="#c7ad60"
         lineWidth={1}
