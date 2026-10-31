@@ -53,24 +53,26 @@ Open `/semantic/`. Click `atc.wake_separation`.
 
 ## 4. Honest evaluation [20%] — 40 s
 
-Two batches on the organisers' data, operator rules on:
+Three batches on the organisers' data, operator rules on:
 
-| | 200 rows, scripted | 20 rows, real agents |
-|---|---|---|
-| consensus | 97% | 100%, all one turn |
-| decision time | 0.3 s | 50 s |
-| refused (no legal option) | 6 | 0 |
-| vetoed illegal accepts | 0 | 0 |
-| citation checks / bounced | — | 98 / 38 |
+| | 200 rows, scripted | 20 real, first rows (one day) | 20 real, sampled (10 months, 20 airports) |
+|---|---|---|---|
+| consensus | 97% | 100%, all one turn | 85% |
+| decision time | 0.3 s | 50 s | 87 s |
+| refused (no legal option) | 6 | 0 | 3, each after a full 3-turn negotiation |
+| vetoed illegal accepts | 0 | 0 | 0 |
+| citation checks / bounced | — | 98 / 38 | 123 / 51 |
 
 **Where it fails, shown live:** VX204, minimum fuel, saturated runway. The system refuses and lists
-why. Also: the ATC agent's first proposal on the sample scenario missed the gate window; the engine
-caught it.
+why. And it happened on real rows too: three of the twenty sampled flights, a December Atlanta
+departure, an August O'Hare regional, a January Minneapolis regional, negotiated three full turns
+and ended with no legal plan. Reported, not invented. Also: the ATC agent's first proposal on the
+sample scenario missed the gate window; the engine caught it.
 
 **The measurement that went against us:** we compared negotiated arrival with what actually
-happened to each flight in 2015. We're **3 minutes worse on median**. Reason: in 62–65% of rows the
-real disruption was absorbed at departure, so by arrival there was nothing left to improve, and our
-synthetic runway is busier than the real day was. Delay minutes can't be claimed on this dataset,
+happened to each flight in 2015. We're **3 minutes worse on median**, on all three batches. Reason:
+in 62–88% of rows the real disruption was absorbed at departure, so by arrival there was nothing left
+to improve, and our synthetic runway is busier than the real day was. Delay minutes can't be claimed on this dataset,
 and the README says so.
 
 > Say: "We report the number that went against us, and why. Here's what the data can and can't show."

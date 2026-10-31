@@ -169,23 +169,30 @@ Two runs over the organisers' dataset (rows with `WEATHER_DELAY > 15` or
 traces; `uv run atc impact <traces.jsonl>` compares them with what actually
 happened to the same flight.
 
-| | 200 rows, scripted agents | 20 rows, real agents (`claude-opus-5-5`) |
-|---|---|---|
-| Consensus | 194 (97%) | 20 (100%) |
-| Fallback to solver | 0 | 0 |
-| Declined: no legal option | 6 | 0 |
-| Turns, mean | 2.0 | 1.0 |
-| Decision time, mean | 0.3 s | 50 s (max 65 s) |
-| Vetoed accepts (agent agreed to an illegal plan) | 0 | 0 |
-| Passengers kept on connections | 5,252 of 5,447 (96.4%) | 516 of 582 (88.7%) |
-| LLM calls / tool calls | — | 168 / 257 |
-| Citation checks / claims sent back for re-grounding | — | 98 / 38 |
+| | 200 rows, scripted | 20 rows, real agents, first in file | 20 rows, real agents, sampled |
+|---|---|---|---|
+| Rows drawn from | first 200 (all 1 Jan) | first 20 (all 1 Jan) | 10 months, 20 destinations (`--sample --seed 2026`) |
+| Consensus | 194 (97%) | 20 (100%) | 17 (85%) |
+| Fallback to solver | 0 | 0 | 0 |
+| Declined: no legal option | 6 | 0 | 3 |
+| Turns, mean | 2.0 | 1.0 | 1.3 |
+| Decision time, mean | 0.3 s | 50 s (max 65 s) | 87 s (max 374 s; the three refusals ran all 3 turns) |
+| Vetoed accepts (agent agreed to an illegal plan) | 0 | 0 | 0 |
+| Passengers kept on connections | 5,252 of 5,447 (96.4%) | 516 of 582 (88.7%) | 488 of 508 (96.1%) |
+| LLM calls / tool calls | — | 168 / 257 | 251 / 359 |
+| Citation checks / claims sent back for re-grounding | — | 98 / 38 | 123 / 51 |
 
-The real agents converge in one turn because they call `check_proposal` (the rule
-engine) before proposing, so what reaches the table is already legal. The 38
-rejected claims are the guardrail doing its job: a claim whose citation did not
-resolve to the semantic model was returned to the agent instead of being spoken.
-None reached a proposal.
+The first-20 rows are one day at a few hubs and every negotiation closed in one turn.
+The sampled rows are harder: three disruptions (DL1690 ATL–BDL in December, MQ3486
+ORD–MQT in August, OO7403 MSP–HIB in January) went the full three turns and ended
+with no legal plan, which the system reported rather than inventing one. Agents
+converge fast when a legal plan exists because they call `check_proposal` (the rule
+engine) before proposing. The 89 rejected claims across both real runs are the
+guardrail doing its job: a claim whose citation did not resolve to the semantic
+model was returned to the agent instead of being spoken. None reached a proposal.
+
+Reproduce: `uv run atc batch data/flights.csv --n 20 --sample --seed 2026 --out run.jsonl`
+then `uv run atc impact run.jsonl`.
 
 ### Impact against the recorded 2015 outcome
 
@@ -193,19 +200,20 @@ The baseline is real: each DOT row records the flight's actual `ARRIVAL_DELAY`.
 Only post-departure delay is comparable, because a flight cannot arrive before its
 recorded departure delay.
 
-| Measure | Status | 200 rows, scripted | 20 rows, real agents |
-|---|---|---|---|
-| Decision time per disruption | measured | 0.3 s | 50 s |
-| vs. today | not quantified | phone/radio coordination across three organisations; no published per-flight figure found | |
-| Passengers kept on connections | measured | 96.4% | 88.7% |
-| Plans refused because nothing legal existed | measured | 6 of 200 | 0 of 20 |
-| Holding absorbed per flight | measured | median 3 min | median 4.5 min |
-| Fuel burned in hold | estimate | median 120 kg/flight | median 180 kg/flight (40 kg/min, A320 planning figure) |
-| Post-departure delay vs recorded | measured | **median 3 min worse** (47 better, 119 worse, 28 same) | **median 3 min worse** (6 better, 12 worse, 2 same) |
+| Measure | Status | 200 scripted | 20 real, first in file | 20 real, sampled |
+|---|---|---|---|---|
+| Decision time per disruption | measured | 0.3 s | 50 s | 87 s |
+| vs. today | not quantified | phone/radio coordination across three organisations; no published per-flight figure found | | |
+| Passengers kept on connections | measured | 96.4% | 88.7% | 96.1% |
+| Plans refused because nothing legal existed | measured | 6 of 200 | 0 of 20 | 3 of 20 |
+| Holding absorbed per flight | measured | median 3 min | median 4.5 min | median 4 min |
+| Fuel burned in hold | estimate (40 kg/min, A320 planning figure) | median 120 kg | median 180 kg | median 160 kg |
+| Post-departure delay vs recorded | measured | **median 3 min worse** (47 better, 119 worse, 28 same) | **median 3 min worse** (6 / 12 / 2) | **median 3 min worse** (1 / 13 / 3) |
 
 **The delay number is against us, and we report it.** In 121 of 194 scripted rows
-(62.4%) and 13 of 20 real-agent rows (65%) the real system had already absorbed the
-disruption before arrival: the recorded post-departure delay is 0. There was nothing left for a negotiation to
+(62.4%), 13 of 20 first-in-file real rows (65%) and 15 of 17 sampled real rows (88%)
+the real system had already absorbed the disruption before arrival: the recorded
+post-departure delay is 0. There was nothing left for a negotiation to
 remove, and the holding our synthetic runway imposes shows up as "worse". On this
 dataset the disruption lives at departure; delay minutes cannot be claimed in our
 favour, and the comparison says more about the synthetic congestion than about the
@@ -220,9 +228,14 @@ protected, and honest refusals.
 - The ATC agent's first proposal on `sample-weather-ORD` missed the gate window; the
   rule engine rejected it and the agents converged on the next turn. The LLM got the
   wake spacing and fuel right and the gate wrong; the code caught it.
-- Across the 20 real-agent runs the citation guardrail sent 38 of 98 claims back to
+- Across the 40 real-agent runs the citation guardrail sent 89 of 221 claims back to
   the agent because their source did not resolve to the semantic model. That is the
   LLM reaching for a number it did not have; the guardrail is what stops it being said.
+- Three of the 20 sampled real-agent rows (DL1690, MQ3486, OO7403) negotiated for the
+  full three turns and ended with no plan that passed every hard rule. The system
+  reported `no_legal_option` with the failing rules. These are dataset rows, not
+  hand-written cases: a regional flight into a small airport with the generated
+  runway closed and tight fuel has no legal slot, and the right answer is to say so.
 - Operator knowledge in the model is a labelled worked example, not an interview.
   Coverage of the elicitation stage is red (9 of 31 questions) until a real
   controller, pilot or ramp supervisor answers.
