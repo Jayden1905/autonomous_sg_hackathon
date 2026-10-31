@@ -11,3 +11,4 @@ traces/
 
 # Organisers' challenge briefs: keep local, do not redistribute
 *.pdf
+frontend/vite.tunnel.config.ts
