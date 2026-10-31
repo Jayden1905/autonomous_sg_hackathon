@@ -18,16 +18,18 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from . import data, fallback
-from .agents import DEFAULT_MODEL, make_agents
+from .agents import DEFAULT_EFFORT, DEFAULT_MODEL, make_agents
 from .orchestrator import negotiate
 from .rules import evaluate
-from .schemas import Evaluation, NegotiationTrace, Proposal, Scenario
+from .semantic_api import semantic_router
+from .schemas import Evaluation, GuardrailReport, NegotiationTrace, Proposal, Scenario, ToolCall
+from .sqlengine import dataset_available
 
 ROOT = Path(__file__).resolve().parent.parent
 SCENARIO_DIR = ROOT / "scenarios"
 DOT_CSV = ROOT / "data" / "flights.csv"
 
-EventName = Literal["started", "thinking", "proposal", "evaluation", "response",
+EventName = Literal["started", "thinking", "tool_call", "guardrail", "proposal", "evaluation", "response",
                     "turn_complete", "done", "error"]
 
 app = FastAPI(
@@ -36,6 +38,7 @@ app = FastAPI(
     description="Three-agent (ATC / Pilot / Ground) disruption negotiation. See contracts/CONTRACT.md.",
 )
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.include_router(semantic_router)
 
 
 # ---- request / response models -------------------------------------------------
@@ -43,7 +46,9 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 class Health(BaseModel):
     status: Literal["ok"]
     default_model: str
-    dot_dataset_available: bool
+    default_effort: str
+    dot_dataset_available: bool = Field(description="flights.csv present: /dot/scenarios works")
+    sql_tool_available: bool = Field(description="all three CSVs present: agents can call query_metric")
 
 
 class ScenarioSummary(BaseModel):
@@ -60,6 +65,8 @@ class NegotiateRequest(BaseModel):
     mock: bool = Field(default=False, description="Scripted agents, no LLM calls. For UI development.")
     max_turns: int = Field(default=3, ge=1, le=6)
     model: str | None = Field(default=None, description="Overrides the server default model")
+    effort: Literal["low", "medium", "high", "xhigh", "max"] | None = Field(
+        default=None, description="Reasoning effort per agent call. Higher is slower. Default: server setting")
 
 
 class EvaluateRequest(BaseModel):
@@ -75,6 +82,13 @@ class ThinkingEvent(BaseModel):
     turn: int
     agent: Literal["atc", "pilot", "ground"]
     action: Literal["propose", "respond"]
+
+
+class GuardrailEvent(BaseModel):
+    turn: int
+    agent: Literal["atc", "pilot", "ground"]
+    report: GuardrailReport = Field(description="passed=false: the reply was sent back to the agent with these "
+                                                "violations (or, after the last repair, blocked)")
 
 
 class StartedEvent(BaseModel):
@@ -112,6 +126,8 @@ class StreamEvents(BaseModel):
 
     started: StartedEvent
     thinking: ThinkingEvent
+    tool_call: ToolCall
+    guardrail: GuardrailEvent
     proposal: ProposalEvent
     evaluation: EvaluationEvent
     response: ResponseEvent
@@ -130,7 +146,8 @@ StreamEvents.model_rebuild()
 
 @app.get("/health", response_model=Health)
 def health() -> Health:
-    return Health(status="ok", default_model=DEFAULT_MODEL, dot_dataset_available=DOT_CSV.exists())
+    return Health(status="ok", default_model=DEFAULT_MODEL, default_effort=DEFAULT_EFFORT,
+                  dot_dataset_available=DOT_CSV.exists(), sql_tool_available=dataset_available())
 
 
 @app.get("/scenarios", response_model=list[ScenarioSummary])
@@ -174,8 +191,8 @@ def run_fallback(scenario: Scenario) -> FallbackResponse:
 
 @app.post("/negotiate", response_model=NegotiationTrace)
 def run_negotiation(req: NegotiateRequest) -> NegotiationTrace:
-    """Blocking. Returns the full trace once done (30-90 s with real agents)."""
-    agents = make_agents(mock=req.mock, model=req.model or DEFAULT_MODEL)
+    """Blocking. Returns the full trace once done (1-4 min with real agents)."""
+    agents = make_agents(mock=req.mock, model=req.model or DEFAULT_MODEL, effort=req.effort or DEFAULT_EFFORT)
     return negotiate(req.scenario, agents, max_turns=req.max_turns)
 
 
@@ -188,7 +205,8 @@ async def stream_negotiation(req: NegotiateRequest):
 
     def worker() -> None:
         try:
-            agents = make_agents(mock=req.mock, model=req.model or DEFAULT_MODEL)
+            agents = make_agents(mock=req.mock, model=req.model or DEFAULT_MODEL,
+                                 effort=req.effort or DEFAULT_EFFORT)
             negotiate(req.scenario, agents, max_turns=req.max_turns,
                       on_event=lambda name, payload: q.put((name, payload)))
         except Exception as e:  # noqa: BLE001  surfaced to the client as an event

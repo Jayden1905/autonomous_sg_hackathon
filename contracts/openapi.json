@@ -6,6 +6,170 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/semantic/graph": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Graph",
+        "description": "Nodes and edges of the whole model, with per-node detail for a hover/click panel.",
+        "operationId": "graph_semantic_graph_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Graph Semantic Graph Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semantic/model": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Model",
+        "description": "The full curated+profiled model, as loaded.",
+        "operationId": "model_semantic_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemanticModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semantic/brief/{role}": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Brief",
+        "description": "The grounding text this agent receives in its system prompt.",
+        "operationId": "brief_semantic_brief__role__get",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "atc",
+                "pilot",
+                "ground"
+              ],
+              "type": "string",
+              "title": "Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Brief Semantic Brief  Role  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semantic/lookup": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Lookup Term",
+        "description": "What a term means in the model; `found` false when the model has no entry.",
+        "operationId": "lookup_term_semantic_lookup_get",
+        "parameters": [
+          {
+            "name": "term",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Term"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Lookup Term Semantic Lookup Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semantic/check": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Check",
+        "operationId": "check_semantic_check_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Check Semantic Check Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -221,7 +385,7 @@
     "/negotiate": {
       "post": {
         "summary": "Run Negotiation",
-        "description": "Blocking. Returns the full trace once done (30-90 s with real agents).",
+        "description": "Blocking. Returns the full trace once done (1-4 min with real agents).",
         "operationId": "run_negotiation_negotiate_post",
         "requestBody": {
           "content": {
@@ -324,18 +488,42 @@
             },
             "type": "array",
             "title": "Objections",
-            "description": "Empty when accepting"
+            "description": "Empty when accepting. Carry [n] markers"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "One or two sentences on why this verdict, with [n] markers",
+            "default": ""
           },
           "counter": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/Proposal"
+                "$ref": "#/components/schemas/Proposal-Output"
               },
               {
                 "type": "null"
               }
             ],
             "description": "Required when verdict is counter"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__schemas__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "description": "Claims behind the verdict, with sources"
+          },
+          "guardrail": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuardrailReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -397,6 +585,281 @@
         "title": "AirportInfo",
         "description": "From the organisers' airports.csv. For labels and maps; the rules never read it."
       },
+      "Citation": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "metric",
+              "rule",
+              "passage",
+              "code",
+              "scenario",
+              "rule_engine",
+              "unknown"
+            ],
+            "title": "Kind"
+          },
+          "ref": {
+            "type": "string",
+            "title": "Ref",
+            "description": "Model id, e.g. 'pilot.final_reserve_fuel', 'taxi_in', 'easa:cat.op.mpa.181'"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Short human title, e.g. 'EASA Air OPS CAT.OP.MPA.181(c)(5) Final reserve fuel'"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "What the source says: rule text, passage quote, metric definition"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "passage_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passage Id",
+            "description": "Regulation/brief passage behind a rule or metric"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "ref",
+          "label",
+          "text"
+        ],
+        "title": "Citation",
+        "description": "A source resolved from the semantic model, ready to render as a footnote."
+      },
+      "CodeEntry": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition",
+            "default": ""
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "title": "CodeEntry"
+      },
+      "CodeSet": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column"
+          },
+          "entries": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CodeEntry"
+            },
+            "type": "object",
+            "title": "Entries"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": ""
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "entries"
+        ],
+        "title": "CodeSet",
+        "description": "What each raw coded value means. Agents read labels/definitions, never guess."
+      },
+      "Column": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "int",
+              "float",
+              "str",
+              "empty"
+            ],
+            "title": "Type"
+          },
+          "nulls": {
+            "type": "number",
+            "title": "Nulls",
+            "default": 0.0
+          },
+          "distinct": {
+            "type": "integer",
+            "title": "Distinct",
+            "default": 0
+          },
+          "samples": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Samples"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "is_id": {
+            "type": "boolean",
+            "title": "Is Id",
+            "default": false
+          },
+          "is_time": {
+            "type": "boolean",
+            "title": "Is Time",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "Column"
+      },
+      "Concept": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "extends": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extends"
+          },
+          "abstract": {
+            "type": "boolean",
+            "title": "Abstract",
+            "default": false
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition",
+            "default": ""
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Domain",
+            "default": "shared"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Concept",
+        "description": "A box in the reference ontology. Entity types declare which concept they are."
+      },
       "Connection": {
         "properties": {
           "passengers": {
@@ -419,6 +882,121 @@
           "departs_min"
         ],
         "title": "Connection"
+      },
+      "EntityType": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "concept": {
+            "type": "string",
+            "title": "Concept"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table"
+          },
+          "id_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Column"
+          },
+          "name_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Column"
+          },
+          "attribute_columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attribute Columns"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "title": "Synthetic",
+            "default": false
+          },
+          "scenario_field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Field"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Domain",
+            "default": "shared"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "concept"
+        ],
+        "title": "EntityType",
+        "description": "A concept as it exists in *this* dataset / scenario, bound to columns or marked synthetic."
       },
       "ErrorEvent": {
         "properties": {
@@ -444,7 +1022,7 @@
             "$ref": "#/components/schemas/Scenario"
           },
           "proposal": {
-            "$ref": "#/components/schemas/Proposal"
+            "$ref": "#/components/schemas/Proposal-Input"
           }
         },
         "type": "object",
@@ -457,7 +1035,7 @@
       "Evaluation": {
         "properties": {
           "proposal": {
-            "$ref": "#/components/schemas/Proposal"
+            "$ref": "#/components/schemas/Proposal-Output"
           },
           "results": {
             "items": {
@@ -503,6 +1081,61 @@
         ],
         "title": "EvaluationEvent"
       },
+      "Evidence-Input": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Citation number. The agent's text refers to it as [id]",
+            "default": 0
+          },
+          "claim": {
+            "type": "string",
+            "title": "Claim",
+            "description": "Short factual statement, e.g. 'ORD Jan 17-19h weather delay p90 is 0 min'"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "What backs the claim, as a semantic-model reference: 'metric:<name>' (queried this action), 'rule:<id>', 'passage:<id>', 'code:<CodeSet>.<value>', 'scenario:<field>', or 'check_proposal'"
+          },
+          "grounded": {
+            "type": "boolean",
+            "title": "Grounded",
+            "description": "False when the source does not resolve in the semantic model, or a metric is cited without having been queried. The UI should flag these",
+            "default": true
+          },
+          "citation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Citation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the source says, resolved from the model"
+          },
+          "trust": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Trust",
+            "description": "high: regulation/standard, rule engine, code set, or a metric over >= 100 flights. medium: brief-derived rule, scenario fact, or a smaller sample. low: synthetic scenario field or ungrounded",
+            "default": "medium"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claim",
+          "source"
+        ],
+        "title": "Evidence",
+        "description": "One claim an agent relies on, tied to the semantic-model element it comes from."
+      },
       "FallbackResponse": {
         "properties": {
           "evaluation": {
@@ -546,6 +1179,132 @@
         ],
         "title": "Gate"
       },
+      "GuardrailEvent": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "agent": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Agent"
+          },
+          "report": {
+            "$ref": "#/components/schemas/GuardrailReport",
+            "description": "passed=false: the reply was sent back to the agent with these violations (or, after the last repair, blocked)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "agent",
+          "report"
+        ],
+        "title": "GuardrailEvent"
+      },
+      "GuardrailReport": {
+        "properties": {
+          "passed": {
+            "type": "boolean",
+            "title": "Passed"
+          },
+          "violations": {
+            "items": {
+              "$ref": "#/components/schemas/GuardrailViolation"
+            },
+            "type": "array",
+            "title": "Violations"
+          },
+          "checked_claims": {
+            "type": "integer",
+            "title": "Checked Claims",
+            "default": 0
+          },
+          "low_trust": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Low Trust",
+            "description": "Evidence ids with trust 'low'"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts",
+            "description": "Submits it took; >1 means the agent was sent back",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "required": [
+          "passed"
+        ],
+        "title": "GuardrailReport",
+        "description": "Result of the citation guardrails on one agent reply."
+      },
+      "GuardrailViolation": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "G1",
+              "G2",
+              "G3",
+              "G4",
+              "G5",
+              "G6",
+              "G7"
+            ],
+            "title": "Code"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "uncited_sentence",
+              "dangling_marker",
+              "ungrounded_source",
+              "unsupported_number",
+              "off_source",
+              "unsupported_prose",
+              "thin_sample"
+            ],
+            "title": "Kind"
+          },
+          "where": {
+            "type": "string",
+            "title": "Where",
+            "description": "'proposal rationale', 'summary', 'objection 2', 'response', 'counter' ..."
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "kind",
+          "where",
+          "message"
+        ],
+        "title": "GuardrailViolation"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -570,18 +1329,225 @@
             "type": "string",
             "title": "Default Model"
           },
+          "default_effort": {
+            "type": "string",
+            "title": "Default Effort"
+          },
           "dot_dataset_available": {
             "type": "boolean",
-            "title": "Dot Dataset Available"
+            "title": "Dot Dataset Available",
+            "description": "flights.csv present: /dot/scenarios works"
+          },
+          "sql_tool_available": {
+            "type": "boolean",
+            "title": "Sql Tool Available",
+            "description": "all three CSVs present: agents can call query_metric"
           }
         },
         "type": "object",
         "required": [
           "status",
           "default_model",
-          "dot_dataset_available"
+          "default_effort",
+          "dot_dataset_available",
+          "sql_tool_available"
         ],
         "title": "Health"
+      },
+      "KnowledgeLink": {
+        "properties": {
+          "passage_id": {
+            "type": "string",
+            "title": "Passage Id"
+          },
+          "target_kind": {
+            "type": "string",
+            "enum": [
+              "concept",
+              "type",
+              "rule",
+              "metric",
+              "code_set"
+            ],
+            "title": "Target Kind"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "defines",
+              "constrains",
+              "describes",
+              "sources"
+            ],
+            "title": "Kind",
+            "default": "describes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "passage_id",
+          "target_kind",
+          "target"
+        ],
+        "title": "KnowledgeLink"
+      },
+      "KnowledgePassage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "doc": {
+            "type": "string",
+            "title": "Doc"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "regulation",
+              "standard",
+              "statistic",
+              "definition"
+            ],
+            "title": "Kind",
+            "default": "brief"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "retrieved": {
+            "type": "string",
+            "title": "Retrieved",
+            "default": ""
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Domain",
+            "default": "shared"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "doc",
+          "title",
+          "text"
+        ],
+        "title": "KnowledgePassage",
+        "description": "A quotable chunk of the brief or a regulation. Briefings cite these by id."
+      },
+      "Metric": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "default": ""
+          },
+          "grain": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Grain"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula",
+            "default": ""
+          },
+          "inputs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inputs"
+          },
+          "range_lo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Range Lo"
+          },
+          "range_hi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Range Hi"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Domain",
+            "default": "shared"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Metric"
       },
       "NegotiateRequest": {
         "properties": {
@@ -612,6 +1578,25 @@
             ],
             "title": "Model",
             "description": "Overrides the server default model"
+          },
+          "effort": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effort",
+            "description": "Reasoning effort per agent call. Higher is slower. Default: server setting"
           }
         },
         "type": "object",
@@ -657,7 +1642,7 @@
             "description": "consensus: agents agreed on a feasible plan. fallback: no consensus, the deterministic solver picked the cheapest feasible plan. no_legal_option: nothing in the window passes every hard rule; `final` is the last attempt, NOT a recommendation, and a human must decide."
           },
           "final": {
-            "$ref": "#/components/schemas/Proposal"
+            "$ref": "#/components/schemas/Proposal-Output"
           },
           "final_evaluation": {
             "$ref": "#/components/schemas/Evaluation"
@@ -672,6 +1657,9 @@
               }
             ],
             "title": "Fallback Reason"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/RunStats"
           }
         },
         "type": "object",
@@ -687,7 +1675,40 @@
         ],
         "title": "NegotiationTrace"
       },
-      "Proposal": {
+      "Project": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "challenge": {
+            "type": "string",
+            "title": "Challenge",
+            "default": ""
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "default": "UTC"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Project"
+      },
+      "Proposal-Input": {
         "properties": {
           "arrival_min": {
             "type": "integer",
@@ -705,7 +1726,75 @@
           "rationale": {
             "type": "string",
             "title": "Rationale",
-            "description": "One or two sentences, plain language"
+            "description": "One or two sentences, plain language, with [n] citation markers"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence-Input"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "description": "Claims the plan relies on, each with its model source. Empty for the deterministic solver"
+          },
+          "guardrail": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuardrailReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Citation guardrail result; null for the solver"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arrival_min",
+          "runway",
+          "gate",
+          "rationale"
+        ],
+        "title": "Proposal"
+      },
+      "Proposal-Output": {
+        "properties": {
+          "arrival_min": {
+            "type": "integer",
+            "title": "Arrival Min",
+            "description": "Revised arrival, minutes after scheduled arrival"
+          },
+          "runway": {
+            "type": "string",
+            "title": "Runway"
+          },
+          "gate": {
+            "type": "string",
+            "title": "Gate"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale",
+            "description": "One or two sentences, plain language, with [n] citation markers"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__schemas__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "description": "Claims the plan relies on, each with its model source. Empty for the deterministic solver"
+          },
+          "guardrail": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuardrailReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Citation guardrail result; null for the solver"
           }
         },
         "type": "object",
@@ -733,7 +1822,7 @@
             "title": "Proposer"
           },
           "proposal": {
-            "$ref": "#/components/schemas/Proposal"
+            "$ref": "#/components/schemas/Proposal-Output"
           }
         },
         "type": "object",
@@ -743,6 +1832,73 @@
           "proposal"
         ],
         "title": "ProposalEvent"
+      },
+      "RelationType": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "target_type": {
+            "type": "string",
+            "title": "Target Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "via": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Via"
+          },
+          "cardinality": {
+            "type": "string",
+            "enum": [
+              "many_to_one",
+              "one_to_one",
+              "one_to_many",
+              "many_to_many"
+            ],
+            "title": "Cardinality",
+            "default": "many_to_one"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "source_type",
+          "target_type"
+        ],
+        "title": "RelationType"
       },
       "ResponseEvent": {
         "properties": {
@@ -788,11 +1944,120 @@
         ],
         "title": "ResponseEvent"
       },
+      "Rule": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "threshold",
+              "constraint",
+              "precedence",
+              "protocol"
+            ],
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Domain"
+          },
+          "hard": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hard"
+          },
+          "subjects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Subjects"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": ""
+          },
+          "enforced_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforced By"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "text",
+          "domain"
+        ],
+        "title": "Rule",
+        "description": "Operational knowledge no table holds. `id` is what rules.py cites in every RuleResult.\n\nkind: threshold   a numeric limit        params: {op, value, unit} or a table\n      constraint  a yes/no condition\n      precedence  ordering / priority\n      protocol    how the negotiation itself must run (from the brief)"
+      },
       "RuleResult": {
         "properties": {
           "rule": {
             "type": "string",
             "title": "Rule"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id",
+            "description": "Semantic-model rule id, e.g. 'atc.wake_separation'"
           },
           "domain": {
             "type": "string",
@@ -830,6 +2095,48 @@
           "detail"
         ],
         "title": "RuleResult"
+      },
+      "RunStats": {
+        "properties": {
+          "llm_calls": {
+            "type": "integer",
+            "title": "Llm Calls",
+            "default": 0
+          },
+          "tool_calls": {
+            "type": "integer",
+            "title": "Tool Calls",
+            "default": 0
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens",
+            "default": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens",
+            "default": 0
+          },
+          "cache_read_tokens": {
+            "type": "integer",
+            "title": "Cache Read Tokens",
+            "default": 0
+          },
+          "guardrail_checks": {
+            "type": "integer",
+            "title": "Guardrail Checks",
+            "default": 0
+          },
+          "guardrail_rejections": {
+            "type": "integer",
+            "title": "Guardrail Rejections",
+            "description": "Replies sent back (or blocked) by the guardrails",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "RunStats"
       },
       "Runway": {
         "properties": {
@@ -1073,6 +2380,142 @@
         ],
         "title": "ScenarioSummary"
       },
+      "SemanticModel": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "default": 1
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/Table"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "concepts": {
+            "items": {
+              "$ref": "#/components/schemas/Concept"
+            },
+            "type": "array",
+            "title": "Concepts"
+          },
+          "entity_types": {
+            "items": {
+              "$ref": "#/components/schemas/EntityType"
+            },
+            "type": "array",
+            "title": "Entity Types"
+          },
+          "relation_types": {
+            "items": {
+              "$ref": "#/components/schemas/RelationType"
+            },
+            "type": "array",
+            "title": "Relation Types"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/Metric"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            },
+            "type": "array",
+            "title": "Rules"
+          },
+          "code_sets": {
+            "items": {
+              "$ref": "#/components/schemas/CodeSet"
+            },
+            "type": "array",
+            "title": "Code Sets"
+          },
+          "passages": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgePassage"
+            },
+            "type": "array",
+            "title": "Passages"
+          },
+          "knowledge_links": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeLink"
+            },
+            "type": "array",
+            "title": "Knowledge Links"
+          },
+          "vocabulary": {
+            "items": {
+              "$ref": "#/components/schemas/VocabTerm"
+            },
+            "type": "array",
+            "title": "Vocabulary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project"
+        ],
+        "title": "SemanticModel"
+      },
+      "SqlResult": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated",
+            "description": "True when the query returned more rows than shown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "columns",
+          "rows",
+          "truncated"
+        ],
+        "title": "SqlResult"
+      },
       "StartedEvent": {
         "properties": {
           "scenario_id": {
@@ -1104,6 +2547,12 @@
           "thinking": {
             "$ref": "#/components/schemas/ThinkingEvent"
           },
+          "tool_call": {
+            "$ref": "#/components/schemas/ToolCall"
+          },
+          "guardrail": {
+            "$ref": "#/components/schemas/GuardrailEvent"
+          },
           "proposal": {
             "$ref": "#/components/schemas/ProposalEvent"
           },
@@ -1127,6 +2576,8 @@
         "required": [
           "started",
           "thinking",
+          "tool_call",
+          "guardrail",
           "proposal",
           "evaluation",
           "response",
@@ -1136,6 +2587,49 @@
         ],
         "title": "StreamEvents",
         "description": "Not an endpoint. Exists so every SSE payload type lands in the OpenAPI schema."
+      },
+      "Table": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "rows": {
+            "type": "integer",
+            "title": "Rows"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/Column"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "profiled_rows": {
+            "type": "integer",
+            "title": "Profiled Rows"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/atc_negotiation__semantic__model__Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "path",
+          "rows",
+          "columns",
+          "profiled_rows"
+        ],
+        "title": "Table"
       },
       "ThinkingEvent": {
         "properties": {
@@ -1169,6 +2663,99 @@
         ],
         "title": "ThinkingEvent"
       },
+      "ToolCall": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "agent": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Agent"
+          },
+          "step": {
+            "type": "integer",
+            "title": "Step",
+            "description": "LLM call within this agent's action, from 1"
+          },
+          "tool": {
+            "type": "string",
+            "enum": [
+              "query_metric",
+              "check_proposal",
+              "lookup_concept"
+            ],
+            "title": "Tool"
+          },
+          "input": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input"
+          },
+          "output": {
+            "type": "string",
+            "title": "Output",
+            "description": "What the agent saw, verbatim (long outputs are cut)"
+          },
+          "is_error": {
+            "type": "boolean",
+            "title": "Is Error",
+            "default": false
+          },
+          "duration_ms": {
+            "type": "number",
+            "title": "Duration Ms"
+          },
+          "sql_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SqlResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rows for query_metric, as a table"
+          },
+          "sql": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sql",
+            "description": "SQL that ran. For query_metric it is compiled from the model"
+          },
+          "model_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Model Refs",
+            "description": "Semantic-model elements this call touched, e.g. ['metric:taxi_in', 'type:Flight.DESTINATION_AIRPORT'] or the rule ids a check_proposal evaluated. Link these to /semantic/lookup"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "agent",
+          "step",
+          "tool",
+          "input",
+          "output",
+          "duration_ms"
+        ],
+        "title": "ToolCall",
+        "description": "One tool an agent ran while working out its proposal or response."
+      },
       "TurnRecord": {
         "properties": {
           "turn": {
@@ -1180,7 +2767,7 @@
             "title": "Proposer"
           },
           "proposal": {
-            "$ref": "#/components/schemas/Proposal"
+            "$ref": "#/components/schemas/Proposal-Output"
           },
           "evaluation": {
             "$ref": "#/components/schemas/Evaluation"
@@ -1206,6 +2793,22 @@
             "type": "array",
             "title": "Vetoed Accepts",
             "description": "Agents that accepted a proposal the rule engine found infeasible"
+          },
+          "tool_calls": {
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            },
+            "type": "array",
+            "title": "Tool Calls",
+            "description": "Every tool run during this turn, in order"
+          },
+          "guardrail_blocked": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guardrail Blocked",
+            "description": "Agents whose reply failed the citation guardrails after repairs. Their accept or counter did not count"
           }
         },
         "type": "object",
@@ -1266,6 +2869,132 @@
           "counter"
         ],
         "title": "Verdict"
+      },
+      "VocabTerm": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "title": "Term"
+          },
+          "target_kind": {
+            "type": "string",
+            "enum": [
+              "concept",
+              "type",
+              "metric",
+              "rule",
+              "code"
+            ],
+            "title": "Target Kind"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "user"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "target_kind",
+          "target"
+        ],
+        "title": "VocabTerm",
+        "description": "What people say \u2192 what the model calls it."
+      },
+      "atc_negotiation__schemas__Evidence": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Citation number. The agent's text refers to it as [id]",
+            "default": 0
+          },
+          "claim": {
+            "type": "string",
+            "title": "Claim",
+            "description": "Short factual statement, e.g. 'ORD Jan 17-19h weather delay p90 is 0 min'"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "What backs the claim, as a semantic-model reference: 'metric:<name>' (queried this action), 'rule:<id>', 'passage:<id>', 'code:<CodeSet>.<value>', 'scenario:<field>', or 'check_proposal'"
+          },
+          "grounded": {
+            "type": "boolean",
+            "title": "Grounded",
+            "description": "False when the source does not resolve in the semantic model, or a metric is cited without having been queried. The UI should flag these",
+            "default": true
+          },
+          "citation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Citation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the source says, resolved from the model"
+          },
+          "trust": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Trust",
+            "description": "high: regulation/standard, rule engine, code set, or a metric over >= 100 flights. medium: brief-derived rule, scenario fact, or a smaller sample. low: synthetic scenario field or ungrounded",
+            "default": "medium"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claim",
+          "source"
+        ],
+        "title": "Evidence",
+        "description": "One claim an agent relies on, tied to the semantic-model element it comes from."
+      },
+      "atc_negotiation__semantic__model__Evidence": {
+        "properties": {
+          "by": {
+            "type": "string",
+            "title": "By"
+          },
+          "what": {
+            "type": "string",
+            "title": "What"
+          },
+          "ref": {
+            "type": "string",
+            "title": "Ref",
+            "default": ""
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "by",
+          "what"
+        ],
+        "title": "Evidence",
+        "description": "Why an element exists / was decided the way it was."
       }
     }
   }

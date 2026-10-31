@@ -1,0 +1,579 @@
+_generated: by atc_negotiation.semantic.profiler; do not edit
+tables:
+- name: airlines
+  path: data/airlines.csv
+  rows: 14
+  columns:
+  - name: IATA_CODE
+    type: str
+    nulls: 0.0
+    distinct: 14
+    samples:
+    - UA
+    - AA
+    - US
+    - F9
+    - B6
+    - OO
+    is_id: true
+    is_time: false
+  - name: AIRLINE
+    type: str
+    nulls: 0.0
+    distinct: 14
+    samples:
+    - United Air Lines Inc.
+    - American Airlines Inc.
+    - US Airways Inc.
+    - Frontier Airlines Inc.
+    - JetBlue Airways
+    - Skywest Airlines Inc.
+    is_id: false
+    is_time: false
+  profiled_rows: 14
+  evidence:
+  - by: profiler
+    what: profiled 14 of 14 rows on 2026-10-31
+    ref: data/airlines.csv
+- name: airports
+  path: data/airports.csv
+  rows: 322
+  columns:
+  - name: IATA_CODE
+    type: str
+    nulls: 0.0
+    distinct: 322
+    samples:
+    - ABE
+    - ABI
+    - ABQ
+    - ABR
+    - ABY
+    - ACK
+    is_id: true
+    is_time: false
+  - name: AIRPORT
+    type: str
+    nulls: 0.0
+    distinct: 322
+    samples:
+    - Lehigh Valley International Airport
+    - Abilene Regional Airport
+    - Albuquerque International Sunport
+    - Aberdeen Regional Airport
+    - Southwest Georgia Regional Airport
+    - Nantucket Memorial Airport
+    is_id: false
+    is_time: false
+  - name: CITY
+    type: str
+    nulls: 0.0
+    distinct: 308
+    samples:
+    - Albany
+    - Columbia
+    - Charleston
+    - San Diego
+    - Columbus
+    - Houston
+    is_id: false
+    is_time: false
+  - name: STATE
+    type: str
+    nulls: 0.0
+    distinct: 54
+    samples:
+    - TX
+    - CA
+    - AK
+    - FL
+    - MI
+    - NY
+    is_id: false
+    is_time: false
+  - name: COUNTRY
+    type: str
+    nulls: 0.0
+    distinct: 1
+    samples:
+    - USA
+    is_id: false
+    is_time: false
+  - name: LATITUDE
+    type: float
+    nulls: 0.0093
+    distinct: 319
+    samples:
+    - '40.65236'
+    - '32.41132'
+    - '35.04022'
+    - '45.44906'
+    - '31.53552'
+    - '41.25305'
+    min: 13.48345
+    max: 71.28545
+    is_id: false
+    is_time: false
+  - name: LONGITUDE
+    type: float
+    nulls: 0.0093
+    distinct: 319
+    samples:
+    - '-75.44040'
+    - '-99.68190'
+    - '-106.60919'
+    - '-98.42183'
+    - '-84.19447'
+    - '-70.06018'
+    min: -176.64603
+    max: -64.79856
+    is_id: false
+    is_time: false
+  profiled_rows: 322
+  evidence:
+  - by: profiler
+    what: profiled 322 of 322 rows on 2026-10-31
+    ref: data/airports.csv
+- name: flights
+  path: data/flights.csv
+  rows: 358774
+  columns:
+  - name: YEAR
+    type: int
+    nulls: 0.0
+    distinct: 1
+    samples:
+    - '2015'
+    min: 2015.0
+    max: 2015.0
+    is_id: false
+    is_time: false
+  - name: MONTH
+    type: int
+    nulls: 0.0
+    distinct: 6
+    samples:
+    - '6'
+    - '2'
+    - '1'
+    - '5'
+    - '3'
+    - '4'
+    min: 1.0
+    max: 6.0
+    is_id: false
+    is_time: false
+  - name: DAY
+    type: int
+    nulls: 0.0
+    distinct: 31
+    samples:
+    - '3'
+    - '26'
+    - '9'
+    - '5'
+    - '4'
+    - '2'
+    min: 1.0
+    max: 31.0
+    is_id: false
+    is_time: false
+  - name: DAY_OF_WEEK
+    type: int
+    nulls: 0.0
+    distinct: 7
+    samples:
+    - '1'
+    - '5'
+    - '4'
+    - '7'
+    - '2'
+    - '3'
+    min: 1.0
+    max: 7.0
+    is_id: false
+    is_time: false
+  - name: AIRLINE
+    type: str
+    nulls: 0.0
+    distinct: 14
+    samples:
+    - WN
+    - OO
+    - EV
+    - UA
+    - AA
+    - DL
+    is_id: false
+    is_time: false
+  - name: FLIGHT_NUMBER
+    type: int
+    nulls: 0.0
+    distinct: 6317
+    samples:
+    - '42'
+    - '341'
+    - '719'
+    - '207'
+    - '705'
+    - '498'
+    min: 1.0
+    max: 7438.0
+    is_id: true
+    is_time: false
+  - name: TAIL_NUMBER
+    type: str
+    nulls: 0.0
+    distinct: 4507
+    samples:
+    - N647SW
+    - N362SW
+    - N397SW
+    - N905EV
+    - N352SW
+    - N361SW
+    is_id: true
+    is_time: false
+  - name: ORIGIN_AIRPORT
+    type: str
+    nulls: 0.0
+    distinct: 319
+    samples:
+    - ORD
+    - DFW
+    - ATL
+    - DEN
+    - LAX
+    - SFO
+    is_id: false
+    is_time: false
+  - name: DESTINATION_AIRPORT
+    type: str
+    nulls: 0.0
+    distinct: 315
+    samples:
+    - ORD
+    - DFW
+    - ATL
+    - DEN
+    - LAX
+    - IAH
+    is_id: false
+    is_time: false
+  - name: SCHEDULED_DEPARTURE
+    type: int
+    nulls: 0.0
+    distinct: 1208
+    samples:
+    - '1700'
+    - '1900'
+    - '2000'
+    - '1830'
+    - '1930'
+    - '1800'
+    min: 3.0
+    max: 2359.0
+    is_id: false
+    is_time: true
+  - name: DEPARTURE_TIME
+    type: int
+    nulls: 0.0
+    distinct: 1399
+    samples:
+    - '2027'
+    - '2038'
+    - '2018'
+    - '1937'
+    - '1944'
+    - '1946'
+    min: 1.0
+    max: 2400.0
+    is_id: false
+    is_time: true
+  - name: DEPARTURE_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 822
+    samples:
+    - '39'
+    - '38'
+    - '43'
+    - '42'
+    - '41'
+    - '34'
+    min: -22.0
+    max: 1609.0
+    is_id: false
+    is_time: false
+  - name: TAXI_OUT
+    type: int
+    nulls: 0.0
+    distinct: 176
+    samples:
+    - '11'
+    - '12'
+    - '10'
+    - '13'
+    - '9'
+    - '14'
+    min: 1.0
+    max: 225.0
+    is_id: false
+    is_time: false
+  - name: WHEELS_OFF
+    type: int
+    nulls: 0.0
+    distinct: 1399
+    samples:
+    - '1956'
+    - '2040'
+    - '2004'
+    - '2032'
+    - '2048'
+    - '2043'
+    min: 1.0
+    max: 2400.0
+    is_id: false
+    is_time: true
+  - name: SCHEDULED_TIME
+    type: int
+    nulls: 0.0
+    distinct: 466
+    samples:
+    - '80'
+    - '75'
+    - '85'
+    - '65'
+    - '90'
+    - '70'
+    min: 18.0
+    max: 718.0
+    is_id: false
+    is_time: false
+  - name: ELAPSED_TIME
+    type: int
+    nulls: 0.0
+    distinct: 549
+    samples:
+    - '76'
+    - '80'
+    - '77'
+    - '79'
+    - '73'
+    - '78'
+    min: 18.0
+    max: 731.0
+    is_id: false
+    is_time: false
+  - name: AIR_TIME
+    type: int
+    nulls: 0.0
+    distinct: 512
+    samples:
+    - '64'
+    - '55'
+    - '54'
+    - '63'
+    - '52'
+    - '62'
+    min: 8.0
+    max: 687.0
+    is_id: false
+    is_time: false
+  - name: DISTANCE
+    type: int
+    nulls: 0.0
+    distinct: 1282
+    samples:
+    - '337'
+    - '447'
+    - '184'
+    - '802'
+    - '190'
+    - '862'
+    min: 31.0
+    max: 4983.0
+    is_id: false
+    is_time: false
+  - name: WHEELS_ON
+    type: int
+    nulls: 0.0
+    distinct: 1439
+    samples:
+    - '2144'
+    - '2123'
+    - '2129'
+    - '2128'
+    - '2109'
+    - '2138'
+    min: 1.0
+    max: 2400.0
+    is_id: false
+    is_time: true
+  - name: TAXI_IN
+    type: int
+    nulls: 0.0
+    distinct: 161
+    samples:
+    - '5'
+    - '4'
+    - '6'
+    - '7'
+    - '3'
+    - '8'
+    min: 1.0
+    max: 202.0
+    is_id: false
+    is_time: false
+  - name: SCHEDULED_ARRIVAL
+    type: int
+    nulls: 0.0
+    distinct: 1336
+    samples:
+    - '2100'
+    - '1925'
+    - '2030'
+    - '2025'
+    - '2105'
+    - '1905'
+    min: 1.0
+    max: 2400.0
+    is_id: false
+    is_time: true
+  - name: ARRIVAL_TIME
+    type: int
+    nulls: 0.0
+    distinct: 1438
+    samples:
+    - '2137'
+    - '2126'
+    - '2130'
+    - '2121'
+    - '2213'
+    - '2155'
+    min: 1.0
+    max: 2400.0
+    is_id: false
+    is_time: true
+  - name: ARRIVAL_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 789
+    samples:
+    - '30'
+    - '34'
+    - '35'
+    - '31'
+    - '33'
+    - '29'
+    min: 16.0
+    max: 1598.0
+    is_id: false
+    is_time: false
+  - name: DIVERTED
+    type: int
+    nulls: 0.0
+    distinct: 1
+    samples:
+    - '0'
+    min: 0.0
+    max: 0.0
+    is_id: false
+    is_time: false
+  - name: CANCELLED
+    type: int
+    nulls: 0.0
+    distinct: 1
+    samples:
+    - '0'
+    min: 0.0
+    max: 0.0
+    is_id: false
+    is_time: false
+  - name: CANCELLATION_REASON
+    type: empty
+    nulls: 1.0
+    distinct: 0
+    samples: []
+    is_id: false
+    is_time: false
+  - name: AIR_SYSTEM_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 322
+    samples:
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    min: 0.0
+    max: 588.0
+    is_id: false
+    is_time: false
+  - name: SECURITY_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 52
+    samples:
+    - '0'
+    - '2'
+    - '4'
+    - '5'
+    - '6'
+    - '3'
+    min: 0.0
+    max: 204.0
+    is_id: false
+    is_time: false
+  - name: AIRLINE_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 463
+    samples:
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    min: 0.0
+    max: 1563.0
+    is_id: false
+    is_time: false
+  - name: LATE_AIRCRAFT_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 610
+    samples:
+    - '0'
+    - '21'
+    - '22'
+    - '23'
+    - '24'
+    - '25'
+    min: 0.0
+    max: 1331.0
+    is_id: false
+    is_time: false
+  - name: WEATHER_DELAY
+    type: int
+    nulls: 0.0
+    distinct: 546
+    samples:
+    - '0'
+    - '16'
+    - '17'
+    - '18'
+    - '20'
+    - '19'
+    min: 0.0
+    max: 1152.0
+    is_id: false
+    is_time: false
+  profiled_rows: 200000
+  evidence:
+  - by: profiler
+    what: profiled 200000 of 358774 rows on 2026-10-31
+    ref: data/flights.csv

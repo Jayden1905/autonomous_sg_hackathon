@@ -1,0 +1,142 @@
+{
+  "scenario_id": "demo-storm-ORD-UA599",
+  "flight": "UA599",
+  "airline": "UA",
+  "airline_name": "United Air Lines Inc.",
+  "origin": "BOS",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "BOS",
+    "name": "Gen. Edward Lawrence Logan International Airport",
+    "city": "Boston",
+    "state": "MA",
+    "country": "USA",
+    "latitude": 42.36435,
+    "longitude": -71.00518
+  },
+  "destination_info": {
+    "iata": "ORD",
+    "name": "Chicago O'Hare International Airport",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "latitude": 41.9796,
+    "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "17:55",
+  "disruption": "Thunderstorm over O'Hare, 8 May 2015. Runway 27L closed; every arrival is sequenced onto 27R behind a stream of heavies. UA599 left Boston 52 min late on weather and can reach ORD at t+52 at the earliest. The gate it was planned for (C9) is needed again at t+72.",
+  "weather_delay_min": 52,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 52,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 62,
+  "final_reserve_min": 30,
+  "connections": [
+    {
+      "passengers": 23,
+      "departs_min": 110,
+      "min_connect_min": 35
+    },
+    {
+      "passengers": 6,
+      "departs_min": 160,
+      "min_connect_min": 35
+    }
+  ],
+  "runways": [
+    {
+      "name": "27L",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "27R",
+      "open": true,
+      "taxiway_blocked": false,
+      "arrivals": [
+        {
+          "time_min": 51,
+          "category": "H"
+        },
+        {
+          "time_min": 53,
+          "category": "M"
+        },
+        {
+          "time_min": 57,
+          "category": "H"
+        },
+        {
+          "time_min": 59,
+          "category": "M"
+        },
+        {
+          "time_min": 61,
+          "category": "H"
+        },
+        {
+          "time_min": 63,
+          "category": "M"
+        },
+        {
+          "time_min": 65,
+          "category": "M"
+        },
+        {
+          "time_min": 68,
+          "category": "H"
+        },
+        {
+          "time_min": 73,
+          "category": "M"
+        },
+        {
+          "time_min": 76,
+          "category": "L"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "name": "C9",
+      "free_from_min": 30,
+      "free_until_min": 72
+    },
+    {
+      "name": "B6",
+      "free_from_min": 58,
+      "free_until_min": 200
+    }
+  ],
+  "crew_shift_ends_min": 120,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "source": {
+    "YEAR": "2015",
+    "MONTH": "5",
+    "DAY": "8",
+    "AIRLINE": "UA",
+    "FLIGHT_NUMBER": "599",
+    "ORIGIN_AIRPORT": "BOS",
+    "DESTINATION_AIRPORT": "ORD",
+    "SCHEDULED_ARRIVAL": "1755",
+    "DEPARTURE_DELAY": "52",
+    "ARRIVAL_DELAY": "88",
+    "WEATHER_DELAY": "52",
+    "LATE_AIRCRAFT_DELAY": "0",
+    "AIR_SYSTEM_DELAY": "36",
+    "TAXI_IN": "13"
+  },
+  "synthetic_fields": [
+    "aircraft_category",
+    "fuel_endurance_min",
+    "connections",
+    "runways",
+    "gates",
+    "crew_shift_ends_min",
+    "turnaround_min",
+    "demo: flight, date, schedule and delays are the real DOT row; the airport layout is hand-tuned so the earliest legal slot and the cheapest plan differ"
+  ]
+}

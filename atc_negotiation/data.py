@@ -16,6 +16,13 @@ from pathlib import Path
 from typing import Iterator
 
 from .schemas import AirportInfo, AircraftCategory, Connection, Gate, Runway, RunwayArrival, Scenario
+from .semantic import default_engine
+
+# Thresholds come from the semantic model, like every number in rules.py.
+_filter = default_engine().rule_params("data.disruption_filter")
+WEATHER_DELAY_GT: int = int(_filter.get("weather_delay_gt", 15))
+LATE_AIRCRAFT_DELAY_GT: int = int(_filter.get("late_aircraft_delay_gt", 20))
+TURNAROUND_MIN: int = int(default_engine().rule_params("ground.turnaround").get("value", 45))
 
 SYNTHETIC = ["aircraft_category", "fuel_endurance_min", "connections", "runways", "gates",
              "crew_shift_ends_min", "turnaround_min", "disruption"]
@@ -60,7 +67,8 @@ def qualifying_rows(csv_path: Path, limit: int | None = None) -> Iterator[dict]:
     n = 0
     with csv_path.open(newline="") as f:
         for row in csv.DictReader(f):
-            if _int(row.get("WEATHER_DELAY", "")) > 15 or _int(row.get("LATE_AIRCRAFT_DELAY", "")) > 20:
+            if (_int(row.get("WEATHER_DELAY", "")) > WEATHER_DELAY_GT
+                    or _int(row.get("LATE_AIRCRAFT_DELAY", "")) > LATE_AIRCRAFT_DELAY_GT):
                 yield row
                 n += 1
                 if limit is not None and n >= limit:
@@ -84,7 +92,7 @@ def scenario_from_row(row: dict) -> Scenario:
     dest_label = dest_info.name if dest_info else row["DESTINATION_AIRPORT"]
     left, right = _runway_pair(rng)
 
-    if weather > 15:
+    if weather > WEATHER_DELAY_GT:
         disruption = (f"Thunderstorms at {dest_label}: {weather} min weather delay logged. "
                       f"Runway {left} closed, arrival rate reduced.")
         runways = [
@@ -125,7 +133,7 @@ def scenario_from_row(row: dict) -> Scenario:
         connections=connections,
         runways=runways, gates=gates,
         crew_shift_ends_min=earliest + rng.randint(30, 90),
-        turnaround_min=45,
+        turnaround_min=TURNAROUND_MIN,
         max_arrival_min=earliest + 180,  # window is relative to when it can first arrive
         source={k: row[k] for k in ("YEAR", "MONTH", "DAY", "AIRLINE", "FLIGHT_NUMBER", "TAIL_NUMBER",
                                     "ORIGIN_AIRPORT", "DESTINATION_AIRPORT", "SCHEDULED_DEPARTURE",

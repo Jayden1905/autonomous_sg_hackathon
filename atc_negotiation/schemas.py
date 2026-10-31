@@ -85,11 +85,62 @@ class Scenario(BaseModel):
     synthetic_fields: list[str] = Field(default_factory=list)
 
 
+class Evidence(BaseModel):
+    """One claim an agent relies on, tied to the semantic-model element it comes from."""
+
+    id: int = Field(default=0, description="Citation number. The agent's text refers to it as [id]")
+    claim: str = Field(description="Short factual statement, e.g. 'ORD Jan 17-19h weather delay p90 is 0 min'")
+    source: str = Field(description=(
+        "What backs the claim, as a semantic-model reference: 'metric:<name>' (queried this action), "
+        "'rule:<id>', 'passage:<id>', 'code:<CodeSet>.<value>', 'scenario:<field>', or 'check_proposal'"))
+    grounded: bool = Field(default=True, description=(
+        "False when the source does not resolve in the semantic model, or a metric is cited without "
+        "having been queried. The UI should flag these"))
+    citation: "Citation | None" = Field(default=None, description="What the source says, resolved from the model")
+    trust: Literal["high", "medium", "low"] = Field(default="medium", description=(
+        "high: regulation/standard, rule engine, code set, or a metric over >= 100 flights. medium: brief-derived "
+        "rule, scenario fact, or a smaller sample. low: synthetic scenario field or ungrounded"))
+
+
+class GuardrailViolation(BaseModel):
+    code: Literal["G1", "G2", "G3", "G4", "G5", "G6", "G7"]
+    kind: Literal["uncited_sentence", "dangling_marker", "ungrounded_source", "unsupported_number", "off_source",
+                  "unsupported_prose", "thin_sample"]
+    where: str = Field(description="'proposal rationale', 'summary', 'objection 2', 'response', 'counter' ...")
+    evidence_id: int | None = None
+    message: str
+
+
+class GuardrailReport(BaseModel):
+    """Result of the citation guardrails on one agent reply."""
+
+    passed: bool
+    violations: list[GuardrailViolation] = Field(default_factory=list)
+    checked_claims: int = 0
+    low_trust: list[int] = Field(default_factory=list, description="Evidence ids with trust 'low'")
+    attempts: int = Field(default=1, description="Submits it took; >1 means the agent was sent back")
+
+
+class Citation(BaseModel):
+    """A source resolved from the semantic model, ready to render as a footnote."""
+
+    kind: Literal["metric", "rule", "passage", "code", "scenario", "rule_engine", "unknown"]
+    ref: str = Field(description="Model id, e.g. 'pilot.final_reserve_fuel', 'taxi_in', 'easa:cat.op.mpa.181'")
+    label: str = Field(description="Short human title, e.g. 'EASA Air OPS CAT.OP.MPA.181(c)(5) Final reserve fuel'")
+    text: str = Field(description="What the source says: rule text, passage quote, metric definition")
+    url: str | None = None
+    passage_id: str | None = Field(default=None, description="Regulation/brief passage behind a rule or metric")
+
+
 class Proposal(BaseModel):
     arrival_min: int = Field(description="Revised arrival, minutes after scheduled arrival")
     runway: str
     gate: str
-    rationale: str = Field(description="One or two sentences, plain language")
+    rationale: str = Field(description="One or two sentences, plain language, with [n] citation markers")
+    evidence: list[Evidence] = Field(default_factory=list,
+                                     description="Claims the plan relies on, each with its model source. Empty "
+                                                 "for the deterministic solver")
+    guardrail: GuardrailReport | None = Field(default=None, description="Citation guardrail result; null for the solver")
 
 
 class Verdict(str, Enum):
@@ -99,12 +150,16 @@ class Verdict(str, Enum):
 
 class AgentResponse(BaseModel):
     verdict: Verdict
-    objections: list[str] = Field(default_factory=list, description="Empty when accepting")
+    objections: list[str] = Field(default_factory=list, description="Empty when accepting. Carry [n] markers")
+    summary: str = Field(default="", description="One or two sentences on why this verdict, with [n] markers")
     counter: Proposal | None = Field(default=None, description="Required when verdict is counter")
+    evidence: list[Evidence] = Field(default_factory=list, description="Claims behind the verdict, with sources")
+    guardrail: GuardrailReport | None = None
 
 
 class RuleResult(BaseModel):
     rule: str
+    rule_id: str | None = Field(default=None, description="Semantic-model rule id, e.g. 'atc.wake_separation'")
     domain: Literal["atc", "pilot", "ground"]
     passed: bool
     hard: bool
@@ -132,6 +187,40 @@ class Evaluation(BaseModel):
         return [r for r in self.results if r.hard and not r.passed]
 
 
+class SqlResult(BaseModel):
+    columns: list[str]
+    rows: list[list[str | int | float | bool | None]]
+    truncated: bool = Field(description="True when the query returned more rows than shown")
+
+
+class ToolCall(BaseModel):
+    """One tool an agent ran while working out its proposal or response."""
+
+    turn: int
+    agent: Literal["atc", "pilot", "ground"]
+    step: int = Field(description="LLM call within this agent's action, from 1")
+    tool: Literal["query_metric", "check_proposal", "lookup_concept"]
+    input: dict
+    output: str = Field(description="What the agent saw, verbatim (long outputs are cut)")
+    is_error: bool = False
+    duration_ms: float
+    sql_result: SqlResult | None = Field(default=None, description="Rows for query_metric, as a table")
+    sql: str | None = Field(default=None, description="SQL that ran. For query_metric it is compiled from the model")
+    model_refs: list[str] = Field(default_factory=list, description=(
+        "Semantic-model elements this call touched, e.g. ['metric:taxi_in', 'type:Flight.DESTINATION_AIRPORT'] "
+        "or the rule ids a check_proposal evaluated. Link these to /semantic/lookup"))
+
+
+class RunStats(BaseModel):
+    llm_calls: int = 0
+    tool_calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cache_read_tokens: int = 0
+    guardrail_checks: int = 0
+    guardrail_rejections: int = Field(default=0, description="Replies sent back (or blocked) by the guardrails")
+
+
 class TurnRecord(BaseModel):
     turn: int
     proposer: str
@@ -143,6 +232,9 @@ class TurnRecord(BaseModel):
         default_factory=list,
         description="Agents that accepted a proposal the rule engine found infeasible",
     )
+    tool_calls: list[ToolCall] = Field(default_factory=list, description="Every tool run during this turn, in order")
+    guardrail_blocked: list[str] = Field(default_factory=list, description=(
+        "Agents whose reply failed the citation guardrails after repairs. Their accept or counter did not count"))
 
 
 class NegotiationTrace(BaseModel):
@@ -158,3 +250,7 @@ class NegotiationTrace(BaseModel):
     final: Proposal
     final_evaluation: Evaluation
     fallback_reason: str | None = None
+    stats: RunStats = Field(default_factory=RunStats)
+
+
+Evidence.model_rebuild()

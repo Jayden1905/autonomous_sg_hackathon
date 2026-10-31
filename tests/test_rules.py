@@ -44,7 +44,8 @@ def test_gate_window(scenario):
 
 
 def test_soft_costs_do_not_block(scenario):
-    ev = evaluate(scenario, Proposal(arrival_min=44, runway="27R", gate="B12", rationale=""))
+    # The fallback's own pick: every hard rule passes (operator buffers included), soft costs remain.
+    ev = evaluate(scenario, Proposal(arrival_min=28, runway="27R", gate="B14", rationale=""))
     assert ev.feasible
     assert ev.cost > 0
 
@@ -59,3 +60,11 @@ def test_fallback_returns_none_when_nothing_fits(scenario):
     scenario.fuel_endurance_min = scenario.final_reserve_min  # zero holding allowed
     scenario.runways[1].arrivals.append(type(scenario.runways[1].arrivals[0])(time_min=22, category="H"))
     assert fallback.solve(scenario) is None
+
+
+def test_operator_rules_are_labelled_as_worked_example(scenario):
+    from atc_negotiation.rules import OPERATOR_LABEL
+    ev = evaluate(scenario, Proposal(arrival_min=46, runway="27R", gate="B12", rationale=""))
+    ops = [r for r in ev.results if r.rule_id and r.rule_id.startswith("operator.")]
+    assert ops, "operator rules are on for the demo"
+    assert all(r.detail.startswith(OPERATOR_LABEL) for r in ops)

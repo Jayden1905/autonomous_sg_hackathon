@@ -1,0 +1,125 @@
+{
+  "scenario_id": "demo-storm-ORD-VX204-divert",
+  "flight": "VX204",
+  "airline": "VX",
+  "airline_name": "Virgin America",
+  "origin": "SFO",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "SFO",
+    "name": "San Francisco International Airport",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA",
+    "latitude": 37.619,
+    "longitude": -122.37484
+  },
+  "destination_info": {
+    "iata": "ORD",
+    "name": "Chicago O'Hare International Airport",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "latitude": 41.9796,
+    "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "18:00",
+  "disruption": "Same thunderstorm, minutes later. VX204 left San Francisco on time but has burned its contingency fuel on the long leg. With 27L closed, 27R is saturated with heavies re-sequenced off the closed runway. No slot it can legally wait for exists: the correct answer is to divert, and the system must say so.",
+  "weather_delay_min": 45,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 50,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 38,
+  "final_reserve_min": 30,
+  "connections": [
+    {
+      "passengers": 14,
+      "departs_min": 110,
+      "min_connect_min": 35
+    }
+  ],
+  "runways": [
+    {
+      "name": "27L",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "27R",
+      "open": true,
+      "taxiway_blocked": false,
+      "arrivals": [
+        {
+          "time_min": 51,
+          "category": "H"
+        },
+        {
+          "time_min": 53,
+          "category": "H"
+        },
+        {
+          "time_min": 55,
+          "category": "H"
+        },
+        {
+          "time_min": 57,
+          "category": "H"
+        },
+        {
+          "time_min": 59,
+          "category": "H"
+        },
+        {
+          "time_min": 61,
+          "category": "H"
+        },
+        {
+          "time_min": 63,
+          "category": "M"
+        },
+        {
+          "time_min": 65,
+          "category": "H"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "name": "B6",
+      "free_from_min": 40,
+      "free_until_min": 200
+    }
+  ],
+  "crew_shift_ends_min": 120,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "source": {
+    "YEAR": "2015",
+    "MONTH": "5",
+    "DAY": "8",
+    "AIRLINE": "VX",
+    "FLIGHT_NUMBER": "204",
+    "ORIGIN_AIRPORT": "SFO",
+    "DESTINATION_AIRPORT": "ORD",
+    "SCHEDULED_ARRIVAL": "1800",
+    "DEPARTURE_DELAY": "-4",
+    "ARRIVAL_DELAY": "45",
+    "WEATHER_DELAY": "45",
+    "LATE_AIRCRAFT_DELAY": "0",
+    "AIR_SYSTEM_DELAY": "0",
+    "TAXI_IN": "15"
+  },
+  "synthetic_fields": [
+    "aircraft_category",
+    "fuel_endurance_min",
+    "connections",
+    "runways",
+    "gates",
+    "crew_shift_ends_min",
+    "turnaround_min",
+    "earliest_arrival_min",
+    "demo: flight, date, schedule and delays are the real DOT row; minimum fuel and the saturated runway are hand-set so that no legal option exists"
+  ]
+}

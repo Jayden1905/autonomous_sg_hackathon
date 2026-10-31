@@ -1,0 +1,473 @@
+# Elicitation ledger: what the documents could not say, asked of the people who do the job.
+# Append-only. The last confirmed answer per question wins. Applied on SemanticModel.load().
+#
+# STATUS: the answers below are a WORKED EXAMPLE written by the model author to exercise the stage,
+# not a transcript of real interviews. Every operator's title says so. Replace them with real
+# operators' words before any claim of operator grounding is made to a judge or a user.
+operators:
+- id: twr_sup_ord
+  name: Tower supervisor
+  role: atc
+  title: Tower supervisor, ORD
+  organisation: FAA ATCT (illustrative)
+  status: example
+- id: capt_737
+  name: Line captain
+  role: pilot
+  title: B737 captain
+  organisation: United (illustrative)
+  status: example
+- id: dm_ord
+  name: Duty manager
+  role: ground
+  title: Airline duty manager, ORD
+  organisation: United (illustrative)
+  status: example
+questions:
+- id: q.atc.open
+  role: atc
+  kind: open
+  target_kind: none
+  target: ''
+  text: What do you know about sequencing arrivals in a weather event here that no manual says? Which heuristics
+    do you actually use when the rate is cut?
+  why: The model can only ask about what it already names.
+  priority: 1
+- id: q.atc.type.runway
+  role: atc
+  kind: synthetic_type
+  target_kind: type
+  target: Runway
+  text: How many runways does the hub actually run for arrivals during a weather event, which ones, and which exit
+    taxiway is the usual bottleneck?
+  why: The generator invents two parallel runways and closes or blocks one at random.
+  priority: 1
+- id: q.ground.open
+  role: ground
+  kind: open
+  target_kind: none
+  target: ''
+  text: What makes a recovery plan unworkable on the ramp even when the board says it fits? What do controllers
+    and crews not see?
+  why: The model can only ask about what it already names.
+  priority: 1
+- id: q.ground.type.gate
+  role: ground
+  kind: synthetic_type
+  target_kind: type
+  target: Gate
+  text: How reliable is the gate board? When a gate shows free at time T, how late is it typically actually free,
+    and which gates are the chronic offenders?
+  why: The generator gives each gate a clean free window; the engine trusts it exactly.
+  priority: 1
+- id: q.pilot.open
+  role: pilot
+  kind: open
+  target_kind: none
+  target: ''
+  text: 'When you''re holding with fuel getting tight, what decides it for you: divert now, or wait for the slot?
+    What do you need ATC and ground to tell you?'
+  why: The model can only ask about what it already names.
+  priority: 1
+- id: q.atc.metric.sector_delay
+  role: atc
+  kind: unsourced_metric
+  target_kind: metric
+  target: sector_delay
+  text: 'Metric sector_delay (min): Delay against schedule the sector absorbs for this flight. Is this the number
+    you watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.atc.metric.wake_gap
+  role: atc
+  kind: unsourced_metric
+  target_kind: metric
+  target: wake_gap
+  text: 'Metric wake_gap (s): Time to the nearest other arrival on the chosen runway. Is this the number you watch,
+    and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.atc.param.sector_delay
+  role: atc
+  kind: default_param
+  target_kind: rule
+  target: atc.sector_delay
+  text: 'Rule atc.sector_delay: Every minute of delay against schedule costs the sector; minimise it. Is {''cost_per_min'':
+    1.0} right for your operation? What would you use, and should it be a hard limit instead?'
+  why: 'Current source: brief:c2:atc; these are typical values, not yours.'
+  priority: 2
+- id: q.atc.rule.slot_window
+  role: atc
+  kind: unsourced_rule
+  target_kind: rule
+  target: atc.slot_window
+  text: 'Rule atc.slot_window: The slot must be no earlier than the flight can physically arrive and no later than
+    the sector''s hand-off limit. Where does this come from in your operation, and is it right?'
+  why: No source passage.
+  priority: 2
+- id: q.ground.metric.crew_overtime
+  role: ground
+  kind: unsourced_metric
+  target_kind: metric
+  target: crew_overtime
+  text: 'Metric crew_overtime (min): max(0, arrival_min + turnaround_min - crew_shift_ends_min). Is this the number
+    you watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.ground.metric.taxi_in
+  role: ground
+  kind: unsourced_metric
+  target_kind: metric
+  target: taxi_in
+  text: 'Metric taxi_in (min): Wheels-on to gate arrival. Adds to the real on-block time. Is this the number you
+    watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.ground.param.crew_overtime
+  role: ground
+  kind: default_param
+  target_kind: rule
+  target: ground.crew_overtime
+  text: 'Rule ground.crew_overtime: Every minute the turnaround runs past the crew''s shift end is overtime; minimise
+    it. Is {''cost_per_min'': 1.5} right for your operation? What would you use, and should it be a hard limit instead?'
+  why: 'Current source: brief:c2:ground; these are typical values, not yours.'
+  priority: 2
+- id: q.ground.param.gate_overrun
+  role: ground
+  kind: default_param
+  target_kind: rule
+  target: ground.gate_overrun
+  text: 'Rule ground.gate_overrun: Gate utilisation. The aircraft occupies the gate from arrival until its turnaround
+    ends. Every minute that runs past the gate''s free window pushes the gate''s next flight, so it costs like a
+    minute of delay. This is what makes the earliest slot not always the best one for ground. Is {''cost_per_min'':
+    1.0} right for your operation? What would you use, and should it be a hard limit instead?'
+  why: 'Current source: brief:c2:ground; these are typical values, not yours.'
+  priority: 2
+- id: q.ground.param.turnaround
+  role: ground
+  kind: default_param
+  target_kind: rule
+  target: ground.turnaround
+  text: 'Rule ground.turnaround: Planning turnaround for a narrowbody is 45 min (Airbus quotes 35-45 for a full-service
+    A320; legacy carriers schedule 45-60). Not scored on its own: it sets Scenario.turnaround_min, and its cost
+    reaches the plan through ground.crew_overtime (arrival + turnaround past the crew''s shift end). Is {''value'':
+    45, ''unit'': ''min''} right for your operation? What would you use, and should it be a hard limit instead?'
+  why: 'Current source: airbus:turnaround; these are typical values, not yours.'
+  priority: 2
+- id: q.ground.type.groundcrew
+  role: ground
+  kind: synthetic_type
+  target_kind: type
+  target: GroundCrew
+  text: When does a ramp crew's shift actually end relative to the roster, and how much overtime will they absorb
+    before someone has to be called?
+  why: The generator sets shift end 30–90 min after earliest arrival; any minute past it is costed.
+  priority: 2
+- id: q.ground.type.turnaround
+  role: ground
+  kind: synthetic_type
+  target_kind: type
+  target: Turnaround
+  text: What turnaround does your operation plan for this fleet at the hub, and what is the shortest you'd accept
+    under disruption?
+  why: The model uses 45 min flat, from Airbus's A320 figure.
+  priority: 2
+- id: q.pilot.metric.holding_time
+  role: pilot
+  kind: unsourced_metric
+  target_kind: metric
+  target: holding_time
+  text: 'Metric holding_time (min): Airborne delay absorbed before landing. Burns fuel. Is this the number you watch,
+    and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.pilot.metric.missed_connection_pax
+  role: pilot
+  kind: unsourced_metric
+  target_kind: metric
+  target: missed_connection_pax
+  text: 'Metric missed_connection_pax (passengers): sum(c.passengers for c in connections if arrival_min + c.min_connect_min
+    > c.departs_min). Is this the number you watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.pilot.param.connections
+  role: pilot
+  kind: default_param
+  target_kind: rule
+  target: pilot.connections
+  text: 'Rule pilot.connections: A passenger misses an onward flight if arrival plus minimum connect time is after
+    it departs. Default minimum connect time 35 min (US domestic hubs publish 30-55). Is {''default_min_connect_min'':
+    35, ''cost_per_pax'': 2.0} right for your operation? What would you use, and should it be a hard limit instead?'
+  why: 'Current source: iata:mct; these are typical values, not yours.'
+  priority: 2
+- id: q.pilot.type.connection
+  role: pilot
+  kind: synthetic_type
+  target_kind: type
+  target: Connection
+  text: For this airline at the hub, what is the real minimum connect time you'd protect, and which connections
+    do you hold for regardless (last flight of the day, international)?
+  why: The model uses 35 min for everyone and treats every passenger the same.
+  priority: 2
+- id: q.shared.metric.arrival_delay
+  role: shared
+  kind: unsourced_metric
+  target_kind: metric
+  target: arrival_delay
+  text: 'Metric arrival_delay (min): Actual minus scheduled arrival as it happened in 2015. The baseline our negotiated
+    slot is compared against. Is this the number you watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.shared.metric.late_aircraft_delay_min
+  role: shared
+  kind: unsourced_metric
+  target_kind: metric
+  target: late_aircraft_delay_min
+  text: 'Metric late_aircraft_delay_min (min): Minutes attributed to the inbound aircraft arriving late. Is this
+    the number you watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.shared.metric.taxi_out
+  role: shared
+  kind: unsourced_metric
+  target_kind: metric
+  target: taxi_out
+  text: 'Metric taxi_out (min): Gate departure to wheels-off. Is this the number you watch, and at what value does
+    it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.shared.metric.weather_delay_min
+  role: shared
+  kind: unsourced_metric
+  target_kind: metric
+  target: weather_delay_min
+  text: 'Metric weather_delay_min (min): Minutes the carrier attributed to extreme weather. Is this the number you
+    watch, and at what value does it start to worry you?'
+  why: Formula is the model author's; no operator has confirmed it matters or where the thresholds sit.
+  priority: 2
+- id: q.shared.param.on_time_threshold
+  role: shared
+  kind: default_param
+  target_kind: rule
+  target: data.on_time_threshold
+  text: 'Rule data.on_time_threshold: BTS counts a flight on time if it arrives less than 15 minutes after schedule.
+    Is {''op'': ''<'', ''value'': 15, ''unit'': ''min''} right for your operation? What would you use, and should
+    it be a hard limit instead?'
+  why: 'Current source: bts:on-time; these are typical values, not yours.'
+  priority: 2
+- id: q.shared.concept.aircraft
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: Aircraft
+  text: 'The model defines Aircraft as: "One airframe, identified by its registration (tail number). Carries a wake
+    turbulence category." Is that how you''d put it? What do you call it, and what does it leave out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+- id: q.shared.concept.airline
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: Airline
+  text: 'The model defines Airline as: "The operating carrier, by IATA two-letter code." Is that how you''d put
+    it? What do you call it, and what does it leave out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+- id: q.shared.concept.airport
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: Airport
+  text: 'The model defines Airport as: "An aerodrome, by IATA three-letter code, with a position." Is that how you''d
+    put it? What do you call it, and what does it leave out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+- id: q.shared.concept.arrivalslot
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: ArrivalSlot
+  text: 'The model defines ArrivalSlot as: "The negotiated object; a time on a runway, relative to scheduled arrival,
+    with a gate." Is that how you''d put it? What do you call it, and what does it leave out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+- id: q.shared.concept.disruption
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: Disruption
+  text: 'The model defines Disruption as: "The reason this flight needs renegotiation; here, a weather event or
+    a late inbound aircraft, per the DOT delay attribution." Is that how you''d put it? What do you call it, and
+    what does it leave out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+- id: q.shared.concept.flight
+  role: shared
+  kind: undescribed_concept
+  target_kind: concept
+  target: Flight
+  text: 'The model defines Flight as: "One scheduled leg on one day, origin to destination, with scheduled and actual
+    times and attributed delay minutes." Is that how you''d put it? What do you call it, and what does it leave
+    out?'
+  why: No document passage describes this concept; the definition is the model author's.
+  priority: 3
+answers:
+- question_id: q.atc.type.runway
+  by: twr_sup_ord
+  at: '2026-10-31T04:00:00Z'
+  text: 'In a thunderstorm we go to a single arrival runway and the rate drops to roughly 60 percent. The problem
+    is never the runway, it is the exit: if the first high-speed is blocked everyone rolls to the end and we lose
+    a slot every third arrival.'
+  action: answer
+  structured:
+    new_rule:
+      id: operator.atc.single_runway_rate
+      kind: constraint
+      hard: false
+      text: Under a weather event assume single-runway arrivals at about 60% of normal rate; a blocked first high-speed
+        exit costs roughly one slot in three.
+      subjects:
+      - Runway
+      params:
+        rate_factor: 0.6
+        slot_loss_per_blocked_exit: 1 in 3
+  confirmed: true
+  via: cli
+- question_id: q.atc.open
+  by: twr_sup_ord
+  at: '2026-10-31T04:00:00Z'
+  text: When the rate is cut I protect the heavies' spacing first and let mediums fill gaps. I will not take a tight
+    slot behind a heavy for a medium just because the airline is late; the wake rule is the wake rule. What helps
+    me is knowing early who is fuel-critical so I can sequence them before they declare.
+  action: answer
+  structured:
+    new_rule:
+      id: operator.atc.fuel_critical_first
+      kind: precedence
+      hard: false
+      text: When the arrival rate is reduced, sequence declared fuel-critical aircraft ahead of others at equal
+        legality; do not trade wake spacing for airline lateness.
+      subjects:
+      - ArrivalSlot
+      params:
+        priority: fuel_critical_first
+  confirmed: true
+  via: cli
+- question_id: q.atc.param.sector_delay
+  by: twr_sup_ord
+  at: '2026-10-31T04:00:00Z'
+  text: A minute of delay is not one cost. The first fifteen are free, after that every minute compounds because
+    the flow restriction propagates upstream.
+  action: answer
+  structured:
+    params:
+      cost_per_min: 1.0
+      free_minutes: 15
+      note: delay cost accrues after 15 min, per operator
+  confirmed: true
+  via: cli
+- question_id: q.pilot.open
+  by: capt_737
+  at: '2026-10-31T04:00:00Z'
+  text: Final reserve is not negotiable and I decide to divert before I get there, not at it. If ATC cannot give
+    me an EAT inside my holding fuel minus a ten minute buffer, I go. What I need from the ground is a gate commitment,
+    not a hope.
+  action: answer
+  structured:
+    new_rule:
+      id: operator.pilot.divert_buffer
+      kind: threshold
+      hard: true
+      text: Divert if the expected approach time is later than holding fuel minus a 10 min buffer above final reserve;
+        the decision is made before reaching final reserve, never at it.
+      subjects:
+      - fuel_remaining_at_landing
+      params:
+        op: '>='
+        value: 10
+        unit: min
+        above: final_reserve
+      enforced_by: rules.pilot_rules
+  confirmed: true
+  via: cli
+- question_id: q.pilot.param.connections
+  by: capt_737
+  at: '2026-10-31T04:00:00Z'
+  text: Thirty-five is what the airline publishes at ORD; realistically forty if the connection is in another terminal.
+    The last bank of the evening we protect hard because there is no recovery, the rest we do not hold for.
+  action: answer
+  structured:
+    params:
+      default_min_connect_min: 40
+      cost_per_pax: 2.0
+      last_bank_cost_per_pax: 6.0
+    vocabulary:
+    - term: last bank
+      target_kind: concept
+      target: Connection
+  confirmed: true
+  via: cli
+- question_id: q.ground.type.gate
+  by: dm_ord
+  at: '2026-10-31T04:00:00Z'
+  text: The board is optimistic by about ten minutes. If the inbound to that gate is still airborne, the gate is
+    not free, whatever the board says. B12 and B14 are the chronic ones because of the tow path.
+  action: answer
+  structured:
+    new_rule:
+      id: operator.ground.gate_board_buffer
+      kind: threshold
+      hard: true
+      text: Treat a gate as free only from 10 min after the board says so; a gate whose inbound is still airborne
+        is not free.
+      subjects:
+      - Gate
+      params:
+        board_buffer_min: 10
+      enforced_by: rules.ground_rules
+  confirmed: true
+  via: cli
+- question_id: q.ground.param.turnaround
+  by: dm_ord
+  at: '2026-10-31T04:00:00Z'
+  text: We plan forty on the 737 fleet at ORD, thirty-five is the floor under irregular ops and I will not sign
+    off below that.
+  action: answer
+  structured:
+    params:
+      value: 40
+      unit: min
+      floor_min: 35
+  confirmed: true
+  via: cli
+- question_id: q.ground.type.groundcrew
+  by: dm_ord
+  at: '2026-10-31T04:00:00Z'
+  text: Crews will absorb ten minutes past shift without a word. Past twenty I have to call the union rep and it
+    costs me the next shift's goodwill too.
+  action: answer
+  structured:
+    params:
+      grace_min: 10
+      call_threshold_min: 20
+  confirmed: true
+  via: cli
+- question_id: q.ground.open
+  by: dm_ord
+  at: '2026-10-31T04:00:00Z'
+  text: A plan is unworkable when the aircraft arrives before its gate is clear and sits on a taxiway with engines
+    running; controllers see a legal slot, I see a stranded aircraft. Also pushback congestion at 1800 means a late
+    arrival into the B concourse blocks two departures.
+  action: answer
+  confirmed: false
+  via: cli
+- question_id: q.shared.concept.disruption
+  by: dm_ord
+  at: '2026-10-31T04:00:00Z'
+  text: That's how we'd say it. We also call it IROPS or a 'bad day'.
+  action: answer
+  structured:
+    aliases:
+    - bad day
+  confirmed: true
+  via: cli

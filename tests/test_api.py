@@ -43,7 +43,10 @@ def test_negotiate_mock_stream_event_order():
     events = [line.split(": ", 1)[1] for line in body.splitlines() if line.startswith("event: ")]
     assert events[0] == "started"
     assert events[-1] == "done"
-    assert events[1:4] == ["thinking", "proposal", "evaluation"]
+    # tool_call events sit between thinking and the action they belong to
+    core = [e for e in events if e not in ("tool_call", "guardrail")]
+    assert core[1:4] == ["thinking", "proposal", "evaluation"]
+    assert "tool_call" in events and "guardrail" in events
     assert "turn_complete" in events
     # every data line is valid JSON
     for line in body.splitlines():
@@ -53,6 +56,6 @@ def test_negotiate_mock_stream_event_order():
 
 def test_openapi_includes_stream_event_schemas():
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
-    for name in ("StreamEvents", "ThinkingEvent", "ProposalEvent", "EvaluationEvent",
+    for name in ("StreamEvents", "ThinkingEvent", "ToolCall", "ProposalEvent", "EvaluationEvent",
                  "ResponseEvent", "NegotiationTrace", "TurnRecord", "ErrorEvent"):
         assert name in schemas, name

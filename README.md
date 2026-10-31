@@ -95,6 +95,36 @@ Everything the frontend needs is in `contracts/`:
 
 Pass `mock: true` in `POST /negotiate/stream` while building the UI; same events, no LLM calls.
 
+## Semantic model (what grounds the agents)
+
+Every number an agent is told, and every number `rules.py` enforces, lives in
+one place: `semantic/model.yaml` (curated) plus `semantic/schema.yaml` (profiled
+from the CSVs, never hand-edited). Concepts, entity types bound to columns or
+flagged synthetic, metrics with formulas, typed rules with parameters, code sets
+(BTS delay causes, ICAO wake categories), and quoted passages from the Challenge
+2 brief and the regulations (ICAO Doc 4444, EASA CAT.OP.MPA.181, BTS 14 CFR
+234.4). Sources and honest limits: `semantic/SOURCES.md`.
+
+- Each agent's system prompt gets `brief_for(role)`: its concepts, metrics,
+  HARD/SOFT/PROTOCOL rules with `[passage-id]` citations, the quoted passages,
+  and the list of synthetic fields. Deterministic, so it caches.
+- Agents can call `lookup(term)` (the `lookup_concept` tool); it returns
+  "not in the semantic model" rather than let the LLM guess.
+- Every `RuleResult` cites its `rule_id`, so a trace line links back to the
+  rule, its parameters and its source.
+
+```bash
+make semantic                 # re-profile data/*.csv, validate cross-references
+uv run atc semantic brief atc # what the ATC agent is told
+uv run atc semantic lookup FRF
+make serve                    # then open http://localhost:8000/semantic/
+```
+
+The live viewer at `/semantic/` draws the model as a graph (colour = layer,
+shape = kind, dashed = synthetic), with a details panel showing definitions,
+parameters, quoted sources and neighbours, and tabs for each agent's brief.
+JSON for your own rendering: `GET /semantic/graph`.
+
 ## Data
 
 The brief's dataset is the US DOT 2015 flight delays set, supplied by the

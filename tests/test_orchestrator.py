@@ -29,12 +29,12 @@ def test_mock_negotiation_converges_within_three_turns():
 class YesMan(MockAgent):
     """Accepts anything. Must not be able to push an illegal plan through."""
 
-    def respond(self, s, p, ev):
+    def respond(self, s, p, ev, ctx):
         return AgentResponse(verdict=Verdict.ACCEPT)
 
 
 class StubbornATC(MockAgent):
-    def propose(self, s, feedback):
+    def propose(self, s, feedback, ctx):
         return Proposal(arrival_min=22, runway="27L", gate="B14", rationale="closed runway")
 
 

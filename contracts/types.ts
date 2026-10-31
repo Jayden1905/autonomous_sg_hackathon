@@ -4,6 +4,103 @@
  */
 
 export interface paths {
+    "/semantic/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Graph
+         * @description Nodes and edges of the whole model, with per-node detail for a hover/click panel.
+         */
+        get: operations["graph_semantic_graph_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/semantic/model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Model
+         * @description The full curated+profiled model, as loaded.
+         */
+        get: operations["model_semantic_model_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/semantic/brief/{role}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Brief
+         * @description The grounding text this agent receives in its system prompt.
+         */
+        get: operations["brief_semantic_brief__role__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/semantic/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lookup Term
+         * @description What a term means in the model; `found` false when the model has no entry.
+         */
+        get: operations["lookup_term_semantic_lookup_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/semantic/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check */
+        get: operations["check_semantic_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -126,7 +223,7 @@ export interface paths {
         put?: never;
         /**
          * Run Negotiation
-         * @description Blocking. Returns the full trace once done (30-90 s with real agents).
+         * @description Blocking. Returns the full trace once done (1-4 min with real agents).
          */
         post: operations["run_negotiation_negotiate_post"];
         delete?: never;
@@ -181,11 +278,23 @@ export interface components {
             verdict: components["schemas"]["Verdict"];
             /**
              * Objections
-             * @description Empty when accepting
+             * @description Empty when accepting. Carry [n] markers
              */
             objections?: string[];
+            /**
+             * Summary
+             * @description One or two sentences on why this verdict, with [n] markers
+             * @default
+             */
+            summary: string;
             /** @description Required when verdict is counter */
-            counter?: components["schemas"]["Proposal"] | null;
+            counter?: components["schemas"]["Proposal-Output"] | null;
+            /**
+             * Evidence
+             * @description Claims behind the verdict, with sources
+             */
+            evidence?: components["schemas"]["atc_negotiation__schemas__Evidence"][];
+            guardrail?: components["schemas"]["GuardrailReport"] | null;
         };
         /**
          * AircraftCategory
@@ -212,6 +321,147 @@ export interface components {
             /** Longitude */
             longitude: number;
         };
+        /**
+         * Citation
+         * @description A source resolved from the semantic model, ready to render as a footnote.
+         */
+        Citation: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "metric" | "rule" | "passage" | "code" | "scenario" | "rule_engine" | "unknown";
+            /**
+             * Ref
+             * @description Model id, e.g. 'pilot.final_reserve_fuel', 'taxi_in', 'easa:cat.op.mpa.181'
+             */
+            ref: string;
+            /**
+             * Label
+             * @description Short human title, e.g. 'EASA Air OPS CAT.OP.MPA.181(c)(5) Final reserve fuel'
+             */
+            label: string;
+            /**
+             * Text
+             * @description What the source says: rule text, passage quote, metric definition
+             */
+            text: string;
+            /** Url */
+            url?: string | null;
+            /**
+             * Passage Id
+             * @description Regulation/brief passage behind a rule or metric
+             */
+            passage_id?: string | null;
+        };
+        /** CodeEntry */
+        CodeEntry: {
+            /** Label */
+            label: string;
+            /**
+             * Definition
+             * @default
+             */
+            definition: string;
+            /** Aliases */
+            aliases?: string[];
+        };
+        /**
+         * CodeSet
+         * @description What each raw coded value means. Agents read labels/definitions, never guess.
+         */
+        CodeSet: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Column */
+            column?: string | null;
+            /** Entries */
+            entries: {
+                [key: string]: components["schemas"]["CodeEntry"];
+            };
+            /**
+             * Source
+             * @default
+             */
+            source: string;
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
+            /**
+             * Status
+             * @default confirmed
+             * @enum {string}
+             */
+            status: "confirmed" | "proposed" | "rejected";
+        };
+        /** Column */
+        Column: {
+            /** Name */
+            name: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "int" | "float" | "str" | "empty";
+            /**
+             * Nulls
+             * @default 0
+             */
+            nulls: number;
+            /**
+             * Distinct
+             * @default 0
+             */
+            distinct: number;
+            /** Samples */
+            samples?: string[];
+            /** Min */
+            min?: number | null;
+            /** Max */
+            max?: number | null;
+            /**
+             * Is Id
+             * @default false
+             */
+            is_id: boolean;
+            /**
+             * Is Time
+             * @default false
+             */
+            is_time: boolean;
+        };
+        /**
+         * Concept
+         * @description A box in the reference ontology. Entity types declare which concept they are.
+         */
+        Concept: {
+            /** Name */
+            name: string;
+            /** Extends */
+            extends?: string | null;
+            /**
+             * Abstract
+             * @default false
+             */
+            abstract: boolean;
+            /**
+             * Definition
+             * @default
+             */
+            definition: string;
+            /** Aliases */
+            aliases?: string[];
+            /**
+             * Domain
+             * @default shared
+             * @enum {string}
+             */
+            domain: "atc" | "pilot" | "ground" | "shared";
+        };
         /** Connection */
         Connection: {
             /** Passengers */
@@ -224,6 +474,52 @@ export interface components {
              */
             min_connect_min: number;
         };
+        /**
+         * EntityType
+         * @description A concept as it exists in *this* dataset / scenario, bound to columns or marked synthetic.
+         */
+        EntityType: {
+            /** Name */
+            name: string;
+            /** Concept */
+            concept: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Aliases */
+            aliases?: string[];
+            /** Table */
+            table?: string | null;
+            /** Id Column */
+            id_column?: string | null;
+            /** Name Column */
+            name_column?: string | null;
+            /** Attribute Columns */
+            attribute_columns?: string[];
+            /**
+             * Synthetic
+             * @default false
+             */
+            synthetic: boolean;
+            /** Scenario Field */
+            scenario_field?: string | null;
+            /**
+             * Domain
+             * @default shared
+             * @enum {string}
+             */
+            domain: "atc" | "pilot" | "ground" | "shared";
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
+            /**
+             * Status
+             * @default confirmed
+             * @enum {string}
+             */
+            status: "confirmed" | "proposed" | "rejected";
+        };
         /** ErrorEvent */
         ErrorEvent: {
             /** Message */
@@ -234,11 +530,11 @@ export interface components {
         /** EvaluateRequest */
         EvaluateRequest: {
             scenario: components["schemas"]["Scenario"];
-            proposal: components["schemas"]["Proposal"];
+            proposal: components["schemas"]["Proposal-Input"];
         };
         /** Evaluation */
         Evaluation: {
-            proposal: components["schemas"]["Proposal"];
+            proposal: components["schemas"]["Proposal-Output"];
             /** Results */
             results: components["schemas"]["RuleResult"][];
             /** Feasible */
@@ -251,6 +547,43 @@ export interface components {
             /** Turn */
             turn: number;
             evaluation: components["schemas"]["Evaluation"];
+        };
+        /**
+         * Evidence
+         * @description One claim an agent relies on, tied to the semantic-model element it comes from.
+         */
+        "Evidence-Input": {
+            /**
+             * Id
+             * @description Citation number. The agent's text refers to it as [id]
+             * @default 0
+             */
+            id: number;
+            /**
+             * Claim
+             * @description Short factual statement, e.g. 'ORD Jan 17-19h weather delay p90 is 0 min'
+             */
+            claim: string;
+            /**
+             * Source
+             * @description What backs the claim, as a semantic-model reference: 'metric:<name>' (queried this action), 'rule:<id>', 'passage:<id>', 'code:<CodeSet>.<value>', 'scenario:<field>', or 'check_proposal'
+             */
+            source: string;
+            /**
+             * Grounded
+             * @description False when the source does not resolve in the semantic model, or a metric is cited without having been queried. The UI should flag these
+             * @default true
+             */
+            grounded: boolean;
+            /** @description What the source says, resolved from the model */
+            citation?: components["schemas"]["Citation"] | null;
+            /**
+             * Trust
+             * @description high: regulation/standard, rule engine, code set, or a metric over >= 100 flights. medium: brief-derived rule, scenario fact, or a smaller sample. low: synthetic scenario field or ungrounded
+             * @default medium
+             * @enum {string}
+             */
+            trust: "high" | "medium" | "low";
         };
         /** FallbackResponse */
         FallbackResponse: {
@@ -266,6 +599,66 @@ export interface components {
             /** Free Until Min */
             free_until_min: number;
         };
+        /** GuardrailEvent */
+        GuardrailEvent: {
+            /** Turn */
+            turn: number;
+            /**
+             * Agent
+             * @enum {string}
+             */
+            agent: "atc" | "pilot" | "ground";
+            /** @description passed=false: the reply was sent back to the agent with these violations (or, after the last repair, blocked) */
+            report: components["schemas"]["GuardrailReport"];
+        };
+        /**
+         * GuardrailReport
+         * @description Result of the citation guardrails on one agent reply.
+         */
+        GuardrailReport: {
+            /** Passed */
+            passed: boolean;
+            /** Violations */
+            violations?: components["schemas"]["GuardrailViolation"][];
+            /**
+             * Checked Claims
+             * @default 0
+             */
+            checked_claims: number;
+            /**
+             * Low Trust
+             * @description Evidence ids with trust 'low'
+             */
+            low_trust?: number[];
+            /**
+             * Attempts
+             * @description Submits it took; >1 means the agent was sent back
+             * @default 1
+             */
+            attempts: number;
+        };
+        /** GuardrailViolation */
+        GuardrailViolation: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "uncited_sentence" | "dangling_marker" | "ungrounded_source" | "unsupported_number" | "off_source" | "unsupported_prose" | "thin_sample";
+            /**
+             * Where
+             * @description 'proposal rationale', 'summary', 'objection 2', 'response', 'counter' ...
+             */
+            where: string;
+            /** Evidence Id */
+            evidence_id?: number | null;
+            /** Message */
+            message: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -280,8 +673,114 @@ export interface components {
             status: "ok";
             /** Default Model */
             default_model: string;
-            /** Dot Dataset Available */
+            /** Default Effort */
+            default_effort: string;
+            /**
+             * Dot Dataset Available
+             * @description flights.csv present: /dot/scenarios works
+             */
             dot_dataset_available: boolean;
+            /**
+             * Sql Tool Available
+             * @description all three CSVs present: agents can call query_metric
+             */
+            sql_tool_available: boolean;
+        };
+        /** KnowledgeLink */
+        KnowledgeLink: {
+            /** Passage Id */
+            passage_id: string;
+            /**
+             * Target Kind
+             * @enum {string}
+             */
+            target_kind: "concept" | "type" | "rule" | "metric" | "code_set";
+            /** Target */
+            target: string;
+            /**
+             * Kind
+             * @default describes
+             * @enum {string}
+             */
+            kind: "defines" | "constrains" | "describes" | "sources";
+        };
+        /**
+         * KnowledgePassage
+         * @description A quotable chunk of the brief or a regulation. Briefings cite these by id.
+         */
+        KnowledgePassage: {
+            /** Id */
+            id: string;
+            /** Doc */
+            doc: string;
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
+            /**
+             * Kind
+             * @default brief
+             * @enum {string}
+             */
+            kind: "brief" | "regulation" | "standard" | "statistic" | "definition";
+            /**
+             * Url
+             * @default
+             */
+            url: string;
+            /**
+             * Retrieved
+             * @default
+             */
+            retrieved: string;
+            /**
+             * Domain
+             * @default shared
+             * @enum {string}
+             */
+            domain: "atc" | "pilot" | "ground" | "shared";
+        };
+        /** Metric */
+        Metric: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Unit
+             * @default
+             */
+            unit: string;
+            /** Grain */
+            grain?: string[];
+            /**
+             * Formula
+             * @default
+             */
+            formula: string;
+            /** Inputs */
+            inputs?: string[];
+            /** Range Lo */
+            range_lo?: number | null;
+            /** Range Hi */
+            range_hi?: number | null;
+            /**
+             * Domain
+             * @default shared
+             * @enum {string}
+             */
+            domain: "atc" | "pilot" | "ground" | "shared";
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
+            /**
+             * Status
+             * @default confirmed
+             * @enum {string}
+             */
+            status: "confirmed" | "proposed" | "rejected";
         };
         /** NegotiateRequest */
         NegotiateRequest: {
@@ -302,6 +801,11 @@ export interface components {
              * @description Overrides the server default model
              */
             model?: string | null;
+            /**
+             * Effort
+             * @description Reasoning effort per agent call. Higher is slower. Default: server setting
+             */
+            effort?: ("low" | "medium" | "high" | "xhigh" | "max") | null;
         };
         /** NegotiationTrace */
         NegotiationTrace: {
@@ -324,13 +828,36 @@ export interface components {
              * @enum {string}
              */
             outcome: "consensus" | "fallback" | "no_legal_option";
-            final: components["schemas"]["Proposal"];
+            final: components["schemas"]["Proposal-Output"];
             final_evaluation: components["schemas"]["Evaluation"];
             /** Fallback Reason */
             fallback_reason?: string | null;
+            stats?: components["schemas"]["RunStats"];
+        };
+        /** Project */
+        Project: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Challenge
+             * @default
+             */
+            challenge: string;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
         };
         /** Proposal */
-        Proposal: {
+        "Proposal-Input": {
             /**
              * Arrival Min
              * @description Revised arrival, minutes after scheduled arrival
@@ -342,9 +869,40 @@ export interface components {
             gate: string;
             /**
              * Rationale
-             * @description One or two sentences, plain language
+             * @description One or two sentences, plain language, with [n] citation markers
              */
             rationale: string;
+            /**
+             * Evidence
+             * @description Claims the plan relies on, each with its model source. Empty for the deterministic solver
+             */
+            evidence?: components["schemas"]["Evidence-Input"][];
+            /** @description Citation guardrail result; null for the solver */
+            guardrail?: components["schemas"]["GuardrailReport"] | null;
+        };
+        /** Proposal */
+        "Proposal-Output": {
+            /**
+             * Arrival Min
+             * @description Revised arrival, minutes after scheduled arrival
+             */
+            arrival_min: number;
+            /** Runway */
+            runway: string;
+            /** Gate */
+            gate: string;
+            /**
+             * Rationale
+             * @description One or two sentences, plain language, with [n] citation markers
+             */
+            rationale: string;
+            /**
+             * Evidence
+             * @description Claims the plan relies on, each with its model source. Empty for the deterministic solver
+             */
+            evidence?: components["schemas"]["atc_negotiation__schemas__Evidence"][];
+            /** @description Citation guardrail result; null for the solver */
+            guardrail?: components["schemas"]["GuardrailReport"] | null;
         };
         /** ProposalEvent */
         ProposalEvent: {
@@ -355,7 +913,37 @@ export interface components {
              * @enum {string}
              */
             proposer: "atc" | "pilot" | "ground";
-            proposal: components["schemas"]["Proposal"];
+            proposal: components["schemas"]["Proposal-Output"];
+        };
+        /** RelationType */
+        RelationType: {
+            /** Name */
+            name: string;
+            /** Source Type */
+            source_type: string;
+            /** Target Type */
+            target_type: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Via */
+            via?: string | null;
+            /**
+             * Cardinality
+             * @default many_to_one
+             * @enum {string}
+             */
+            cardinality: "many_to_one" | "one_to_one" | "one_to_many" | "many_to_many";
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
+            /**
+             * Status
+             * @default confirmed
+             * @enum {string}
+             */
+            status: "confirmed" | "proposed" | "rejected";
         };
         /** ResponseEvent */
         ResponseEvent: {
@@ -374,10 +962,63 @@ export interface components {
              */
             vetoed: boolean;
         };
+        /**
+         * Rule
+         * @description Operational knowledge no table holds. `id` is what rules.py cites in every RuleResult.
+         *
+         *     kind: threshold   a numeric limit        params: {op, value, unit} or a table
+         *           constraint  a yes/no condition
+         *           precedence  ordering / priority
+         *           protocol    how the negotiation itself must run (from the brief)
+         */
+        Rule: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "threshold" | "constraint" | "precedence" | "protocol";
+            /** Text */
+            text: string;
+            /**
+             * Domain
+             * @enum {string}
+             */
+            domain: "atc" | "pilot" | "ground" | "shared";
+            /** Hard */
+            hard?: boolean | null;
+            /** Subjects */
+            subjects?: string[];
+            /** Params */
+            params?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Source
+             * @default
+             */
+            source: string;
+            /** Enforced By */
+            enforced_by?: string | null;
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
+            /**
+             * Status
+             * @default confirmed
+             * @enum {string}
+             */
+            status: "confirmed" | "proposed" | "rejected";
+        };
         /** RuleResult */
         RuleResult: {
             /** Rule */
             rule: string;
+            /**
+             * Rule Id
+             * @description Semantic-model rule id, e.g. 'atc.wake_separation'
+             */
+            rule_id?: string | null;
             /**
              * Domain
              * @enum {string}
@@ -394,6 +1035,45 @@ export interface components {
              * @default 0
              */
             cost: number;
+        };
+        /** RunStats */
+        RunStats: {
+            /**
+             * Llm Calls
+             * @default 0
+             */
+            llm_calls: number;
+            /**
+             * Tool Calls
+             * @default 0
+             */
+            tool_calls: number;
+            /**
+             * Input Tokens
+             * @default 0
+             */
+            input_tokens: number;
+            /**
+             * Output Tokens
+             * @default 0
+             */
+            output_tokens: number;
+            /**
+             * Cache Read Tokens
+             * @default 0
+             */
+            cache_read_tokens: number;
+            /**
+             * Guardrail Checks
+             * @default 0
+             */
+            guardrail_checks: number;
+            /**
+             * Guardrail Rejections
+             * @description Replies sent back (or blocked) by the guardrails
+             * @default 0
+             */
+            guardrail_rejections: number;
         };
         /** Runway */
         Runway: {
@@ -507,6 +1187,47 @@ export interface components {
             /** Earliest Arrival Min */
             earliest_arrival_min: number;
         };
+        /** SemanticModel */
+        SemanticModel: {
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
+            project: components["schemas"]["Project"];
+            /** Tables */
+            tables?: components["schemas"]["Table"][];
+            /** Concepts */
+            concepts?: components["schemas"]["Concept"][];
+            /** Entity Types */
+            entity_types?: components["schemas"]["EntityType"][];
+            /** Relation Types */
+            relation_types?: components["schemas"]["RelationType"][];
+            /** Metrics */
+            metrics?: components["schemas"]["Metric"][];
+            /** Rules */
+            rules?: components["schemas"]["Rule"][];
+            /** Code Sets */
+            code_sets?: components["schemas"]["CodeSet"][];
+            /** Passages */
+            passages?: components["schemas"]["KnowledgePassage"][];
+            /** Knowledge Links */
+            knowledge_links?: components["schemas"]["KnowledgeLink"][];
+            /** Vocabulary */
+            vocabulary?: components["schemas"]["VocabTerm"][];
+        };
+        /** SqlResult */
+        SqlResult: {
+            /** Columns */
+            columns: string[];
+            /** Rows */
+            rows: (string | number | boolean | null)[][];
+            /**
+             * Truncated
+             * @description True when the query returned more rows than shown
+             */
+            truncated: boolean;
+        };
         /** StartedEvent */
         StartedEvent: {
             /** Scenario Id */
@@ -523,12 +1244,29 @@ export interface components {
         StreamEvents: {
             started: components["schemas"]["StartedEvent"];
             thinking: components["schemas"]["ThinkingEvent"];
+            tool_call: components["schemas"]["ToolCall"];
+            guardrail: components["schemas"]["GuardrailEvent"];
             proposal: components["schemas"]["ProposalEvent"];
             evaluation: components["schemas"]["EvaluationEvent"];
             response: components["schemas"]["ResponseEvent"];
             turn_complete: components["schemas"]["TurnRecord"];
             done: components["schemas"]["NegotiationTrace"];
             error: components["schemas"]["ErrorEvent"];
+        };
+        /** Table */
+        Table: {
+            /** Name */
+            name: string;
+            /** Path */
+            path: string;
+            /** Rows */
+            rows: number;
+            /** Columns */
+            columns: components["schemas"]["Column"][];
+            /** Profiled Rows */
+            profiled_rows: number;
+            /** Evidence */
+            evidence?: components["schemas"]["atc_negotiation__semantic__model__Evidence"][];
         };
         /** ThinkingEvent */
         ThinkingEvent: {
@@ -545,13 +1283,64 @@ export interface components {
              */
             action: "propose" | "respond";
         };
+        /**
+         * ToolCall
+         * @description One tool an agent ran while working out its proposal or response.
+         */
+        ToolCall: {
+            /** Turn */
+            turn: number;
+            /**
+             * Agent
+             * @enum {string}
+             */
+            agent: "atc" | "pilot" | "ground";
+            /**
+             * Step
+             * @description LLM call within this agent's action, from 1
+             */
+            step: number;
+            /**
+             * Tool
+             * @enum {string}
+             */
+            tool: "query_metric" | "check_proposal" | "lookup_concept";
+            /** Input */
+            input: {
+                [key: string]: unknown;
+            };
+            /**
+             * Output
+             * @description What the agent saw, verbatim (long outputs are cut)
+             */
+            output: string;
+            /**
+             * Is Error
+             * @default false
+             */
+            is_error: boolean;
+            /** Duration Ms */
+            duration_ms: number;
+            /** @description Rows for query_metric, as a table */
+            sql_result?: components["schemas"]["SqlResult"] | null;
+            /**
+             * Sql
+             * @description SQL that ran. For query_metric it is compiled from the model
+             */
+            sql?: string | null;
+            /**
+             * Model Refs
+             * @description Semantic-model elements this call touched, e.g. ['metric:taxi_in', 'type:Flight.DESTINATION_AIRPORT'] or the rule ids a check_proposal evaluated. Link these to /semantic/lookup
+             */
+            model_refs?: string[];
+        };
         /** TurnRecord */
         TurnRecord: {
             /** Turn */
             turn: number;
             /** Proposer */
             proposer: string;
-            proposal: components["schemas"]["Proposal"];
+            proposal: components["schemas"]["Proposal-Output"];
             evaluation: components["schemas"]["Evaluation"];
             /** Responses */
             responses: {
@@ -566,6 +1355,16 @@ export interface components {
              * @description Agents that accepted a proposal the rule engine found infeasible
              */
             vetoed_accepts?: string[];
+            /**
+             * Tool Calls
+             * @description Every tool run during this turn, in order
+             */
+            tool_calls?: components["schemas"]["ToolCall"][];
+            /**
+             * Guardrail Blocked
+             * @description Agents whose reply failed the citation guardrails after repairs. Their accept or counter did not count
+             */
+            guardrail_blocked?: string[];
         };
         /** ValidationError */
         ValidationError: {
@@ -585,6 +1384,80 @@ export interface components {
          * @enum {string}
          */
         Verdict: "accept" | "counter";
+        /**
+         * VocabTerm
+         * @description What people say → what the model calls it.
+         */
+        VocabTerm: {
+            /** Term */
+            term: string;
+            /**
+             * Target Kind
+             * @enum {string}
+             */
+            target_kind: "concept" | "type" | "metric" | "rule" | "code";
+            /** Target */
+            target: string;
+            /**
+             * Source
+             * @default user
+             */
+            source: string;
+        };
+        /**
+         * Evidence
+         * @description One claim an agent relies on, tied to the semantic-model element it comes from.
+         */
+        atc_negotiation__schemas__Evidence: {
+            /**
+             * Id
+             * @description Citation number. The agent's text refers to it as [id]
+             * @default 0
+             */
+            id: number;
+            /**
+             * Claim
+             * @description Short factual statement, e.g. 'ORD Jan 17-19h weather delay p90 is 0 min'
+             */
+            claim: string;
+            /**
+             * Source
+             * @description What backs the claim, as a semantic-model reference: 'metric:<name>' (queried this action), 'rule:<id>', 'passage:<id>', 'code:<CodeSet>.<value>', 'scenario:<field>', or 'check_proposal'
+             */
+            source: string;
+            /**
+             * Grounded
+             * @description False when the source does not resolve in the semantic model, or a metric is cited without having been queried. The UI should flag these
+             * @default true
+             */
+            grounded: boolean;
+            /** @description What the source says, resolved from the model */
+            citation?: components["schemas"]["Citation"] | null;
+            /**
+             * Trust
+             * @description high: regulation/standard, rule engine, code set, or a metric over >= 100 flights. medium: brief-derived rule, scenario fact, or a smaller sample. low: synthetic scenario field or ungrounded
+             * @default medium
+             * @enum {string}
+             */
+            trust: "high" | "medium" | "low";
+        };
+        /**
+         * Evidence
+         * @description Why an element exists / was decided the way it was.
+         */
+        atc_negotiation__semantic__model__Evidence: {
+            /** By */
+            by: string;
+            /** What */
+            what: string;
+            /**
+             * Ref
+             * @default
+             */
+            ref: string;
+            /** Confidence */
+            confidence?: number | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -594,6 +1467,136 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    graph_semantic_graph_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    model_semantic_model_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SemanticModel"];
+                };
+            };
+        };
+    };
+    brief_semantic_brief__role__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                role: "atc" | "pilot" | "ground";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lookup_term_semantic_lookup_get: {
+        parameters: {
+            query: {
+                term: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_semantic_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     health_health_get: {
         parameters: {
             query?: never;

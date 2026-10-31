@@ -10,11 +10,12 @@ REPO := https://github.com/Jayden1905/autonomous_sg_hackathon.git
 # Token goes through a credential helper, not the URL, so it never shows in `ps`.
 GIT  := git -c credential.helper='!f(){ echo username=x-access-token; echo password=$$GITHUB_TOKEN; }; f'
 
-.PHONY: help setup data test demo demo-mock serve contracts push pull sync status log
+.PHONY: help setup data semantic test demo demo-mock serve contracts push pull sync status log
 
 help:
 	@echo "  make setup      create .venv and install deps (uv)"
-	@echo "  make data       download DOT 2015 flights dataset into data/"
+	@echo "  make data       extract the organisers' Challenge 2 zip into data/"
+	@echo "  make semantic   re-profile data/*.csv into semantic/schema.yaml and check the model"
 	@echo "  make test       run tests (no API calls)"
 	@echo "  make demo-mock  scripted agents on scenarios/sample_weather.json"
 	@echo "  make demo       real agents on the sample scenario"
@@ -36,6 +37,12 @@ data:
 	  out = pathlib.Path('data'); out.mkdir(exist_ok=True); z = zipfile.ZipFile(zs[0]); \
 	  [ (out / pathlib.Path(i.filename).name).write_bytes(z.read(i)) for i in z.infolist() if not i.is_dir() ]; \
 	  print('extracted', zs[0], '->', sorted(p.name for p in out.glob('*.csv')))"
+
+semantic:
+	@uv run atc semantic profile && uv run atc semantic check
+
+semantic-view:
+	@echo "open http://localhost:8000/semantic/  (needs make serve in another terminal)"
 
 test:
 	@uv run pytest -q

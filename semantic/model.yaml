@@ -1,0 +1,690 @@
+# Semantic model for Autonomous SG 2026, Airbus Challenge 2.
+# Curated layer. The schema layer is generated into schema.yaml by `atc semantic profile`.
+# Every rule/code set cites a passage below; `atc semantic check` fails on dangling references.
+version: 1
+project:
+  id: asg2026-c2
+  name: ATC / Pilot / Ground disruption negotiation
+  challenge: Airbus Challenge 2
+  description: >-
+    Three agents negotiate a revised arrival slot, runway and gate for one disrupted
+    flight from the DOT 2015 on-time dataset. Hard constraints are code; this model is
+    what each agent is told, and where every number comes from.
+  timezone: UTC
+
+# ─── reference ontology ─────────────────────────────────────────────────────────────────────────
+concepts:
+  - {name: Resource, abstract: true, definition: Anything the operation uses to do work.}
+  - name: Aircraft
+    extends: Resource
+    definition: One airframe, identified by its registration (tail number). Carries a wake turbulence category.
+    aliases: [tail, tail number, airframe, ship, registration]
+    domain: shared
+  - name: Airline
+    extends: Resource
+    definition: The operating carrier, by IATA two-letter code.
+    aliases: [carrier, operator]
+    domain: shared
+  - name: Airport
+    extends: Resource
+    definition: An aerodrome, by IATA three-letter code, with a position.
+    aliases: [station, aerodrome, field, destination, origin]
+    domain: shared
+  - name: Runway
+    extends: Resource
+    definition: A landing surface at the destination, with an open/closed state, an exit taxiway and a sequence of other arrivals.
+    aliases: [rwy, strip]
+    domain: atc
+  - name: Gate
+    extends: Resource
+    definition: A parking stand with a window during which it is free.
+    aliases: [stand, bay, parking position]
+    domain: ground
+  - name: GroundCrew
+    extends: Resource
+    definition: The handling team whose shift ends at a fixed time.
+    aliases: [ramp crew, handlers]
+    domain: ground
+
+  - {name: Operation, abstract: true, definition: Something that is flown or performed.}
+  - name: Flight
+    extends: Operation
+    definition: One scheduled leg on one day, origin to destination, with scheduled and actual times and attributed delay minutes.
+    aliases: [leg, sector, service]
+    domain: shared
+  - name: Connection
+    extends: Operation
+    definition: An onward flight that some passengers on this flight are booked on; missed if arrival plus minimum connect time is after it departs.
+    aliases: [onward flight, connecting flight, transfer]
+    domain: pilot
+  - name: Turnaround
+    extends: Operation
+    definition: Ground time from on-blocks to off-blocks for the next leg.
+    aliases: [turn, ground time, TAT]
+    domain: ground
+
+  - {name: Event, abstract: true, definition: Something that happens to an operation.}
+  - name: Disruption
+    extends: Event
+    definition: The reason this flight needs renegotiation; here, a weather event or a late inbound aircraft, per the DOT delay attribution.
+    aliases: [irregular operation, IROPS, upset]
+    domain: shared
+  - name: DelayCause
+    extends: Event
+    definition: One of the five BTS categories an airline attributes delay minutes to.
+    aliases: [delay reason, delay category, attribution]
+    domain: shared
+  - name: ArrivalSlot
+    extends: Event
+    definition: The negotiated object; a time on a runway, relative to scheduled arrival, with a gate.
+    aliases: [slot, arrival time, landing time, revised ETA]
+    domain: shared
+  - name: WakeCategory
+    extends: Event
+    definition: ICAO wake turbulence class of an aircraft, by maximum take-off mass; sets separation behind it.
+    aliases: [wake class, WTC, weight class]
+    domain: atc
+
+# ─── entity types: concepts as bound to this data / scenario ────────────────────────────────────
+entity_types:
+  - name: Flight
+    concept: Flight
+    table: flights
+    id_column: FLIGHT_NUMBER
+    attribute_columns: [YEAR, MONTH, DAY, DAY_OF_WEEK, AIRLINE, TAIL_NUMBER, ORIGIN_AIRPORT, DESTINATION_AIRPORT,
+                        SCHEDULED_DEPARTURE, DEPARTURE_DELAY, SCHEDULED_ARRIVAL, ARRIVAL_DELAY, DISTANCE,
+                        AIR_SYSTEM_DELAY, SECURITY_DELAY, AIRLINE_DELAY, LATE_AIRCRAFT_DELAY, WEATHER_DELAY]
+    description: One row of flights.csv. The key is (AIRLINE, FLIGHT_NUMBER, date); FLIGHT_NUMBER alone repeats daily.
+    evidence: [{by: profiler, what: "358,774 rows, Jan-Apr 2015, all delayed and none cancelled or diverted", ref: flights.csv}]
+  - name: Airline
+    concept: Airline
+    table: airlines
+    id_column: IATA_CODE
+    name_column: AIRLINE
+    evidence: [{by: profiler, what: 14 carriers, ref: airlines.csv}]
+  - name: Airport
+    concept: Airport
+    table: airports
+    id_column: IATA_CODE
+    name_column: AIRPORT
+    attribute_columns: [CITY, STATE, COUNTRY, LATITUDE, LONGITUDE]
+    evidence: [{by: profiler, what: 322 US airports with coordinates, ref: airports.csv}]
+  - name: Aircraft
+    concept: Aircraft
+    table: flights
+    id_column: TAIL_NUMBER
+    description: Registration only. The dataset has no type or MTOM, so wake category is synthetic.
+    evidence: [{by: profiler, what: ~4,400 distinct tails in the sample, ref: flights.TAIL_NUMBER}]
+  - name: Runway
+    concept: Runway
+    synthetic: true
+    scenario_field: runways
+    domain: atc
+    description: Two parallel runways per scenario, one degraded by the disruption, with other traffic at 3-5 min spacing.
+    evidence: [{by: derived, what: not in DOT data; generated per row from a seeded RNG, ref: data.py}]
+  - name: Gate
+    concept: Gate
+    synthetic: true
+    scenario_field: gates
+    domain: ground
+    evidence: [{by: derived, what: three gates with free windows per scenario, ref: data.py}]
+  - name: GroundCrew
+    concept: GroundCrew
+    synthetic: true
+    scenario_field: crew_shift_ends_min
+    domain: ground
+    evidence: [{by: derived, what: shift end 30-90 min after earliest arrival, ref: data.py}]
+  - name: Connection
+    concept: Connection
+    synthetic: true
+    scenario_field: connections
+    domain: pilot
+    evidence: [{by: derived, what: two onward flights with passenger counts per scenario, ref: data.py}]
+  - name: Turnaround
+    concept: Turnaround
+    synthetic: true
+    scenario_field: turnaround_min
+    domain: ground
+    description: Fixed at the planning value for a narrowbody; see rule ground.turnaround.
+    evidence: [{by: research, what: 45 min planning turnaround, ref: airbus:turnaround}]
+  - name: Disruption
+    concept: Disruption
+    table: flights
+    attribute_columns: [WEATHER_DELAY, LATE_AIRCRAFT_DELAY]
+    description: Derived from the row; WEATHER_DELAY > 15 closes a runway, LATE_AIRCRAFT_DELAY > 20 blocks a taxiway.
+    evidence: [{by: brief, what: row filter and cause mapping, ref: brief:c2:data}]
+  - name: ArrivalSlot
+    concept: ArrivalSlot
+    scenario_field: "Proposal.arrival_min / runway / gate"
+    description: The thing being negotiated. Minutes relative to SCHEDULED_ARRIVAL.
+
+relation_types:
+  - {name: OPERATED_BY, source_type: Flight, target_type: Airline, via: flights.AIRLINE}
+  - {name: FLOWN_BY, source_type: Flight, target_type: Aircraft, via: flights.TAIL_NUMBER}
+  - {name: DEPARTS, source_type: Flight, target_type: Airport, via: flights.ORIGIN_AIRPORT}
+  - {name: ARRIVES, source_type: Flight, target_type: Airport, via: flights.DESTINATION_AIRPORT}
+  - {name: DISRUPTED_BY, source_type: Flight, target_type: Disruption, via: flights.WEATHER_DELAY|LATE_AIRCRAFT_DELAY, cardinality: one_to_one}
+  - {name: LANDS_ON, source_type: ArrivalSlot, target_type: Runway, via: Proposal.runway}
+  - {name: PARKS_AT, source_type: ArrivalSlot, target_type: Gate, via: Proposal.gate}
+  - {name: FEEDS, source_type: Flight, target_type: Connection, via: Scenario.connections, cardinality: one_to_many}
+  - {name: HANDLED_BY, source_type: Flight, target_type: GroundCrew, via: Scenario.crew_shift_ends_min}
+
+# ─── metrics ────────────────────────────────────────────────────────────────────────────────────
+metrics:
+  - name: departure_delay
+    unit: min
+    grain: [Flight]
+    inputs: [flights.DEPARTURE_DELAY]
+    description: Actual minus scheduled departure. Sets the earliest possible arrival for the negotiation.
+    range_lo: -82
+    range_hi: 1988
+    evidence: [{by: profiler, what: observed range in data, ref: flights.DEPARTURE_DELAY}]
+  - name: arrival_delay
+    unit: min
+    grain: [Flight]
+    inputs: [flights.ARRIVAL_DELAY]
+    description: Actual minus scheduled arrival as it happened in 2015. The baseline our negotiated slot is compared against.
+  - name: weather_delay_min
+    unit: min
+    grain: [Flight]
+    inputs: [flights.WEATHER_DELAY]
+    description: Minutes the carrier attributed to extreme weather.
+  - name: late_aircraft_delay_min
+    unit: min
+    grain: [Flight]
+    inputs: [flights.LATE_AIRCRAFT_DELAY]
+    description: Minutes attributed to the inbound aircraft arriving late.
+  - name: taxi_in
+    unit: min
+    grain: [Flight]
+    inputs: [flights.TAXI_IN]
+    description: Wheels-on to gate arrival. Adds to the real on-block time.
+    domain: ground
+  - name: taxi_out
+    unit: min
+    grain: [Flight]
+    inputs: [flights.TAXI_OUT]
+    description: Gate departure to wheels-off.
+  - name: air_system_delay_min
+    unit: min
+    grain: [Flight]
+    inputs: [flights.AIR_SYSTEM_DELAY]
+    description: "NAS delay: non-extreme weather, airport operations, traffic volume, ATC."
+    domain: atc
+    evidence: [{by: regulation, what: BTS National Aviation System delay cause, ref: bts:delay-causes}]
+  - name: airline_delay_min
+    unit: min
+    grain: [Flight]
+    inputs: [flights.AIRLINE_DELAY]
+    description: Minutes attributed to causes within the airline's control (BTS Air Carrier delay).
+    evidence: [{by: regulation, what: BTS Air Carrier delay cause, ref: bts:delay-causes}]
+  - name: holding_time
+    unit: min
+    grain: [Flight]
+    formula: max(0, arrival_min - earliest_arrival_min)
+    inputs: [Proposal.arrival_min, Scenario.earliest_arrival_min]
+    description: Airborne delay absorbed before landing. Burns fuel.
+    domain: pilot
+  - name: fuel_remaining_at_landing
+    unit: min
+    grain: [Flight]
+    formula: fuel_endurance_min - holding_time
+    inputs: [Scenario.fuel_endurance_min, holding_time]
+    description: Endurance left on touchdown. Must stay at or above final reserve.
+    domain: pilot
+  - name: missed_connection_pax
+    unit: passengers
+    grain: [Flight]
+    formula: sum(c.passengers for c in connections if arrival_min + c.min_connect_min > c.departs_min)
+    inputs: [Scenario.connections, Proposal.arrival_min]
+    domain: pilot
+  - name: sector_delay
+    unit: min
+    grain: [ArrivalSlot]
+    formula: max(0, arrival_min)
+    description: Delay against schedule the sector absorbs for this flight.
+    domain: atc
+  - name: wake_gap
+    unit: s
+    grain: [ArrivalSlot]
+    formula: "|arrival_min - other.time_min| * 60, for each other arrival on the same runway"
+    description: Time to the nearest other arrival on the chosen runway.
+    domain: atc
+  - name: crew_overtime
+    unit: min
+    grain: [Flight]
+    formula: max(0, arrival_min + turnaround_min - crew_shift_ends_min)
+    domain: ground
+  - name: on_time
+    unit: boolean
+    grain: [Flight]
+    formula: ARRIVAL_DELAY < 15
+    inputs: [flights.ARRIVAL_DELAY]
+    description: BTS definition. No row in this dataset is on time.
+    evidence: [{by: regulation, what: 15-minute threshold, ref: bts:on-time}]
+
+# ─── code sets ──────────────────────────────────────────────────────────────────────────────────
+code_sets:
+  - name: DelayCause
+    description: The five BTS categories. Columns hold prorated minutes per category.
+    column: flights.*_DELAY
+    source: bts:delay-causes
+    entries:
+      AIRLINE_DELAY:
+        label: Air Carrier
+        definition: Within the airline's control, e.g. maintenance or crew problems, cleaning, baggage loading, fueling.
+        aliases: [carrier delay, airline delay]
+      WEATHER_DELAY:
+        label: Extreme Weather
+        definition: Significant meteorological conditions, actual or forecast, that in the carrier's judgment delay or prevent the flight, e.g. tornado, blizzard, hurricane.
+        aliases: [weather]
+      AIR_SYSTEM_DELAY:
+        label: National Aviation System
+        definition: Non-extreme weather, airport operations, heavy traffic volume, air traffic control.
+        aliases: [NAS, NAS delay, ATC delay]
+      LATE_AIRCRAFT_DELAY:
+        label: Late-arriving aircraft
+        definition: A previous flight with the same aircraft arrived late, causing this flight to depart late.
+        aliases: [late inbound, reactionary delay, knock-on]
+      SECURITY_DELAY:
+        label: Security
+        definition: Evacuation, re-boarding after a breach, inoperative screening, or screening queues over 29 minutes.
+  - name: CancellationReason
+    description: Kaggle/BTS code. Every value is null in this trimmed dataset; listed so agents never guess.
+    column: flights.CANCELLATION_REASON
+    source: bts:delay-causes
+    entries:
+      A: {label: Airline/Carrier}
+      B: {label: Weather}
+      C: {label: National Air System}
+      D: {label: Security}
+  - name: WakeCategory
+    description: ICAO wake turbulence categories by maximum certificated take-off mass.
+    column: Scenario.aircraft_category
+    source: icao:wtc
+    entries:
+      L: {label: Light, definition: "MTOM under 7,000 kg.", aliases: [light]}
+      M: {label: Medium, definition: "MTOM 7,000 kg up to but not including 136,000 kg. Most narrowbodies (A320, 737).", aliases: [medium]}
+      H: {label: Heavy, definition: "MTOM 136,000 kg or more.", aliases: [heavy]}
+      J: {label: Super, definition: "A380-800 and similar; added by Doc 4444 Amendment 9 (2020). Not generated in scenarios.", aliases: [super]}
+
+# ─── rules: every operational number, typed and sourced ─────────────────────────────────────────
+rules:
+  # ATC
+  - id: atc.runway_exists
+    kind: constraint
+    hard: true
+    domain: atc
+    subjects: [Runway]
+    text: The proposed runway must be one of the destination airport's runways.
+    source: brief:c2:atc
+    enforced_by: rules.atc_rules
+  - id: atc.runway_open
+    kind: constraint
+    hard: true
+    domain: atc
+    subjects: [Runway]
+    text: A closed runway cannot be assigned.
+    source: brief:c2:description
+    enforced_by: rules.atc_rules
+  - id: atc.taxiway_clear
+    kind: constraint
+    hard: true
+    domain: atc
+    subjects: [Runway]
+    text: A runway whose exit taxiway is blocked cannot be assigned.
+    source: brief:c2:atc
+    enforced_by: rules.atc_rules
+  - id: atc.wake_separation
+    kind: threshold
+    hard: true
+    domain: atc
+    subjects: [Runway, WakeCategory, wake_gap]
+    text: >-
+      Minimum time between a leading arrival and the next on the same runway, by (leader, follower)
+      wake category. Pairs not listed use the radar minimum.
+    params:
+      unit: s
+      table: {H>M: 120, H>L: 180, M>L: 180, J>H: 120, J>M: 180, J>L: 240, H>H: 96, default: 72}
+      derivation: >-
+        H>M, H>L, M>L, J>* are ICAO Doc 4444 §5.8.2 time-based arrival minima. H>H and default are
+        derived from the §8.7.3 distance minima (4 NM and 3 NM) at a 150 kt approach speed.
+    source: icao:4444:5.8.2
+    enforced_by: rules.atc_rules
+  - id: atc.slot_window
+    kind: constraint
+    hard: true
+    domain: atc
+    subjects: [ArrivalSlot]
+    text: The slot must be no earlier than the flight can physically arrive and no later than the sector's hand-off limit.
+    params: {min: Scenario.earliest_arrival_min, max: Scenario.max_arrival_min}
+    enforced_by: rules.atc_rules
+  - id: atc.sector_delay
+    kind: threshold
+    hard: false
+    domain: atc
+    subjects: [sector_delay]
+    text: Every minute of delay against schedule costs the sector; minimise it.
+    params: {cost_per_min: 1.0}
+    source: brief:c2:atc
+    enforced_by: rules.atc_rules
+
+  # Pilot
+  - id: pilot.final_reserve_fuel
+    kind: threshold
+    hard: true
+    domain: pilot
+    subjects: [fuel_remaining_at_landing]
+    text: >-
+      Fuel on landing must not drop below final reserve: 30 minutes at holding speed at 1,500 ft above
+      the aerodrome for turbine aeroplanes. Holding that would eat into it is not an option.
+    params: {op: ">=", value: 30, unit: min, applies_to: turbine}
+    source: easa:cat.op.mpa.181
+    enforced_by: rules.pilot_rules
+  - id: pilot.connections
+    kind: threshold
+    hard: false
+    domain: pilot
+    subjects: [Connection, missed_connection_pax]
+    text: >-
+      A passenger misses an onward flight if arrival plus minimum connect time is after it departs.
+      Default minimum connect time 35 min (US domestic hubs publish 30-55).
+    params: {default_min_connect_min: 35, cost_per_pax: 2.0}
+    source: iata:mct
+    enforced_by: rules.pilot_rules
+
+  # Ground
+  - id: ground.gate_exists
+    kind: constraint
+    hard: true
+    domain: ground
+    subjects: [Gate]
+    text: The proposed gate must be one of the destination airport's gates.
+    source: brief:c2:ground
+    enforced_by: rules.ground_rules
+  - id: ground.gate_available
+    kind: constraint
+    hard: true
+    domain: ground
+    subjects: [Gate]
+    text: The gate must be free at the arrival time.
+    source: brief:c2:ground
+    enforced_by: rules.ground_rules
+  - id: ground.gate_overrun
+    kind: threshold
+    hard: false
+    domain: ground
+    subjects: [Gate, Turnaround]
+    text: >-
+      Gate utilisation. The aircraft occupies the gate from arrival until its turnaround ends. Every minute that
+      runs past the gate's free window pushes the gate's next flight, so it costs like a minute of delay. This is
+      what makes the earliest slot not always the best one for ground.
+    params: {cost_per_min: 1.0}
+    source: brief:c2:ground
+    enforced_by: rules.ground_rules
+  - id: ground.turnaround
+    kind: threshold
+    hard: false
+    domain: ground
+    subjects: [Turnaround]
+    text: >-
+      Planning turnaround for a narrowbody is 45 min (Airbus quotes 35-45 for a full-service A320; legacy carriers
+      schedule 45-60). Not scored on its own: it sets Scenario.turnaround_min, and its cost reaches the plan through
+      ground.crew_overtime (arrival + turnaround past the crew's shift end).
+    params: {value: 45, unit: min}
+    source: airbus:turnaround
+    enforced_by: data.scenario_from_row
+  - id: ground.crew_overtime
+    kind: threshold
+    hard: false
+    domain: ground
+    subjects: [GroundCrew, crew_overtime]
+    text: Every minute the turnaround runs past the crew's shift end is overtime; minimise it.
+    params: {cost_per_min: 1.5}
+    source: brief:c2:ground
+    enforced_by: rules.ground_rules
+
+  # Data
+  - id: data.disruption_filter
+    kind: constraint
+    hard: true
+    domain: shared
+    subjects: [Flight, Disruption]
+    text: A row qualifies as a disruption scenario when WEATHER_DELAY > 15 or LATE_AIRCRAFT_DELAY > 20.
+    params: {weather_delay_gt: 15, late_aircraft_delay_gt: 20}
+    source: brief:c2:data
+    enforced_by: data.qualifying_rows
+  - id: data.on_time_threshold
+    kind: threshold
+    hard: false
+    domain: shared
+    subjects: [on_time]
+    text: BTS counts a flight on time if it arrives less than 15 minutes after schedule.
+    params: {op: "<", value: 15, unit: min}
+    source: bts:on-time
+
+  # Protocol (how the negotiation itself must run)
+  - id: protocol.max_turns
+    kind: protocol
+    domain: shared
+    text: Agents must converge in under 3 turns; after that the deterministic fallback decides.
+    params: {max_turns: 3}
+    source: brief:c2:demo
+    enforced_by: orchestrator.negotiate
+  - id: protocol.separate_agents
+    kind: protocol
+    domain: shared
+    text: The three roles are separate agents with separate prompts; never one prompt playing all three.
+    source: brief:c2:avoid
+    enforced_by: agents.make_agents
+  - id: protocol.structured_messages
+    kind: protocol
+    domain: shared
+    text: Agents exchange typed Proposal / AgentResponse messages only, validated by schema.
+    source: brief:c2:want
+    enforced_by: schemas
+  - id: protocol.no_waiving_constraints
+    kind: protocol
+    domain: shared
+    text: An agent may not accept a plan that violates a hard rule; the rule engine vetoes such accepts and logs them.
+    source: brief:c2:avoid
+    enforced_by: orchestrator.negotiate
+  - id: protocol.deterministic_fallback
+    kind: protocol
+    domain: shared
+    text: If no consensus, a non-AI solver picks the cheapest feasible plan; if none exists, the system says so.
+    source: brief:c2:want
+    enforced_by: fallback.solve
+
+# ─── knowledge passages ─────────────────────────────────────────────────────────────────────────
+passages:
+  - id: brief:c2:description
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Description
+    kind: brief
+    text: >-
+      Today, when a runway closes, weather delays occur or ground equipment fail unexpectedly,
+      communications are reliant on human phone calls, manual software updates etc., leading to
+      cascading delays, excessive holding patterns, and excessive fuel consumption. The future of Air
+      Traffic Management relies on AI assistants that can autonomously communicate and negotiate
+      trade-offs across organisational boundaries.
+  - id: brief:c2:want
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Want to see
+    kind: brief
+    text: >-
+      A Multi-Agent Communication Framework where ATC AI agents, Pilot AI agents, and ground ops
+      agents are able to negotiate resolutions to real-time disruptions without human intervention
+      until a consensus is reached. These 3 agents must exchange structured data, evaluate
+      cross-domain constraints, and converge on an agreed solution. This includes sending structured
+      messages, explicit constraint checking, traceable consensus log, deterministic non-AI fallback.
+  - id: brief:c2:atc
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, ATC agent
+    kind: brief
+    domain: atc
+    text: ATC agent must take care of runway wake separation, taxiway blockage, maximise sector throughput.
+  - id: brief:c2:pilot
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Pilot agent
+    kind: brief
+    domain: pilot
+    text: "Pilot Agent: preserve fuel reserves, ensure flight safety, minimise turbulence and protect passengers' connections."
+  - id: brief:c2:ground
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Ground agent
+    kind: brief
+    domain: ground
+    text: "Ground Agent: optimise gate utilisation, avoid ground-crew overtime, minimise turnaround delays."
+  - id: brief:c2:avoid
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, What to avoid
+    kind: brief
+    text: >-
+      Combining 3 roles into a single prompt call; the point is to test multi-agent coordination across
+      independent domains. LLM agents talking to each other in endless, unconstrained loops with no
+      convergence logic / turn limits. Disregard of safety margins; AI agents should not be allowed to
+      accept solutions that ignore operational constraints.
+  - id: brief:c2:data
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Provided data
+    kind: brief
+    text: >-
+      US Department of Transportation data for 2015 flight delays and cancellations. Pick any row with
+      WEATHER_DELAY value of > 15, or LATE_AIRCRAFT_DELAY > 20. Pass the parameters in that row into the
+      3 AI Agents.
+  - id: brief:c2:demo
+    doc: Autonomous SG 2026 Airbus Track brief
+    title: Challenge 2, Demonstration
+    kind: brief
+    text: Demonstrate how agents negotiate revised arrival time, gate assignment, or flight plan adjustment in under 3 turns.
+
+  - id: icao:4444:5.8.2
+    doc: ICAO Doc 4444 PANS-ATM
+    title: §5.8.2 Time-based wake turbulence separation minima, arriving aircraft
+    kind: regulation
+    domain: atc
+    url: https://en.wikipedia.org/wiki/Wake_turbulence_category
+    retrieved: "2026-10-31"
+    text: >-
+      MEDIUM aircraft landing behind HEAVY aircraft: 2 minutes. LIGHT aircraft landing behind a HEAVY or
+      MEDIUM aircraft: 3 minutes. LIGHT aircraft landing behind SUPER aircraft: 4 minutes. Applied when
+      the aircraft are using the same runway or parallel runways separated by less than 760 m.
+  - id: icao:4444:8.7.3
+    doc: ICAO Doc 4444 PANS-ATM
+    title: §8.7.3 Distance-based wake turbulence separation minima (ATS surveillance)
+    kind: regulation
+    domain: atc
+    url: https://code7700.com/wake_turbulence.htm
+    retrieved: "2026-10-31"
+    text: >-
+      Heavy behind Heavy 7.4 km (4.0 NM); Medium behind Heavy 9.3 km (5.0 NM); Light behind Heavy 11.1 km
+      (6.0 NM); Light behind Medium 9.3 km (5.0 NM); Super leading: 5.0 / 7.0 / 8.0 NM for Heavy / Medium /
+      Light. Otherwise the radar separation minimum of 3 NM (5.6 km) applies.
+  - id: icao:wtc
+    doc: ICAO Doc 4444 PANS-ATM
+    title: Wake turbulence categories by MTOM
+    kind: definition
+    domain: atc
+    url: https://en.wikipedia.org/wiki/Wake_turbulence_category
+    retrieved: "2026-10-31"
+    text: >-
+      Light: less than 7,000 kg. Medium: 7,000 kg up to but not including 136,000 kg. Heavy: 136,000 kg or
+      more. Super: the A380-800, introduced by Amendment 9 (2020). RECAT groups A-G exist for distance-based
+      separation as low as 3 NM; time-based minima are used for departures and range from 80 to 240 s.
+
+  - id: easa:cat.op.mpa.181
+    doc: EASA Air OPS, AMC/GM to Part-CAT
+    title: CAT.OP.MPA.181(c)(5) Final reserve fuel
+    kind: regulation
+    domain: pilot
+    url: https://www.easa.europa.eu/en/downloads/136239/en
+    retrieved: "2026-10-31"
+    text: >-
+      Final reserve fuel: for aeroplanes with turbine engines, fuel to fly for 30 minutes at holding speed at
+      1,500 ft (450 m) above the aerodrome elevation in standard conditions; for reciprocating engines,
+      45 minutes. Mirrors ICAO Annex 6 Part I 4.3.6.3. For comparison, FAA 14 CFR 121.639 domestic reserve
+      is 45 minutes at normal cruise consumption.
+
+  - id: bts:delay-causes
+    doc: US DOT Bureau of Transportation Statistics
+    title: Understanding the Reporting of Causes of Flight Delays and Cancellations
+    kind: definition
+    url: https://www.bts.gov/topics/airlines-and-airports/understanding-reporting-causes-flight-delays-and-cancellations
+    retrieved: "2026-10-31"
+    text: >-
+      Air Carrier: circumstances within the airline's control (maintenance or crew problems, cleaning, baggage
+      loading, fueling). Extreme Weather: significant meteorological conditions, actual or forecast, that in
+      the carrier's judgment delay or prevent the flight (tornado, blizzard, hurricane). National Aviation
+      System: non-extreme weather, airport operations, heavy traffic volume, air traffic control.
+      Late-arriving aircraft: a previous flight with the same aircraft arrived late, causing this flight to
+      depart late. Security: evacuation, re-boarding after a breach, inoperative screening, or queues over
+      29 minutes. Reported since June 2003 under 14 CFR 234.4; when several causes apply, minutes are
+      prorated. Airlines do not report the root cause behind a late-arriving aircraft.
+  - id: bts:on-time
+    doc: US DOT Bureau of Transportation Statistics
+    title: On-time definition
+    kind: definition
+    url: https://www.bts.gov/explore-topics-and-geography/topics/airline-time-performance-and-causes-flight-delays
+    retrieved: "2026-10-31"
+    text: >-
+      A flight is counted as on time if it operated less than 15 minutes later than the scheduled time in
+      the carrier's reservation system. A flight is delayed when it arrives 15 or more minutes after schedule.
+      Delay minutes are calculated for delayed flights only.
+
+  - id: iata:mct
+    doc: IATA PSC Resolution 765 / OAG MCT data (secondary sources)
+    title: Minimum connection time, US domestic
+    kind: standard
+    domain: pilot
+    url: https://travelvient.com/blog/tightest-connections-2026/
+    retrieved: "2026-10-31"
+    text: >-
+      Minimum connection time is the shortest interval between an inbound arrival and a connecting departure
+      an airline may sell as one itinerary; IATA administers the standards, airlines file exceptions. Of the
+      50 busiest US airports, 43 publish a 30-minute domestic-to-domestic MCT; the exceptions are LAX 70,
+      ATL 55, SFO 50, MCI 45, PHL 40, CVG 40, BWI 35. DEN, CLT and JFK publish 30; ORD and most hubs sit in
+      the 30-55 minute band.
+  - id: airbus:turnaround
+    doc: Airbus / industry ground-operations references (secondary sources)
+    title: Narrowbody turnaround time
+    kind: standard
+    domain: ground
+    url: https://simpleflying.com/narrowbody-turnaround-times-time-differences-guide/
+    retrieved: "2026-10-31"
+    text: >-
+      Turnaround time is chocks-on to chocks-off. Airbus quotes 35 to 45 minutes for a full-service turnaround
+      of a 160-seat A320-family aircraft (deboarding, cleaning, catering, refuelling, boarding). Legacy carriers
+      schedule 45 to 60 minutes on short-haul narrowbodies; low-cost carriers target 25 to 30. Both Airbus and
+      Boeing use 40 minutes for planning; airlines typically plan on 45.
+
+knowledge_links:
+  - {passage_id: brief:c2:atc,          target_kind: concept,  target: Runway,        kind: describes}
+  - {passage_id: brief:c2:pilot,        target_kind: concept,  target: Connection,    kind: describes}
+  - {passage_id: brief:c2:ground,       target_kind: concept,  target: Gate,          kind: describes}
+  - {passage_id: brief:c2:ground,       target_kind: concept,  target: GroundCrew,    kind: describes}
+  - {passage_id: brief:c2:data,         target_kind: rule,     target: data.disruption_filter, kind: sources}
+  - {passage_id: brief:c2:demo,         target_kind: rule,     target: protocol.max_turns,     kind: sources}
+  - {passage_id: icao:4444:5.8.2,       target_kind: rule,     target: atc.wake_separation,    kind: sources}
+  - {passage_id: icao:4444:8.7.3,       target_kind: rule,     target: atc.wake_separation,    kind: sources}
+  - {passage_id: icao:wtc,              target_kind: code_set, target: WakeCategory,  kind: defines}
+  - {passage_id: icao:wtc,              target_kind: concept,  target: WakeCategory,  kind: defines}
+  - {passage_id: easa:cat.op.mpa.181,   target_kind: rule,     target: pilot.final_reserve_fuel, kind: sources}
+  - {passage_id: easa:cat.op.mpa.181,   target_kind: metric,   target: fuel_remaining_at_landing, kind: constrains}
+  - {passage_id: bts:delay-causes,      target_kind: code_set, target: DelayCause,    kind: defines}
+  - {passage_id: bts:delay-causes,      target_kind: concept,  target: DelayCause,    kind: defines}
+  - {passage_id: bts:on-time,           target_kind: metric,   target: on_time,       kind: defines}
+  - {passage_id: iata:mct,              target_kind: rule,     target: pilot.connections, kind: sources}
+  - {passage_id: airbus:turnaround,     target_kind: rule,     target: ground.turnaround, kind: sources}
+  - {passage_id: airbus:turnaround,     target_kind: concept,  target: Turnaround,    kind: defines}
+
+vocabulary:
+  - {term: ETA, target_kind: concept, target: ArrivalSlot, source: user}
+  - {term: reg, target_kind: concept, target: Aircraft, source: user}
+  - {term: dest, target_kind: concept, target: Airport, source: user}
+  - {term: wx delay, target_kind: code, target: WEATHER_DELAY, source: user}
+  - {term: late inbound, target_kind: code, target: LATE_AIRCRAFT_DELAY, source: user}
+  - {term: FRF, target_kind: rule, target: pilot.final_reserve_fuel, source: user}
+  - {term: final reserve, target_kind: rule, target: pilot.final_reserve_fuel, source: user}
+  - {term: MCT, target_kind: rule, target: pilot.connections, source: user}
+  - {term: TAT, target_kind: rule, target: ground.turnaround, source: user}
