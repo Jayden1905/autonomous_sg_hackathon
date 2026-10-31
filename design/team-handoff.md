@@ -1,10 +1,10 @@
 # Bill and Daniel: frontend handoff
 
-Use the [shared design system](README.md) and [component specification](components.md). This is the agreed planning boundary for future implementation. No frontend framework, component library, or 3D engine is installed by this design handoff.
+Use the [shared design system](README.md) and [component specification](components.md). The frontend is now implemented in `frontend/`; see its README for run instructions and integration details. Daniel's public components are consumed by Bill's shared shell.
 
 ## Ownership
 
-| Owner | Future responsibility | Boundary |
+| Owner | Responsibility | Boundary |
 | --- | --- | --- |
 | Bill | Application shell, shared primitives/tokens integration, run state and API stream, Negotiation tab, rule disclosures, final decision, History tab/drawer and export | Owns the shared selected scenario, current run, active proposal/turn, and selection coordination |
 | Daniel | Detailed 3D airport and camera controls, scene selection/highlights, selected-aircraft tooltip, scenario picker, Flight tab and provenance disclosure | Consumes the selected scenario/proposal/selection; emits selection intentions; does not independently run negotiations or decide feasibility |
@@ -45,4 +45,10 @@ Keep scenario identity with every saved trace. Scene anchors are presentation da
 3. Connect selected proposals to runway/gate emphasis and the shared tooltip.
 4. Verify consensus, fallback, and no-legal-option states together before adding optional tools.
 
-The current request stops at the design system. App implementation is a separate next task.
+Implementation now lives in `frontend/src/app`, `frontend/src/api`, and
+`frontend/src/negotiation` for Bill, consuming Daniel's existing feature exports.
+The root entry point connects to the backend; `/preview.html` retains Daniel's
+recorded component harness during development. Production run state is never
+read from those recordings. Explicit illustrative mappings for the two storm
+scenarios live with the shell; unfamiliar dataset scenarios keep their resources
+in the Flight list rather than assigning them arbitrary geometry.

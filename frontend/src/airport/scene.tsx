@@ -1,5 +1,5 @@
-import { Component, Suspense, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { Component, Suspense, useEffect, useRef, useState } from "react";
+import type { ReactNode, RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Html, Line } from "@react-three/drei";
 import {
@@ -86,12 +86,14 @@ function AirportContents({
   intent,
   reducedMotion,
   inspectorWidth,
+  labels,
 }: {
   view: FlightView;
   layout: AirportLayout;
   intent: CameraIntent;
   reducedMotion: boolean;
   inspectorWidth: number;
+  labels: RefObject<HTMLDivElement>;
 }) {
   const scene = resolveScene(view, layout);
   const { scenario, selection, onSelect } = view;
@@ -170,6 +172,7 @@ function AirportContents({
           layout.gates[g.name] && (
             <Html
               key={g.name}
+              portal={labels}
               position={[
                 layout.gates[g.name][0] + 12,
                 1,
@@ -193,6 +196,7 @@ function AirportContents({
           layout.runways[r.name] && (
             <Html
               key={r.name}
+              portal={labels}
               position={[
                 layout.runways[r.name][0] - 60,
                 2,
@@ -222,6 +226,7 @@ function AirportContents({
           view={view}
           position={scene.aircraft}
           inspectorWidth={inspectorWidth}
+          portal={labels}
         />
       )}
       <AirportCamera
@@ -242,6 +247,10 @@ export function AirportScene({
   layout: AirportLayout;
   inspectorWidth?: number;
 }) {
+  // The label target must be stable while Canvas connects its event surface.
+  // Drei's implicit target changes during that setup and recreates DOM roots,
+  // leaving stale roots that fail to unmount when scenario gates change.
+  const labels = useRef<HTMLDivElement>(null!);
   const [intent, setIntent] = useState<CameraIntent>({
     action: "home",
     sequence: 0,
@@ -265,6 +274,7 @@ export function AirportScene({
     setIntent((i) => ({ action, sequence: i.sequence + 1 }));
   return (
     <section className={styles.airport} aria-label="Illustrative 3D airport">
+      <div ref={labels} className={styles.labels} />
       <RendererBoundary>
         {lost ? (
           <RendererUnavailable />
@@ -301,6 +311,7 @@ export function AirportScene({
                 intent={intent}
                 reducedMotion={reducedMotion}
                 inspectorWidth={inspectorWidth}
+                labels={labels}
               />
             </Suspense>
           </Canvas>

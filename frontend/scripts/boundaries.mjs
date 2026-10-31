@@ -19,6 +19,9 @@ const allowed = {
   flight: ["workspace"],
   scenarios: ["workspace"],
   preview: ["airport", "flight", "scenarios", "workspace"],
+  api: [],
+  negotiation: ["api", "workspace"],
+  app: ["airport", "flight", "scenarios", "workspace", "api", "negotiation"],
 };
 const errors = [];
 for (const file of files) {

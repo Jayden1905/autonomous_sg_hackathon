@@ -5,6 +5,11 @@
   color: var(--color-text);
   overflow: hidden;
 }
+.labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 .caption {
   position: absolute;
   left: var(--space-6);
@@ -100,6 +105,7 @@
   color: var(--color-failure);
 }
 .gate {
+  pointer-events: auto;
   border: 1px solid #ffffff66;
   border-radius: 3px;
   padding: 3px 6px;
@@ -113,6 +119,7 @@
   background: var(--color-accent);
 }
 .runway {
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--space-2);

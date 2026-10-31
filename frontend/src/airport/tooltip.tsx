@@ -1,4 +1,5 @@
 import { Html } from "@react-three/drei";
+import type { RefObject } from "react";
 import { Plane } from "lucide-react";
 import { Vector3 } from "three";
 import type { Camera, Object3D } from "three";
@@ -37,15 +38,18 @@ export function AircraftTooltip({
   view,
   position,
   inspectorWidth,
+  portal,
 }: {
   view: FlightView;
   position: Point;
   inspectorWidth: number;
+  portal: RefObject<HTMLDivElement>;
 }) {
   const { scenario, proposal, context } = view;
   const plan = displayPlan(view);
   return (
     <Html
+      portal={portal}
       position={[position[0], 8, position[2]]}
       calculatePosition={(o, c, s) => tooltipPosition(o, c, s, inspectorWidth)}
       zIndexRange={[12, 10]}

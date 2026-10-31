@@ -92,8 +92,15 @@ Model defaults to `claude-opus-5-5`; override with `ATC_MODEL` in `.env`.
 Bill and Daniel share an approved [design system](design/README.md): a detailed
 3D airport workspace with a slim toolbar and one floating white inspector.
 It includes the approved mockup, shared tokens, component states, and ownership
-boundaries. Read it before starting frontend work. The design system is a
-specification; the frontend application is not built yet.
+boundaries. The integrated frontend combines Daniel's airport and Flight components
+with Bill's negotiation stream, evidence/rule inspector, history and export.
+See [frontend/README.md](frontend/README.md) for setup and the integration boundary.
+
+Run `make serve` in one terminal, then `cd frontend && npm ci && npm run dev`
+in another. Open `http://127.0.0.1:5173`. Mock agents are selected by default;
+they use the backend rule engine without API credentials. Choose Live AI in
+Run settings to use the server's configured model. Daniel's standalone recorded
+component preview remains available at `/preview.html` during development.
 
 The backend exposes a FastAPI server for the UI:
 

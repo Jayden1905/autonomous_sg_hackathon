@@ -60,6 +60,8 @@ The three agent rows use neutral icons and names: ATC, Pilot, Ground. Each row e
 | --- | --- |
 | `started` | Reset run-local state, record scenario/model/turn limit; show Running |
 | `thinking` | Mark only the named agent as Proposing or Evaluating; small progress indicator |
+| `tool_call` | Append an expandable tool record, including query rows, compiled SQL and model references when supplied |
+| `guardrail` | Record citation-check attempts; a failed intermediate check may still be repaired |
 | `proposal` | Update active plan; label its author Proposed; clear responses from the previous turn |
 | `evaluation` | Update hard-rule checks and soft costs from this evaluation |
 | `response` | Show Accepted, Countered, or Acceptance vetoed; reveal objections/counter on expansion |
@@ -70,6 +72,13 @@ The three agent rows use neutral icons and names: ATC, Pilot, Ground. Each row e
 The proposer does not emit an acceptance response for its own proposal. Show “Proposed” for that role and “Accepted” for the actual accepting responders. The approved mockup's three Accepted labels illustrate layout, not exact protocol semantics.
 
 Do not carry old acceptance states into a new turn. An accept with `vetoed: true` must show the rule-engine veto. A counter response may have no alternative; display “No alternative supplied” rather than inventing one.
+
+A returned proposal/response with `guardrail.passed === false`, or a role listed in
+`TurnRecord.guardrail_blocked`, is **Reply blocked**, even when its verdict says
+accept. This is distinct from a rule-engine veto. Resolve `[n]` markers only against
+that same object's `evidence` list; a counterproposal has its own sources. Flag
+`grounded: false` as unverified and low-trust sources explicitly. Render source
+URLs only as HTTP(S) links. Source trust is not a confidence percentage.
 
 Keep “Mock agents” and “Live AI” clearly distinguishable. The mock uses scripted decisions and the same rules; it is not evidence of LLM performance. Disable duplicate submissions while a run is active. If a future Stop watching action only disconnects the client, say so; do not claim the backend has cancelled the run.
 
@@ -90,7 +99,9 @@ Use `Evaluation.feasible`, `cost`, and each rule's `passed`, `hard`, `detail`, a
 
 Times are relative minutes: `+28 min`, `0 min`, `−5 min`. Window labels should say “Relative to scheduled arrival”. Do not label these as local clock times. Soft cost is a weighted score, not dollars or fuel saved. Missing data is “Unavailable”, not zero. Do not invent a confidence percentage.
 
-Use the full generated `NegotiationTrace.outcome` union, including `no_legal_option`. The abbreviated example in `CONTRACT.md` currently omits that third outcome even though its narrative and generated schemas include it.
+Use the full generated `NegotiationTrace.outcome` union, including `no_legal_option`.
+Use stable `rule_id` values for model lookups; rule labels may change. Regenerate
+contracts from the API rather than editing generated TypeScript by hand.
 
 ## History and comparison
 

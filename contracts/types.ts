@@ -101,6 +101,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/semantic/elicitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Elicitation
+         * @description Questions the documents left open, per role, with coverage and answers so far.
+         */
+        get: operations["elicitation_semantic_elicitation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/semantic/elicitation/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer
+         * @description Append an answer to the ledger. Confirmed structured answers apply on the next model load.
+         */
+        post: operations["answer_semantic_elicitation_answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -322,6 +362,75 @@ export interface components {
             longitude: number;
         };
         /**
+         * Answer
+         * @description An operator's answer, as given. Never edited; a later answer to the same question supersedes it.
+         */
+        Answer: {
+            /** Question Id */
+            question_id: string;
+            /** By */
+            by: string;
+            /** At */
+            at: string;
+            /** Text */
+            text: string;
+            /**
+             * Action
+             * @default answer
+             * @enum {string}
+             */
+            action: "answer" | "confirm_default" | "skip" | "not_applicable";
+            /** Structured */
+            structured?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Confirmed
+             * @default false
+             */
+            confirmed: boolean;
+            /**
+             * Via
+             * @default cli
+             * @enum {string}
+             */
+            via: "cli" | "api" | "panel" | "chat";
+        };
+        /** AnswerIn */
+        AnswerIn: {
+            /** Question Id */
+            question_id: string;
+            /**
+             * By
+             * @description Operator id from the operators list
+             */
+            by: string;
+            /**
+             * Text
+             * @description The operator's words, verbatim
+             */
+            text: string;
+            /**
+             * Structured
+             * @description Typed reading: params / new_rule / range_lo / aliases / vocabulary
+             */
+            structured?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Confirmed
+             * @description Operator confirmed the structured reading; only then it applies
+             * @default false
+             */
+            confirmed: boolean;
+            /**
+             * Action
+             * @default answer
+             * @enum {string}
+             */
+            action: "answer" | "confirm_default" | "skip" | "not_applicable";
+        };
+        /**
          * Citation
          * @description A source resolved from the semantic model, ready to render as a footnote.
          */
@@ -473,6 +582,15 @@ export interface components {
              * @default 35
              */
             min_connect_min: number;
+        };
+        /** Elicitation */
+        Elicitation: {
+            /** Operators */
+            operators?: components["schemas"]["Operator"][];
+            /** Questions */
+            questions?: components["schemas"]["Question"][];
+            /** Answers */
+            answers?: components["schemas"]["Answer"][];
         };
         /**
          * EntityType
@@ -706,7 +824,7 @@ export interface components {
         };
         /**
          * KnowledgePassage
-         * @description A quotable chunk of the brief or a regulation. Briefings cite these by id.
+         * @description A quotable chunk of the brief, a regulation, or an operator's own words. Briefings cite these by id.
          */
         KnowledgePassage: {
             /** Id */
@@ -722,7 +840,7 @@ export interface components {
              * @default brief
              * @enum {string}
              */
-            kind: "brief" | "regulation" | "standard" | "statistic" | "definition";
+            kind: "brief" | "regulation" | "standard" | "statistic" | "definition" | "operator";
             /**
              * Url
              * @default
@@ -739,6 +857,11 @@ export interface components {
              * @enum {string}
              */
             domain: "atc" | "pilot" | "ground" | "shared";
+            /**
+             * By
+             * @default
+             */
+            by: string;
         };
         /** Metric */
         Metric: {
@@ -834,6 +957,37 @@ export interface components {
             fallback_reason?: string | null;
             stats?: components["schemas"]["RunStats"];
         };
+        /**
+         * Operator
+         * @description A named person whose knowledge is in the model. Judges want a named user; here they are.
+         */
+        Operator: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "atc" | "pilot" | "ground" | "shared";
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Organisation
+             * @default
+             */
+            organisation: string;
+            /**
+             * Status
+             * @default example
+             * @enum {string}
+             */
+            status: "example" | "interviewed";
+        };
         /** Project */
         Project: {
             /** Id */
@@ -914,6 +1068,43 @@ export interface components {
              */
             proposer: "atc" | "pilot" | "ground";
             proposal: components["schemas"]["Proposal-Output"];
+        };
+        /**
+         * Question
+         * @description One thing the build could not learn from documents. Generated, not hand-written.
+         */
+        Question: {
+            /** Id */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "atc" | "pilot" | "ground" | "shared";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "synthetic_type" | "default_param" | "undescribed_concept" | "unsourced_metric" | "unsourced_rule" | "open";
+            /**
+             * Target Kind
+             * @enum {string}
+             */
+            target_kind: "type" | "rule" | "concept" | "metric" | "none";
+            /** Target */
+            target: string;
+            /** Text */
+            text: string;
+            /**
+             * Why
+             * @default
+             */
+            why: string;
+            /**
+             * Priority
+             * @default 2
+             */
+            priority: number;
         };
         /** RelationType */
         RelationType: {
@@ -1215,6 +1406,7 @@ export interface components {
             knowledge_links?: components["schemas"]["KnowledgeLink"][];
             /** Vocabulary */
             vocabulary?: components["schemas"]["VocabTerm"][];
+            elicitation?: components["schemas"]["Elicitation"];
         };
         /** SqlResult */
         SqlResult: {
@@ -1593,6 +1785,63 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    elicitation_semantic_elicitation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    answer_semantic_elicitation_answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

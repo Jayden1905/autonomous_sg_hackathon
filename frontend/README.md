@@ -1,4 +1,49 @@
-# Daniel's airport and Flight components
+# Integrated airport workspace
+
+Bill's application shell connects Daniel's airport, Flight tab and scenario picker to Jayden's API. The root URL runs real backend negotiations; it does not load recorded traces. Mock agents are the default and require no API key or dataset.
+
+Start two terminals from the repository root:
+
+```sh
+# Terminal 1
+make setup                 # first run only
+make serve                 # API on http://127.0.0.1:8000
+
+# Terminal 2
+cd frontend
+npm ci
+npm run dev               # workspace on http://127.0.0.1:5173
+```
+
+Select a scenario, then **Run negotiation**. The Negotiation tab streams agent replies, source citations, rule checks and tool activity. History compares recorded proposals and counterproposals; selecting one also previews it in the airport. **Back to latest** restores the final/current plan. **Decision history** retains up to 20 completed runs for this browser session. Export JSON to save a trace beyond a reload.
+
+**Run settings** selects Mock agents or Live AI, turn limit and reasoning effort. Live AI requires backend credentials; no credentials belong in the frontend. Missing CSVs leave bundled scenarios usable and historical metric queries unavailable. When the backend has the dataset, the settings disclosure can load additional scenarios in pages of 20. Unknown airport resource IDs stay in the Flight list without fabricated scene anchors.
+
+**Stop watching** and changing scenarios disconnect this browser from the current stream; the backend may continue. Partial runs are never shown as final recommendations. Failed citation reports block returned replies, while intermediate failed checks may be repaired. A rule-engine veto is distinct from a citation block. `no_legal_option` displays the last attempt and a human-decision message, without recommendation highlights.
+
+The Vite development/preview server proxies `/api` to `http://127.0.0.1:8000`. For Jayden's server, set `ATC_API_TARGET` in `frontend/.env.local` (see `.env.example`) and restart Vite. Static hosting needs an equivalent `/api` reverse proxy or a build-time `VITE_API_BASE_URL` pointing at the API. The frontend never calls the model provider directly.
+
+## Bill's modules and checks
+
+- `src/app`: shell, scenario/run ownership, session history, inspector and run settings.
+- `src/api`: typed HTTP client and POST SSE reader using generated contracts.
+- `src/negotiation`: run reducer, agent replies, scoped evidence, rule/tool disclosures and comparison.
+- Daniel's `airport`, `flight`, `scenarios` and `workspace` public entry points remain the integration boundary.
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npx playwright install chromium     # browser tests, first run only
+npm run test:e2e                     # needs the API and frontend running above
+```
+
+The browser tests use mock agents only and cover consensus, fallback, no legal option, gate selection, trace download, historical inspection, scenario-switch isolation, interrupted streams, mobile, WebGL loss and API reconnection. Screenshots go to the system temp directory under `nushack-e2e` (override with `E2E_OUTPUT_DIR`). `PLAYWRIGHT_EXECUTABLE_PATH` can select an existing Chromium installation. Live model calls are not part of automated verification.
+
+The scene's HTML labels use a dedicated stable portal container. Keep it stable: letting the renderer choose a changing DOM target during initialization caused stale label roots and errors when switching between scenarios with different gates.
+
+## Daniel's airport and Flight components
 
 React 19, TypeScript, Vite, React Three Fiber and Drei. Run from this directory:
 
@@ -11,11 +56,11 @@ npm test
 npm run build
 ```
 
-The local preview is at `http://127.0.0.1:5173`. It works without the backend or external model/font/HDRI downloads. The bottom-left **Review states** control loads recorded backend fixtures for consensus, fallback and no legal option. **Load mock result** loads a recording; it does not start a negotiation or issue an airport command.
+Daniel's original component preview remains at `http://127.0.0.1:5173/preview.html` during development. It works without the backend or external model/font/HDRI downloads. The bottom-left **Review states** control loads recorded backend fixtures for consensus, fallback and no legal option. **Load mock result** loads a recording; it does not start a negotiation or issue an airport command.
 
 ## Scope and integration with Bill
 
-This is Daniel's feature implementation plus a disposable preview harness. `src/preview` demonstrates the approved layout at 1600 × 1000; Bill remains the owner of the production toolbar, inspector shell, tabs, shared state, negotiation stream and history. Only the preview imports global styles. Feature components use CSS modules and the existing `design/tokens.css` values.
+`src/preview` is Daniel's independent component harness. Bill's `src/app` now owns the production toolbar, inspector shell, tabs, shared state, negotiation stream and history. Each entry point imports its own shell styles; feature components use CSS modules and the existing `design/tokens.css` values.
 
 The frontend setup and interface below are proposed integration defaults, not a claim of agreement with Bill. Coordinate before merging or making concurrent configuration/lockfile changes. The preview can be removed when Bill's shell consumes the exports.
 
