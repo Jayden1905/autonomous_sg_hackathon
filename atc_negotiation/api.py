@@ -21,6 +21,7 @@ from . import data, fallback
 from .agents import DEFAULT_EFFORT, DEFAULT_MODEL, make_agents
 from .orchestrator import negotiate
 from .rules import evaluate
+from .decisions import decisions_router
 from .semantic_api import semantic_router
 from .schemas import Evaluation, GuardrailReport, NegotiationTrace, Proposal, Scenario, ToolCall
 from .sqlengine import dataset_available
@@ -39,6 +40,7 @@ app = FastAPI(
 )
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.include_router(semantic_router)
+app.include_router(decisions_router)
 
 
 # ---- request / response models -------------------------------------------------

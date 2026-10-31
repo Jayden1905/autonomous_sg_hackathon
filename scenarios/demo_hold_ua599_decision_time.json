@@ -1,0 +1,51 @@
+{
+  "scenario_id": "demo-hold-ORD-UA599-decision-time",
+  "flight": "UA599",
+  "airline": "UA",
+  "airline_name": "United Air Lines Inc.",
+  "origin": "BOS",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "BOS", "name": "Gen. Edward Lawrence Logan International Airport", "city": "Boston",
+    "state": "MA", "country": "USA", "latitude": 42.36435, "longitude": -71.00518
+  },
+  "destination_info": {
+    "iata": "ORD", "name": "Chicago O'Hare International Airport", "city": "Chicago",
+    "state": "IL", "country": "USA", "latitude": 41.9796, "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "17:55",
+  "disruption": "ILLUSTRATION, not from the dataset: UA599 is already in the hold over ORD when 27L closes for a thunderstorm cell. t=0 is now. Every minute spent deciding is a minute holding. Fuel allows 25 min of holding above final reserve; gate C9 frees at t+4 and is lost at t+30 to the next inbound. A phone chain between tower, cockpit and ramp typically takes several minutes; the negotiation takes under one.",
+  "weather_delay_min": 20,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 1,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 55,
+  "final_reserve_min": 30,
+  "connections": [
+    {"passengers": 23, "departs_min": 48, "min_connect_min": 35},
+    {"passengers": 9, "departs_min": 95, "min_connect_min": 35}
+  ],
+  "runways": [
+    {"name": "27L", "open": false, "taxiway_blocked": false, "arrivals": []},
+    {"name": "27R", "open": true, "taxiway_blocked": false,
+     "arrivals": [
+       {"time_min": -2, "category": "H"},
+       {"time_min": 7, "category": "M"},
+       {"time_min": 11, "category": "H"},
+       {"time_min": 15, "category": "M"},
+       {"time_min": 19, "category": "M"},
+       {"time_min": 24, "category": "H"}
+     ]}
+  ],
+  "gates": [
+    {"name": "C9", "free_from_min": -6, "free_until_min": 30},
+    {"name": "B6", "free_from_min": 40, "free_until_min": 200}
+  ],
+  "crew_shift_ends_min": 60,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "source": {},
+  "synthetic_fields": [
+    "everything: hand-written illustration of coordination time on the critical path; not a dataset row"
+  ]
+}
