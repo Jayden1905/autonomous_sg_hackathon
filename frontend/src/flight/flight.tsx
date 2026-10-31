@@ -131,36 +131,55 @@ export function FlightTab(view: FlightView) {
             ))}
         </ul>
       )}
-      <DataSection
-        title="Flight constraints"
-        note="Times relative to scheduled arrival"
-      >
-        <DataRow
-          label="Earliest arrival"
-          note={synthetic("earliest_arrival_min")}
+      {finished ? (
+        // Once the agents have talked, the merged picture is fair to show: it is what
+        // the negotiation surfaced. Before that, these limits are private to the
+        // cockpit and the ramp, and live on their cards in the Negotiation tab.
+        <DataSection
+          title="Flight constraints"
+          note="Times relative to scheduled arrival"
         >
-          {relativeMinutes(s.earliest_arrival_min)}
-        </DataRow>
-        <DataRow
-          label={margin < 0 ? "Fuel reserve deficit" : "Holding budget"}
-          tone={margin < 0 ? "danger" : undefined}
-          note={synthetic("fuel_endurance_min")}
-        >
-          {Math.abs(margin)} min
-        </DataRow>
-        <DataRow label="Connecting passengers" note={synthetic("connections")}>
-          {(s.connections ?? []).reduce((n, c) => n + c.passengers, 0)}
-        </DataRow>
-        <DataRow
-          label="Crew shift ends"
-          note={synthetic("crew_shift_ends_min")}
-        >
-          {relativeMinutes(s.crew_shift_ends_min)}
-        </DataRow>
-        <DataRow label="Turnaround" note={synthetic("turnaround_min")}>
-          {s.turnaround_min} min
-        </DataRow>
-      </DataSection>
+          <DataRow
+            label="Earliest arrival"
+            note={synthetic("earliest_arrival_min")}
+          >
+            {relativeMinutes(s.earliest_arrival_min)}
+          </DataRow>
+          <DataRow
+            label={margin < 0 ? "Fuel reserve deficit" : "Holding budget"}
+            tone={margin < 0 ? "danger" : undefined}
+            note={synthetic("fuel_endurance_min")}
+          >
+            {Math.abs(margin)} min
+          </DataRow>
+          <DataRow
+            label="Connecting passengers"
+            note={synthetic("connections")}
+          >
+            {(s.connections ?? []).reduce((n, c) => n + c.passengers, 0)}
+          </DataRow>
+          <DataRow
+            label="Crew shift ends"
+            note={synthetic("crew_shift_ends_min")}
+          >
+            {relativeMinutes(s.crew_shift_ends_min)}
+          </DataRow>
+          <DataRow label="Turnaround" note={synthetic("turnaround_min")}>
+            {s.turnaround_min} min
+          </DataRow>
+        </DataSection>
+      ) : (
+        <DataSection title="Flight constraints">
+          <DataRow label="Earliest arrival">
+            {relativeMinutes(s.earliest_arrival_min)}
+          </DataRow>
+          <p className={styles.heldBy}>
+            Fuel, crew and connection limits are held by the cockpit and the
+            ramp, not shared up front. See <strong>Negotiation</strong> for what
+            each party knows.
+          </p>
+        </DataSection>
+      )}
       <section className={styles.entities}>
         <h3>Airport resources</h3>
         <p>
@@ -207,13 +226,21 @@ export function FlightTab(view: FlightView) {
             aria-pressed={selection?.kind === "gate" && selection.id === g.name}
           >
             <span>Gate {g.name}</span>
+            {/* Gate windows are the ramp's private data until the run surfaces them. */}
             <span>
-              {relativeMinutes(g.free_from_min)} →{" "}
-              {relativeMinutes(g.free_until_min)}
+              {finished
+                ? `${relativeMinutes(g.free_from_min)} → ${relativeMinutes(g.free_until_min)}`
+                : proposal?.gate === g.name
+                  ? "Proposed"
+                  : "Window held by ramp"}
             </span>
           </button>
         ))}
-        <p>Gate windows are relative to scheduled arrival.</p>
+        <p>
+          {finished
+            ? "Gate windows are relative to scheduled arrival."
+            : "Runway state is visible to everyone; gate windows are not."}
+        </p>
       </section>
       <details className={styles.provenance}>
         <summary>Data & provenance</summary>

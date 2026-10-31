@@ -48,7 +48,8 @@ describe("Flight content", () => {
     ).toBeInTheDocument();
   });
   it("shows sourced constraints and connection totals without inventing telemetry", () => {
-    render(<FlightTab {...view} />);
+    // Constraints are other parties' private data until a run has finished.
+    render(<FlightTab {...view} context="consensus" />);
     expect(screen.getByText("25 min")).toBeInTheDocument();
     expect(screen.getByText("24")).toBeInTheDocument();
     expect(
@@ -62,6 +63,7 @@ describe("Flight content", () => {
     render(
       <FlightTab
         {...view}
+        context="consensus"
         scenario={{
           ...view.scenario,
           fuel_endurance_min: 20,
@@ -149,14 +151,37 @@ describe("Flight content", () => {
     expect(row("What actually happened")).toHaveTextContent("+88 min");
     expect(row("What actually happened")).toHaveTextContent("negotiated +70 min");
   });
-  it("separates a DOT flight's recorded facts from its synthetic values", () => {
+  it("keeps other parties' constraints and gate windows private until a run has finished", () => {
     render(<FlightTab {...view} scenario={storm as Scenario} />);
+    // Shared facts are visible; the cockpit's and ramp's private limits are not.
+    expect(screen.getByText("Earliest arrival")).toBeInTheDocument();
+    expect(screen.queryByText("Holding budget")).toBeNull();
+    expect(screen.queryByText("Connecting passengers")).toBeNull();
+    expect(screen.queryByText("Crew shift ends")).toBeNull();
+    expect(
+      screen.getByText(/held by the cockpit and the ramp/),
+    ).toBeInTheDocument();
+    // Runway state is public; gate windows are the ramp's.
+    expect(screen.getByText("× Closed")).toBeInTheDocument();
+    expect(screen.getAllByText("Window held by ramp").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/→/)).toBeNull();
+  });
+  it("separates a DOT flight's recorded facts from its synthetic values once the run is done", () => {
+    render(
+      <FlightTab
+        {...view}
+        scenario={storm as Scenario}
+        context="consensus"
+        proposal={{ arrival_min: 70, runway: "27R", gate: "B6", rationale: "" }}
+      />,
+    );
     const row = (label: string) => screen.getByText(label).closest("div")!;
     expect(screen.getByText("US DOT flight · 8 May 2015")).toBeInTheDocument();
     expect(row("Scheduled arrival")).toHaveTextContent("17:55 local");
     expect(row("Holding budget")).toHaveTextContent("Synthetic");
     expect(row("Connecting passengers")).toHaveTextContent("Synthetic");
     expect(row("Earliest arrival")).not.toHaveTextContent("Synthetic");
+    expect(screen.getAllByText(/→/).length).toBeGreaterThan(0);
     expect(
       screen.getByText(/Runways and gates are synthetic/),
     ).toBeInTheDocument();

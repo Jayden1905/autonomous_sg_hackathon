@@ -93,6 +93,17 @@
   display: block;
   margin-top: var(--space-2);
 }
+/* Pre-run pointer: these limits are private to other parties; the Negotiation tab shows them. */
+.heldBy {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+.heldBy strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
 .disruption {
   padding: var(--space-4) 0;
   border-block: 1px solid var(--color-divider);
