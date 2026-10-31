@@ -170,7 +170,7 @@ happened to the same flight.
 | Turns, mean | 2.0 | 1.0 |
 | Decision time, mean | 0.3 s | 50 s (max 65 s) |
 | Vetoed accepts (agent agreed to an illegal plan) | 0 | 0 |
-| Passengers kept on connections | 5,260 of 5,447 (96.6%) | 516 of 582 (88.7%) |
+| Passengers kept on connections | 5,252 of 5,447 (96.4%) | 516 of 582 (88.7%) |
 | LLM calls / tool calls | — | 168 / 257 |
 | Citation checks / claims sent back for re-grounding | — | 98 / 38 |
 
@@ -190,14 +190,14 @@ recorded departure delay.
 |---|---|---|---|
 | Decision time per disruption | measured | 0.3 s | 50 s |
 | vs. today | not quantified | phone/radio coordination across three organisations; no published per-flight figure found | |
-| Passengers kept on connections | measured | 96.6% | 88.7% |
+| Passengers kept on connections | measured | 96.4% | 88.7% |
 | Plans refused because nothing legal existed | measured | 6 of 200 | 0 of 20 |
 | Holding absorbed per flight | measured | median 3 min | median 4.5 min |
 | Fuel burned in hold | estimate | median 120 kg/flight | median 180 kg/flight (40 kg/min, A320 planning figure) |
-| Post-departure delay vs recorded | measured | **median 3 min worse** (54 better, 116 worse, 24 same) | **median 3 min worse** (6 better, 12 worse, 2 same) |
+| Post-departure delay vs recorded | measured | **median 3 min worse** (47 better, 119 worse, 28 same) | **median 3 min worse** (6 better, 12 worse, 2 same) |
 
-**The delay number is against us, and we report it.** In 127 of 194 scripted rows
-(65.5%) and 13 of 20 real-agent rows (65%) the real system had already absorbed the
+**The delay number is against us, and we report it.** In 121 of 194 scripted rows
+(62.4%) and 13 of 20 real-agent rows (65%) the real system had already absorbed the
 disruption before arrival: the recorded post-departure delay is 0. There was nothing left for a negotiation to
 remove, and the holding our synthetic runway imposes shows up as "worse". On this
 dataset the disruption lives at departure; delay minutes cannot be claimed in our

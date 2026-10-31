@@ -68,7 +68,7 @@ why. Also: the ATC agent's first proposal on the sample scenario missed the gate
 caught it.
 
 **The measurement that went against us:** we compared negotiated arrival with what actually
-happened to each flight in 2015. We're **3 minutes worse on median**. Reason: in 65% of rows the
+happened to each flight in 2015. We're **3 minutes worse on median**. Reason: in 62–65% of rows the
 real disruption was absorbed at departure, so by arrival there was nothing left to improve, and our
 synthetic runway is busier than the real day was. Delay minutes can't be claimed on this dataset,
 and the README says so.
@@ -77,7 +77,7 @@ and the README says so.
 
 ## 5. Impact [10%] — 30 s
 
-What's measured: a cross-organisation decision in **50 seconds**, 89–97% of connecting passengers
+What's measured: a cross-organisation decision in **50 seconds**, 89–96% of connecting passengers
 protected, and a refusal when nothing legal exists.
 
 **Illustration (labelled, not a measurement):** `demo-hold-UA599-decision-time`. The aircraft is
