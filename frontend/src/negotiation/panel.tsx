@@ -8,19 +8,23 @@ import {
   Rules,
   ToolActivity,
 } from "./details";
+import { PartyBriefs } from "./parties";
 import { responseLabel, selectedPlan, planComparison } from "./state";
 import type { Attempt, RunState } from "./state";
+import type { Scenario } from "@/workspace";
 
 export function NegotiationPanel({
   state,
   selected,
   onLatest,
   onSelect,
+  scenario,
 }: {
   state: RunState;
   selected: Attempt | null;
   onLatest: () => void;
   onSelect?: FlightView["onSelect"];
+  scenario?: Scenario;
 }) {
   const plan = selectedPlan(state, selected);
   const turn = plan.turn;
@@ -71,16 +75,19 @@ export function NegotiationPanel({
           <p>The last attempt is not a recommendation. You can retry below.</p>
         </div>
       )}
-      {state.status === "idle" && (
-        <div className="empty">
-          <h3>Ready to negotiate</h3>
-          <p>
-            ATC, Pilot and Ground will propose an arrival plan and check it
-            against the same operational rules.
-          </p>
-          <p>Choose an agent mode below, then run the negotiation.</p>
-        </div>
-      )}
+      {state.status === "idle" &&
+        (scenario ? (
+          <PartyBriefs scenario={scenario} />
+        ) : (
+          <div className="empty">
+            <h3>Ready to negotiate</h3>
+            <p>
+              ATC, Pilot and Ground will propose an arrival plan and check it
+              against the same operational rules.
+            </p>
+            <p>Choose an agent mode below, then run the negotiation.</p>
+          </div>
+        ))}
       {state.status === "running" && !selected && (
         <p className="progress-text">
           {state.thinking

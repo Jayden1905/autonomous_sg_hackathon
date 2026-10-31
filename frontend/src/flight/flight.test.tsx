@@ -130,12 +130,30 @@ describe("Flight content", () => {
     ).toBeVisible();
     expect(screen.getByText(/Geometry, aircraft placement/)).toBeVisible();
   });
+  it("hides the recorded outcome until a run has finished, then shows it beside the plan", () => {
+    const { unmount } = render(
+      <FlightTab {...view} scenario={storm as Scenario} />,
+    );
+    const row = (label: string) => screen.getByText(label).closest("div")!;
+    expect(row("Actual arrival")).toHaveTextContent("Revealed after the run");
+    expect(row("Actual arrival")).not.toHaveTextContent("+88 min");
+    unmount();
+    render(
+      <FlightTab
+        {...view}
+        scenario={storm as Scenario}
+        context="consensus"
+        proposal={{ arrival_min: 70, runway: "27R", gate: "B6", rationale: "" }}
+      />,
+    );
+    expect(row("What actually happened")).toHaveTextContent("+88 min");
+    expect(row("What actually happened")).toHaveTextContent("negotiated +70 min");
+  });
   it("separates a DOT flight's recorded facts from its synthetic values", () => {
     render(<FlightTab {...view} scenario={storm as Scenario} />);
     const row = (label: string) => screen.getByText(label).closest("div")!;
     expect(screen.getByText("US DOT flight · 8 May 2015")).toBeInTheDocument();
     expect(row("Scheduled arrival")).toHaveTextContent("17:55 local");
-    expect(row("Actual arrival")).toHaveTextContent("+88 min");
     expect(row("Holding budget")).toHaveTextContent("Synthetic");
     expect(row("Connecting passengers")).toHaveTextContent("Synthetic");
     expect(row("Earliest arrival")).not.toHaveTextContent("Synthetic");

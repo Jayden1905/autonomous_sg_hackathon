@@ -460,6 +460,7 @@ export function App() {
                   selected={selected}
                   onLatest={() => setSelected(null)}
                   onSelect={view.onSelect}
+                  scenario={view.scenario}
                 />
               )}
               {tab === "History" && (

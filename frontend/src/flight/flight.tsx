@@ -34,6 +34,12 @@ export function FlightTab(view: FlightView) {
   const plan = displayPlan(view);
   const margin = s.fuel_endurance_min - s.final_reserve_min;
   const record = recordedFlight(s);
+  // The recorded 2015 outcome is the answer key. Showing it before the agents run
+  // turns the negotiation into a re-enactment, so it stays hidden until a run ends.
+  const finished =
+    context === "consensus" ||
+    context === "fallback" ||
+    context === "no_legal_option";
   // A hand-written sample is labelled once above; marking rows would tag every value.
   const synthetic = (field: keyof Scenario) =>
     record && s.synthetic_fields?.includes(field) ? "Synthetic" : undefined;
@@ -80,10 +86,17 @@ export function FlightTab(view: FlightView) {
           <DataRow label="Scheduled arrival">
             {s.scheduled_arrival_hhmm} local
           </DataRow>
-          <DataRow label="Actual arrival">
+          <DataRow
+            label={finished ? "What actually happened" : "Actual arrival"}
+            note={finished && proposal ? "vs negotiated" : undefined}
+          >
             {record.arrivalDelayMin === null
               ? "Unavailable"
-              : relativeMinutes(record.arrivalDelayMin)}
+              : !finished
+                ? "Revealed after the run"
+                : proposal
+                  ? `${relativeMinutes(record.arrivalDelayMin)} · negotiated ${relativeMinutes(proposal.arrival_min)}`
+                  : relativeMinutes(record.arrivalDelayMin)}
           </DataRow>
           <DataRow label="Weather delay">{s.weather_delay_min} min</DataRow>
           <DataRow label="Late-aircraft delay">

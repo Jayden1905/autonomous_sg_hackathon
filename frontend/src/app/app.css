@@ -258,6 +258,79 @@ button:focus-visible {
 .empty {
   padding: var(--space-6) 0;
 }
+/* Pre-run view: what each organisation can see, side by side, so the reason to
+   negotiate is visible before the first proposal. */
+.parties {
+  padding: var(--space-4) 0 var(--space-2);
+}
+.parties h3 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-section);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+/* The inspector is ~340px wide: the three parties stack vertically there and only go
+   side by side when the container itself is wide (container query, not viewport). */
+.parties {
+  container-type: inline-size;
+}
+.party-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@container (min-width: 720px) {
+  .party-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.party {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  padding: var(--space-3);
+}
+.party h4 {
+  margin: 0 0 var(--space-2);
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.party h4 svg {
+  flex-shrink: 0;
+  align-self: center;
+}
+.party h4 .muted {
+  font-weight: 400;
+}
+.party ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-caption);
+}
+.party li {
+  padding: 3px 0;
+}
+.party-unknown,
+.party-moves {
+  border-top: 1px dashed var(--color-divider);
+  margin-top: var(--space-2);
+  padding-top: var(--space-2) !important;
+  color: var(--color-text-secondary);
+}
+.party-unknown span,
+.party-moves span {
+  font-weight: 600;
+}
+.party-moves {
+  color: var(--color-accent);
+}
 .empty h3,
 .section-title {
   font-size: var(--font-size-section);
