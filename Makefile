@@ -1,7 +1,10 @@
 # Loads GITHUB_TOKEN from .env (gitignored). Never commit tokens.
 -include .env
+export GITHUB_TOKEN
 
-REPO := https://$(GITHUB_TOKEN)@github.com/Jayden1905/autonomous_sg_hackathon.git
+REPO := https://github.com/Jayden1905/autonomous_sg_hackathon.git
+# Token goes through a credential helper, not the URL, so it never shows in `ps`.
+GIT  := git -c credential.helper='!f(){ echo username=x-access-token; echo password=$$GITHUB_TOKEN; }; f'
 
 .PHONY: help push pull sync status log
 
@@ -16,10 +19,10 @@ _check-token:
 	@test -n "$(GITHUB_TOKEN)" || { echo "GITHUB_TOKEN not set. Add it to .env"; exit 1; }
 
 push: _check-token
-	@git push $(REPO) HEAD:main
+	@$(GIT) push $(REPO) HEAD:main
 
 pull: _check-token
-	@git pull --rebase $(REPO) main
+	@$(GIT) pull --rebase $(REPO) main
 
 sync: pull push
 
