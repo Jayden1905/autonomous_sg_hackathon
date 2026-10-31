@@ -243,7 +243,7 @@ Indicative, not measured savings: the 2015 baseline is real, our side runs on th
 synthetic airport. The real agents' plan cost more than the solver's in 9 of 20 rows
 (they waited for a preferred gate); every plan was legal.
 
-### Private moves: where negotiation finds what a solver can't
+### Private moves (measured before the workbook switch)
 
 Each organisation can hold options only it knows (`Scenario.moves`): Ground can tow a
 parked aircraft or call a standby crew, Pilot can absorb delay en route, ATC can
@@ -258,6 +258,8 @@ re-sequence a heavy and says the gate needs a ground move; Ground adds a tow. 2 
 found the cheapest plan (t+56, cost 94.5), 3 landed a minute later (cost 97). Caveat: a
 solver given every party's private options would also find it; in practice those
 options are not shared up front. Moves exist only in this hand-built scenario so far.
+These runs used the earlier ICAO wake table. Under the workbook's looser table the
+scenario no longer holds (its tests are xfail) and it needs re-tuning.
 
 ### Known failure cases
 
