@@ -3,6 +3,8 @@ name = "atc-negotiation"
 version = "0.1.0"
 description = "Autonomous SG 2026, Airbus Challenge 2: ATC / Pilot / Ground agents negotiating disruption recovery"
 requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "anthropic>=0.80",
     "pydantic>=2.7",

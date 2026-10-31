@@ -8,3 +8,6 @@ traces/
 *.egg-info/
 .pytest_cache/
 *.zip
+
+# Organisers' challenge briefs: keep local, do not redistribute
+*.pdf

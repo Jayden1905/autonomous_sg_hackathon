@@ -222,3 +222,11 @@ negotiation handles one flight at a time.
 - Gates have a single free window; no towing between gates.
 - One flight is negotiated at a time. Knock-on effects on other flights are
   only captured through the sector delay cost.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Anyone may use, modify and redistribute the code.
+
+The DOT 2015 flight dataset and the organisers' challenge briefs are not part of
+this repository and are not covered by this license. Put the organisers' zip in
+the repo root and run `make data` to get the dataset.
