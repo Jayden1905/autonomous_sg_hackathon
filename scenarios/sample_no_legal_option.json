@@ -1,0 +1,98 @@
+{
+  "scenario_id": "sample-no-legal-option-ORD",
+  "flight": "UA1234",
+  "airline": "UA",
+  "airline_name": "United Air Lines Inc.",
+  "origin": "DEN",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "DEN",
+    "name": "Denver International Airport",
+    "city": "Denver",
+    "state": "CO",
+    "country": "USA",
+    "latitude": 39.85841,
+    "longitude": -104.667
+  },
+  "destination_info": {
+    "iata": "ORD",
+    "name": "Chicago O'Hare International Airport",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "latitude": 41.9796,
+    "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "17:40",
+  "disruption": "Same thunderstorm as sample-weather, but the flight departed DEN with minimum fuel and 27R is saturated with heavies. There is no slot it can legally wait for: the correct answer is to divert, and the system must say so rather than invent one.",
+  "weather_delay_min": 38,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 22,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 40,
+  "final_reserve_min": 30,
+  "connections": [
+    {
+      "passengers": 18,
+      "departs_min": 75,
+      "min_connect_min": 35
+    }
+  ],
+  "runways": [
+    {
+      "name": "27L",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "27R",
+      "open": true,
+      "taxiway_blocked": false,
+      "arrivals": [
+        {
+          "time_min": 21,
+          "category": "H"
+        },
+        {
+          "time_min": 23,
+          "category": "H"
+        },
+        {
+          "time_min": 25,
+          "category": "H"
+        },
+        {
+          "time_min": 27,
+          "category": "H"
+        },
+        {
+          "time_min": 29,
+          "category": "H"
+        },
+        {
+          "time_min": 31,
+          "category": "H"
+        },
+        {
+          "time_min": 33,
+          "category": "H"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "name": "B12",
+      "free_from_min": 20,
+      "free_until_min": 140
+    }
+  ],
+  "crew_shift_ends_min": 70,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "source": {},
+  "synthetic_fields": [
+    "everything: hand-written demo scenario"
+  ]
+}

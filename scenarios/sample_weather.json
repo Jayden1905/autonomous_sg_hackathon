@@ -1,0 +1,109 @@
+{
+  "scenario_id": "sample-weather-ORD",
+  "flight": "UA1234",
+  "airline": "UA",
+  "airline_name": "United Air Lines Inc.",
+  "origin": "DEN",
+  "destination": "ORD",
+  "origin_info": {
+    "iata": "DEN",
+    "name": "Denver International Airport",
+    "city": "Denver",
+    "state": "CO",
+    "country": "USA",
+    "latitude": 39.85841,
+    "longitude": -104.667
+  },
+  "destination_info": {
+    "iata": "ORD",
+    "name": "Chicago O'Hare International Airport",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "latitude": 41.9796,
+    "longitude": -87.90446
+  },
+  "scheduled_arrival_hhmm": "17:40",
+  "disruption": "Thunderstorm cell over ORD. Runway 27L closed for 40 minutes, arrival rate cut in half. Flight is already 22 minutes late off DEN.",
+  "weather_delay_min": 38,
+  "late_aircraft_delay_min": 0,
+  "earliest_arrival_min": 22,
+  "aircraft_category": "M",
+  "fuel_endurance_min": 55,
+  "final_reserve_min": 30,
+  "connections": [
+    {
+      "passengers": 18,
+      "departs_min": 75,
+      "min_connect_min": 35
+    },
+    {
+      "passengers": 6,
+      "departs_min": 130,
+      "min_connect_min": 35
+    }
+  ],
+  "runways": [
+    {
+      "name": "27L",
+      "open": false,
+      "taxiway_blocked": false,
+      "arrivals": []
+    },
+    {
+      "name": "27R",
+      "open": true,
+      "taxiway_blocked": false,
+      "arrivals": [
+        {
+          "time_min": 20,
+          "category": "H"
+        },
+        {
+          "time_min": 23,
+          "category": "M"
+        },
+        {
+          "time_min": 26,
+          "category": "M"
+        },
+        {
+          "time_min": 31,
+          "category": "H"
+        },
+        {
+          "time_min": 36,
+          "category": "M"
+        },
+        {
+          "time_min": 41,
+          "category": "L"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "name": "B12",
+      "free_from_min": 35,
+      "free_until_min": 140
+    },
+    {
+      "name": "B14",
+      "free_from_min": 10,
+      "free_until_min": 30
+    },
+    {
+      "name": "C3",
+      "free_from_min": 60,
+      "free_until_min": 200
+    }
+  ],
+  "crew_shift_ends_min": 70,
+  "turnaround_min": 45,
+  "max_arrival_min": 180,
+  "source": {},
+  "synthetic_fields": [
+    "everything: hand-written demo scenario"
+  ]
+}

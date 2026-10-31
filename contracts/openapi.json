@@ -1,0 +1,1272 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ATC negotiation API",
+    "description": "Three-agent (ATC / Pilot / Ground) disruption negotiation. See contracts/CONTRACT.md.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios": {
+      "get": {
+        "summary": "List Scenarios",
+        "operationId": "list_scenarios_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Scenarios Scenarios Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}": {
+      "get": {
+        "summary": "Get Scenario",
+        "operationId": "get_scenario_scenarios__scenario_id__get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Scenario"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dot/scenarios": {
+      "get": {
+        "summary": "Dot Scenarios",
+        "description": "Scenarios built from qualifying rows of the DOT 2015 flights.csv.",
+        "operationId": "dot_scenarios_dot_scenarios_get",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Scenario"
+                  },
+                  "title": "Response Dot Scenarios Dot Scenarios Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluate": {
+      "post": {
+        "summary": "Evaluate Proposal",
+        "description": "Rule engine only. Use for what-if sliders: no LLM involved.",
+        "operationId": "evaluate_proposal_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fallback": {
+      "post": {
+        "summary": "Run Fallback",
+        "description": "Deterministic solver only.",
+        "operationId": "run_fallback_fallback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scenario"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FallbackResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiate": {
+      "post": {
+        "summary": "Run Negotiation",
+        "description": "Blocking. Returns the full trace once done (30-90 s with real agents).",
+        "operationId": "run_negotiation_negotiate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NegotiateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NegotiationTrace"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiate/stream": {
+      "post": {
+        "summary": "Stream Negotiation",
+        "description": "Same as /negotiate but streams one SSE event per step. Ends with `done` or `error`.",
+        "operationId": "stream_negotiation_negotiate_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NegotiateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "SSE stream. Event names and payloads: StreamEvents schema.",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_schemas/stream-events": {
+      "get": {
+        "summary": "Schema anchor for SSE payloads; never call this",
+        "operationId": "_stream_events_schema__schemas_stream_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamEvents"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentResponse": {
+        "properties": {
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "objections": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Objections",
+            "description": "Empty when accepting"
+          },
+          "counter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Proposal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required when verdict is counter"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdict"
+        ],
+        "title": "AgentResponse"
+      },
+      "AircraftCategory": {
+        "type": "string",
+        "enum": [
+          "L",
+          "M",
+          "H"
+        ],
+        "title": "AircraftCategory"
+      },
+      "AirportInfo": {
+        "properties": {
+          "iata": {
+            "type": "string",
+            "title": "Iata"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          }
+        },
+        "type": "object",
+        "required": [
+          "iata",
+          "name",
+          "city",
+          "state",
+          "country",
+          "latitude",
+          "longitude"
+        ],
+        "title": "AirportInfo",
+        "description": "From the organisers' airports.csv. For labels and maps; the rules never read it."
+      },
+      "Connection": {
+        "properties": {
+          "passengers": {
+            "type": "integer",
+            "title": "Passengers"
+          },
+          "departs_min": {
+            "type": "integer",
+            "title": "Departs Min"
+          },
+          "min_connect_min": {
+            "type": "integer",
+            "title": "Min Connect Min",
+            "default": 35
+          }
+        },
+        "type": "object",
+        "required": [
+          "passengers",
+          "departs_min"
+        ],
+        "title": "Connection"
+      },
+      "ErrorEvent": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "type"
+        ],
+        "title": "ErrorEvent"
+      },
+      "EvaluateRequest": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "proposal"
+        ],
+        "title": "EvaluateRequest"
+      },
+      "Evaluation": {
+        "properties": {
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/RuleResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "feasible": {
+            "type": "boolean",
+            "title": "Feasible",
+            "readOnly": true
+          },
+          "cost": {
+            "type": "number",
+            "title": "Cost",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "proposal",
+          "results",
+          "feasible",
+          "cost"
+        ],
+        "title": "Evaluation"
+      },
+      "EvaluationEvent": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "evaluation"
+        ],
+        "title": "EvaluationEvent"
+      },
+      "FallbackResponse": {
+        "properties": {
+          "evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evaluation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null when no option in the window passes every hard rule"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evaluation"
+        ],
+        "title": "FallbackResponse"
+      },
+      "Gate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "free_from_min": {
+            "type": "integer",
+            "title": "Free From Min"
+          },
+          "free_until_min": {
+            "type": "integer",
+            "title": "Free Until Min"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "free_from_min",
+          "free_until_min"
+        ],
+        "title": "Gate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "default_model": {
+            "type": "string",
+            "title": "Default Model"
+          },
+          "dot_dataset_available": {
+            "type": "boolean",
+            "title": "Dot Dataset Available"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "default_model",
+          "dot_dataset_available"
+        ],
+        "title": "Health"
+      },
+      "NegotiateRequest": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "mock": {
+            "type": "boolean",
+            "title": "Mock",
+            "description": "Scripted agents, no LLM calls. For UI development.",
+            "default": false
+          },
+          "max_turns": {
+            "type": "integer",
+            "maximum": 6.0,
+            "minimum": 1.0,
+            "title": "Max Turns",
+            "default": 3
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Overrides the server default model"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario"
+        ],
+        "title": "NegotiateRequest"
+      },
+      "NegotiationTrace": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "duration_s": {
+            "type": "number",
+            "title": "Duration S"
+          },
+          "turns": {
+            "items": {
+              "$ref": "#/components/schemas/TurnRecord"
+            },
+            "type": "array",
+            "title": "Turns"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "consensus",
+              "fallback",
+              "no_legal_option"
+            ],
+            "title": "Outcome",
+            "description": "consensus: agents agreed on a feasible plan. fallback: no consensus, the deterministic solver picked the cheapest feasible plan. no_legal_option: nothing in the window passes every hard rule; `final` is the last attempt, NOT a recommendation, and a human must decide."
+          },
+          "final": {
+            "$ref": "#/components/schemas/Proposal"
+          },
+          "final_evaluation": {
+            "$ref": "#/components/schemas/Evaluation"
+          },
+          "fallback_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fallback Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "model",
+          "started_at",
+          "duration_s",
+          "turns",
+          "outcome",
+          "final",
+          "final_evaluation"
+        ],
+        "title": "NegotiationTrace"
+      },
+      "Proposal": {
+        "properties": {
+          "arrival_min": {
+            "type": "integer",
+            "title": "Arrival Min",
+            "description": "Revised arrival, minutes after scheduled arrival"
+          },
+          "runway": {
+            "type": "string",
+            "title": "Runway"
+          },
+          "gate": {
+            "type": "string",
+            "title": "Gate"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale",
+            "description": "One or two sentences, plain language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arrival_min",
+          "runway",
+          "gate",
+          "rationale"
+        ],
+        "title": "Proposal"
+      },
+      "ProposalEvent": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "proposer": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Proposer"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "proposer",
+          "proposal"
+        ],
+        "title": "ProposalEvent"
+      },
+      "ResponseEvent": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "agent": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Agent"
+          },
+          "response": {
+            "$ref": "#/components/schemas/AgentResponse"
+          },
+          "counter_evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evaluation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "vetoed": {
+            "type": "boolean",
+            "title": "Vetoed",
+            "description": "True when the agent accepted a proposal the rule engine found infeasible"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "agent",
+          "response",
+          "counter_evaluation",
+          "vetoed"
+        ],
+        "title": "ResponseEvent"
+      },
+      "RuleResult": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Domain"
+          },
+          "passed": {
+            "type": "boolean",
+            "title": "Passed"
+          },
+          "hard": {
+            "type": "boolean",
+            "title": "Hard"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "cost": {
+            "type": "number",
+            "title": "Cost",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule",
+          "domain",
+          "passed",
+          "hard",
+          "detail"
+        ],
+        "title": "RuleResult"
+      },
+      "Runway": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "open": {
+            "type": "boolean",
+            "title": "Open",
+            "default": true
+          },
+          "taxiway_blocked": {
+            "type": "boolean",
+            "title": "Taxiway Blocked",
+            "default": false
+          },
+          "arrivals": {
+            "items": {
+              "$ref": "#/components/schemas/RunwayArrival"
+            },
+            "type": "array",
+            "title": "Arrivals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Runway"
+      },
+      "RunwayArrival": {
+        "properties": {
+          "time_min": {
+            "type": "integer",
+            "title": "Time Min"
+          },
+          "category": {
+            "$ref": "#/components/schemas/AircraftCategory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time_min",
+          "category"
+        ],
+        "title": "RunwayArrival",
+        "description": "Another aircraft already slotted on a runway."
+      },
+      "Scenario": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "flight": {
+            "type": "string",
+            "title": "Flight"
+          },
+          "airline": {
+            "type": "string",
+            "title": "Airline"
+          },
+          "airline_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Airline Name",
+            "description": "From airlines.csv, e.g. 'United Air Lines Inc.'"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "destination": {
+            "type": "string",
+            "title": "Destination"
+          },
+          "origin_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AirportInfo"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null if the IATA code is not in airports.csv"
+          },
+          "destination_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AirportInfo"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null if the IATA code is not in airports.csv"
+          },
+          "scheduled_arrival_hhmm": {
+            "type": "string",
+            "title": "Scheduled Arrival Hhmm"
+          },
+          "disruption": {
+            "type": "string",
+            "title": "Disruption"
+          },
+          "weather_delay_min": {
+            "type": "integer",
+            "title": "Weather Delay Min",
+            "default": 0
+          },
+          "late_aircraft_delay_min": {
+            "type": "integer",
+            "title": "Late Aircraft Delay Min",
+            "default": 0
+          },
+          "earliest_arrival_min": {
+            "type": "integer",
+            "title": "Earliest Arrival Min"
+          },
+          "aircraft_category": {
+            "$ref": "#/components/schemas/AircraftCategory",
+            "default": "M"
+          },
+          "fuel_endurance_min": {
+            "type": "integer",
+            "title": "Fuel Endurance Min"
+          },
+          "final_reserve_min": {
+            "type": "integer",
+            "title": "Final Reserve Min",
+            "default": 30
+          },
+          "connections": {
+            "items": {
+              "$ref": "#/components/schemas/Connection"
+            },
+            "type": "array",
+            "title": "Connections"
+          },
+          "runways": {
+            "items": {
+              "$ref": "#/components/schemas/Runway"
+            },
+            "type": "array",
+            "title": "Runways"
+          },
+          "gates": {
+            "items": {
+              "$ref": "#/components/schemas/Gate"
+            },
+            "type": "array",
+            "title": "Gates"
+          },
+          "crew_shift_ends_min": {
+            "type": "integer",
+            "title": "Crew Shift Ends Min"
+          },
+          "turnaround_min": {
+            "type": "integer",
+            "title": "Turnaround Min",
+            "default": 45
+          },
+          "max_arrival_min": {
+            "type": "integer",
+            "title": "Max Arrival Min",
+            "default": 180
+          },
+          "source": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Source"
+          },
+          "synthetic_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Synthetic Fields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "flight",
+          "airline",
+          "origin",
+          "destination",
+          "scheduled_arrival_hhmm",
+          "disruption",
+          "earliest_arrival_min",
+          "fuel_endurance_min",
+          "runways",
+          "gates",
+          "crew_shift_ends_min"
+        ],
+        "title": "Scenario"
+      },
+      "ScenarioSummary": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "flight": {
+            "type": "string",
+            "title": "Flight"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "destination": {
+            "type": "string",
+            "title": "Destination"
+          },
+          "disruption": {
+            "type": "string",
+            "title": "Disruption"
+          },
+          "earliest_arrival_min": {
+            "type": "integer",
+            "title": "Earliest Arrival Min"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "flight",
+          "origin",
+          "destination",
+          "disruption",
+          "earliest_arrival_min"
+        ],
+        "title": "ScenarioSummary"
+      },
+      "StartedEvent": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "max_turns": {
+            "type": "integer",
+            "title": "Max Turns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "model",
+          "max_turns"
+        ],
+        "title": "StartedEvent"
+      },
+      "StreamEvents": {
+        "properties": {
+          "started": {
+            "$ref": "#/components/schemas/StartedEvent"
+          },
+          "thinking": {
+            "$ref": "#/components/schemas/ThinkingEvent"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/ProposalEvent"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/EvaluationEvent"
+          },
+          "response": {
+            "$ref": "#/components/schemas/ResponseEvent"
+          },
+          "turn_complete": {
+            "$ref": "#/components/schemas/TurnRecord"
+          },
+          "done": {
+            "$ref": "#/components/schemas/NegotiationTrace"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorEvent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "started",
+          "thinking",
+          "proposal",
+          "evaluation",
+          "response",
+          "turn_complete",
+          "done",
+          "error"
+        ],
+        "title": "StreamEvents",
+        "description": "Not an endpoint. Exists so every SSE payload type lands in the OpenAPI schema."
+      },
+      "ThinkingEvent": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "agent": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground"
+            ],
+            "title": "Agent"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "propose",
+              "respond"
+            ],
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "agent",
+          "action"
+        ],
+        "title": "ThinkingEvent"
+      },
+      "TurnRecord": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "proposer": {
+            "type": "string",
+            "title": "Proposer"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/Evaluation"
+          },
+          "responses": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AgentResponse"
+            },
+            "type": "object",
+            "title": "Responses"
+          },
+          "counter_evaluations": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Evaluation"
+            },
+            "type": "object",
+            "title": "Counter Evaluations"
+          },
+          "vetoed_accepts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Vetoed Accepts",
+            "description": "Agents that accepted a proposal the rule engine found infeasible"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "proposer",
+          "proposal",
+          "evaluation",
+          "responses",
+          "counter_evaluations"
+        ],
+        "title": "TurnRecord"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Verdict": {
+        "type": "string",
+        "enum": [
+          "accept",
+          "counter"
+        ],
+        "title": "Verdict"
+      }
+    }
+  }
+}
