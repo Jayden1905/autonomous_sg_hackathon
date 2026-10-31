@@ -64,8 +64,8 @@ Show the UA599 run. Three agents, one per organisation, each with its own prompt
 
 Open `/semantic/`. Click `atc.wake_separation`.
 
-- Every rule → its parameters → the regulation passage → the URL. ICAO Doc 4444 §5.8.2 for wake,
-  EASA CAT.OP.MPA.181 for fuel, BTS for the delay categories.
+- Every rule → its parameters → the regulation passage → the URL. The organisers' workbook for wake,
+  turnaround, gate notice and crew duty; EASA CAT.OP.MPA.181 for fuel; BTS for the delay categories.
 - Every claim an agent makes carries a citation; a guardrail checks it resolves to the model before
   the message is sent. In 20 real runs: 98 claims checked, **38 sent back**. That's the LLM reaching
   for a number it didn't have, caught before it was spoken.
@@ -127,7 +127,7 @@ on the 2015 data because it records when planes landed, not how long humans took
 - *Who said the operator knowledge?* Nobody yet. Placeholders, labelled. Five priority-one questions ready for anyone with ramp or tower time.
 - *What if the agents agree on something illegal?* Rule engine vetoes it and logs the veto. Show `vetoed_accepts` in the trace.
 - *Why not fewer delay minutes?* The dataset records landings, not decision time; the real system had finished deciding before arrival in two-thirds of cases.
-- *Is wake separation real?* ICAO time-based minima at an assumed 150 kt, not RECAT. Conservative. Listed in SOURCES.md.
+- *Is wake separation real?* The organisers' workbook table, simplified from FAA JO 7110.65 (e.g. Heavy>Heavy 120 s, other pairs 60 s). Time-based, not RECAT.
 - *What's synthetic?* Runways, gates, fuel, connections, crew. Every scenario lists them. The flight, route, schedule and delay attribution are real.
 
 ## Order of tabs on the laptop

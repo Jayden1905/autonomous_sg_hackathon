@@ -282,14 +282,14 @@ scenario no longer holds (its tests are xfail) and it needs re-tuning.
   controller, pilot or ramp supervisor answers.
 
 Every scenario lists its synthetic fields. Every rule the engine enforces cites a
-source (`semantic/SOURCES.md`). Wake separation is time-based ICAO minima at an
-assumed approach speed, fuel is minutes of endurance with no alternate, and the
+source (`semantic/SOURCES.md`). Wake separation is the organisers' workbook table (simplified
+FAA JO 7110.65), fuel is minutes of endurance with no alternate, and the
 negotiation handles one flight at a time.
 
 ## Simplifications
 
-- Wake separation uses a time-based table approximating ICAO Doc 4444
-  distance minima at typical approach speeds, not the full RECAT matrix.
+- Wake separation uses the organisers' workbook table (simplified FAA JO 7110.65,
+  time-based), not the full RECAT matrix.
 - Fuel is modelled as minutes of endurance against a 30 min final reserve.
   No alternate or contingency fuel.
 - Gates have a single free window; no towing between gates.
