@@ -1,0 +1,69 @@
+/* Shared design tokens, v1. No application styles or components.
+ * See design/README.md. Use these values when application work begins.
+ * Colours describe the light UI over the detailed neutral 3D scene.
+ */
+:root {
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f6f6f6;
+  --color-text: #242424;
+  --color-text-secondary: #6b6b6b;
+  --color-text-on-dark: #ffffff;
+  --color-divider: #e7e7e7;
+  --color-control-border: #8a8a8a;
+  --color-accent: #2453ff;
+  --color-selection-fill: rgba(36, 83, 255, 0.08);
+  --color-success: #1f7a46;
+  --color-caution: #946200;
+  --color-failure: #bc3030;
+  --color-action: #242424;
+  --color-action-hover: #383838;
+  --color-scene-backdrop: #454a4e;
+  --color-scene-label: #ffffff;
+  --color-scene-label-backing: rgba(36, 36, 36, 0.84);
+
+  --font-family-ui: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-size-caption: 12px;
+  --font-size-body: 13px;
+  --font-size-section: 14px;
+  --font-size-title: 16px;
+  --line-height-caption: 18px;
+  --line-height-body: 20px;
+  --line-height-title: 24px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-control: 6px;
+  --radius-panel: 10px;
+  --radius-round: 999px;
+  --border-width: 1px;
+  --shadow-floating: 0 8px 28px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  --height-toolbar: 48px;
+  --height-data-row: 36px;
+  --size-target-desktop: 32px;
+  --size-target-touch: 44px;
+  --size-icon: 16px;
+  --stroke-icon: 1.5px;
+  --width-inspector: 340px;
+  --width-inspector-compact: 320px;
+  --width-inspector-wide: 380px;
+  --width-tooltip: 220px;
+  --width-tool-palette: 44px;
+  --inset-overlay: 24px;
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #2453ff;
+
+  --layer-scene: 0;
+  --layer-scene-label: 10;
+  --layer-toolbar: 20;
+  --layer-inspector: 30;
+  --layer-popover: 40;
+  --layer-modal: 50;
+}

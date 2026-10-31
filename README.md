@@ -74,6 +74,12 @@ Model defaults to `claude-opus-5-5`; override with `ATC_MODEL` or `--model`.
 
 ## Frontend (React, separate)
 
+Bill and Daniel share an approved [design system](design/README.md): a detailed
+3D airport workspace with a slim toolbar and one floating white inspector.
+It includes the approved mockup, shared tokens, component states, and ownership
+boundaries. Read it before starting frontend work. The design system is a
+specification; the frontend application is not built yet.
+
 The backend exposes a FastAPI server for the UI:
 
 ```bash
