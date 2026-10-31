@@ -1,0 +1,71 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size-target-desktop);
+  min-height: var(--size-target-desktop);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.iconButton:hover {
+  background: var(--color-surface-subtle);
+}
+.iconButton[aria-pressed="true"] {
+  background: var(--color-selection-fill);
+  color: var(--color-accent);
+}
+.iconButton:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.row {
+  min-height: var(--height-data-row);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.row:last-child {
+  border-bottom: 0;
+}
+.row dt {
+  color: var(--color-text-secondary);
+}
+.row dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.danger {
+  color: var(--color-failure);
+}
+.section {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.section h3 {
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-2);
+}
+.section dl {
+  margin: 0;
+}
+.note {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2);
+}
+@media (pointer: coarse) {
+  .iconButton {
+    min-width: var(--size-target-touch);
+    min-height: var(--size-target-touch);
+  }
+}

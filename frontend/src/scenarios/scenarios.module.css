@@ -1,0 +1,130 @@
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  padding: var(--space-2) var(--space-3);
+  min-height: 32px;
+  width: 350px;
+  color: var(--color-text-secondary);
+  font: var(--font-size-caption) var(--font-family-ui);
+  cursor: pointer;
+}
+.trigger kbd {
+  margin-left: auto;
+  font: 10px var(--font-family-ui);
+  color: var(--color-text-secondary);
+}
+.dialog {
+  padding: var(--space-5);
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  max-height: 80vh;
+  box-sizing: border-box;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--font-size-body)/var(--line-height-body) var(--font-family-ui);
+  box-shadow: var(--shadow-floating);
+}
+.dialog::backdrop {
+  background: #24242455;
+}
+.dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.dialog h2 {
+  font-size: var(--font-size-title);
+  margin: 0;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+}
+.search:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+}
+.note {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+.results {
+  max-height: 50vh;
+  overflow: auto;
+}
+.result {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-4) var(--space-2);
+  text-align: left;
+  color: var(--color-text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+.result:hover {
+  background: var(--color-surface-subtle);
+}
+.result:focus-visible,
+.trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+.identity {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+.identity span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.identity > svg {
+  margin-left: auto;
+  color: var(--color-accent);
+}
+.empty {
+  padding: var(--space-5) 0;
+}
+@media (max-width: 899px) {
+  .trigger {
+    width: auto;
+  }
+  .trigger kbd {
+    display: none;
+  }
+}
+@media (max-width: 599px) {
+  .trigger span {
+    display: none;
+  }
+  .trigger {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,174 @@
+.airport {
+  position: absolute;
+  inset: 0;
+  font: var(--font-size-body)/var(--line-height-body) var(--font-family-ui);
+  color: var(--color-text);
+  overflow: hidden;
+}
+.caption {
+  position: absolute;
+  left: var(--space-6);
+  top: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-scene-label);
+  text-shadow: 0 1px 3px #242424;
+  font-size: var(--font-size-caption);
+  pointer-events: none;
+}
+.dot {
+  width: 5px;
+  height: 5px;
+  background: var(--color-scene-label);
+  border-radius: var(--radius-round);
+}
+.dock {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-floating);
+  padding: var(--space-2);
+  z-index: 15;
+}
+.separator {
+  height: 20px;
+  width: 1px;
+  background: var(--color-divider);
+  margin: 0 var(--space-2);
+}
+.hint {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--color-scene-label);
+  text-shadow: 0 1px 3px #242424;
+  pointer-events: none;
+}
+.tooltip {
+  width: var(--width-tooltip);
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-floating);
+  background: var(--color-surface);
+  font-size: var(--font-size-caption);
+}
+.tooltip strong {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-section);
+}
+.tooltip p {
+  color: var(--color-text-secondary);
+  margin: var(--space-1) 0;
+}
+.tooltip > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-2);
+  margin-top: var(--space-3);
+}
+.tooltip b {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.tooltip small {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  margin-top: var(--space-2);
+}
+.tooltip .failure {
+  color: var(--color-failure);
+}
+.gate {
+  border: 1px solid #ffffff66;
+  border-radius: 3px;
+  padding: 3px 6px;
+  min-height: 32px;
+  background: var(--color-scene-label-backing);
+  color: var(--color-scene-label);
+  font: 500 11px var(--font-family-ui);
+  cursor: pointer;
+}
+.activeGate {
+  background: var(--color-accent);
+}
+.runway {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  border: 0;
+  padding: var(--space-1) var(--space-2);
+  min-height: 32px;
+  border-radius: var(--radius-control);
+  background: var(--color-scene-label-backing);
+  color: var(--color-scene-label);
+  font: var(--font-size-caption) var(--font-family-ui);
+  cursor: pointer;
+}
+.cross {
+  color: #ff8078;
+  font-size: 32px;
+  line-height: 24px;
+}
+.gate:focus-visible,
+.runway:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+.mapping {
+  position: absolute;
+  top: var(--space-8);
+  left: var(--space-6);
+  max-width: 320px;
+  background: var(--color-surface);
+  border-radius: var(--radius-control);
+  padding: var(--space-3);
+  margin-top: var(--space-6);
+  font-size: var(--font-size-caption);
+}
+.unavailable {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-subtle);
+  padding: var(--space-6);
+}
+@media (max-width: 899px) {
+  .caption {
+    left: var(--space-4);
+    top: var(--space-3);
+  }
+  .dock {
+    bottom: 48px;
+  }
+  .hint {
+    bottom: 28px;
+  }
+  .tooltip {
+    display: none;
+  }
+}
