@@ -170,6 +170,280 @@
         }
       }
     },
+    "/semantic/elicitation": {
+      "get": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Elicitation",
+        "description": "Questions the documents left open, per role, with coverage and answers so far.",
+        "operationId": "elicitation_semantic_elicitation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Elicitation Semantic Elicitation Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semantic/elicitation/answer": {
+      "post": {
+        "tags": [
+          "semantic model"
+        ],
+        "summary": "Answer",
+        "description": "Append an answer to the ledger. Confirmed structured answers apply on the next model load.",
+        "operationId": "answer_semantic_elicitation_answer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Answer Semantic Elicitation Answer Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/decisions": {
+      "post": {
+        "tags": [
+          "human approval"
+        ],
+        "summary": "Create Decision",
+        "description": "Put a finished negotiation in front of an operator. Call it with the stream's `done` trace.",
+        "operationId": "create_decision_decisions_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Decision"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "human approval"
+        ],
+        "summary": "List Decisions",
+        "description": "Newest first. Filter with ?status=pending_approval for the operator's queue.",
+        "operationId": "list_decisions_decisions_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "pending_approval",
+                    "needs_human_decision",
+                    "executed",
+                    "rejected",
+                    "diverted"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Decision"
+                  },
+                  "title": "Response List Decisions Decisions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/decisions/{decision_id}": {
+      "get": {
+        "tags": [
+          "human approval"
+        ],
+        "summary": "Get Decision",
+        "operationId": "get_decision_decisions__decision_id__get",
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Decision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Decision"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/decisions/{decision_id}/decide": {
+      "post": {
+        "tags": [
+          "human approval"
+        ],
+        "summary": "Decide Endpoint",
+        "description": "approve: re-check, then record the (simulated) instructions. reject: close it. divert: no-legal-option only.",
+        "operationId": "decide_endpoint_decisions__decision_id__decide_post",
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Decision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Decision"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Action not allowed in this status, or the rule engine re-check failed (body carries the evaluation)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApproveRefused"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -585,6 +859,177 @@
         "title": "AirportInfo",
         "description": "From the organisers' airports.csv. For labels and maps; the rules never read it."
       },
+      "Answer": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "title": "Question Id"
+          },
+          "by": {
+            "type": "string",
+            "title": "By"
+          },
+          "at": {
+            "type": "string",
+            "title": "At"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "answer",
+              "confirm_default",
+              "skip",
+              "not_applicable"
+            ],
+            "title": "Action",
+            "default": "answer"
+          },
+          "structured": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structured"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "via": {
+            "type": "string",
+            "enum": [
+              "cli",
+              "api",
+              "panel",
+              "chat"
+            ],
+            "title": "Via",
+            "default": "cli"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "by",
+          "at",
+          "text"
+        ],
+        "title": "Answer",
+        "description": "An operator's answer, as given. Never edited; a later answer to the same question supersedes it."
+      },
+      "AnswerIn": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "title": "Question Id"
+          },
+          "by": {
+            "type": "string",
+            "title": "By",
+            "description": "Operator id from the operators list"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "The operator's words, verbatim"
+          },
+          "structured": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structured",
+            "description": "Typed reading: params / new_rule / range_lo / aliases / vocabulary"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "description": "Operator confirmed the structured reading; only then it applies",
+            "default": false
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "answer",
+              "confirm_default",
+              "skip",
+              "not_applicable"
+            ],
+            "title": "Action",
+            "default": "answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "by",
+          "text"
+        ],
+        "title": "AnswerIn"
+      },
+      "ApproveRefused": {
+        "properties": {
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail",
+          "evaluation"
+        ],
+        "title": "ApproveRefused"
+      },
+      "AuditEntry": {
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "by": {
+            "type": "string",
+            "title": "By",
+            "description": "'system' or the operator's name"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event",
+            "description": "created | approve | reject | divert | approve_refused"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "at",
+          "by",
+          "event"
+        ],
+        "title": "AuditEntry"
+      },
       "Citation": {
         "properties": {
           "kind": {
@@ -883,6 +1328,190 @@
         ],
         "title": "Connection"
       },
+      "CreateDecision": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "trace": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Trace",
+            "description": "A NegotiationTrace: the `done` payload of /negotiate/stream, or /negotiate's response, unchanged"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "trace"
+        ],
+        "title": "CreateDecision"
+      },
+      "DecideRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject",
+              "divert"
+            ],
+            "title": "Action"
+          },
+          "operator": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Operator",
+            "description": "Who decided. Goes into the audit trail"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Scenario"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "approve only: the situation as it stands now. The plan is re-checked against it; omit to re-check against the scenario it was negotiated on"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "operator"
+        ],
+        "title": "DecideRequest"
+      },
+      "Decision": {
+        "properties": {
+          "decision_id": {
+            "type": "string",
+            "title": "Decision Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "flight": {
+            "type": "string",
+            "title": "Flight"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending_approval",
+              "needs_human_decision",
+              "executed",
+              "rejected",
+              "diverted"
+            ],
+            "title": "Status"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "consensus",
+              "fallback",
+              "no_legal_option"
+            ],
+            "title": "Outcome"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/Proposal-Output",
+            "description": "The plan put to the operator (trace.final)"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/Evaluation",
+            "description": "Rule engine verdict, re-run at approval"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject",
+                "divert"
+              ]
+            },
+            "type": "array",
+            "title": "Allowed Actions"
+          },
+          "executed": {
+            "items": {
+              "$ref": "#/components/schemas/ExecutedAction"
+            },
+            "type": "array",
+            "title": "Executed",
+            "description": "Instructions issued on approval or divert. simulated: recorded here, not sent to any real ATC, airline or ground system"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          },
+          "audit": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEntry"
+            },
+            "type": "array",
+            "title": "Audit"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "trace": {
+            "$ref": "#/components/schemas/NegotiationTrace"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision_id",
+          "scenario_id",
+          "flight",
+          "status",
+          "outcome",
+          "plan",
+          "evaluation",
+          "allowed_actions",
+          "audit",
+          "scenario",
+          "trace"
+        ],
+        "title": "Decision"
+      },
+      "Elicitation": {
+        "properties": {
+          "operators": {
+            "items": {
+              "$ref": "#/components/schemas/Operator"
+            },
+            "type": "array",
+            "title": "Operators"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/Question"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/Answer"
+            },
+            "type": "array",
+            "title": "Answers"
+          }
+        },
+        "type": "object",
+        "title": "Elicitation"
+      },
       "EntityType": {
         "properties": {
           "name": {
@@ -1135,6 +1764,30 @@
         ],
         "title": "Evidence",
         "description": "One claim an agent relies on, tied to the semantic-model element it comes from."
+      },
+      "ExecutedAction": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "slot_assigned",
+              "gate_assigned",
+              "hold_issued",
+              "divert_issued"
+            ],
+            "title": "Kind"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "detail"
+        ],
+        "title": "ExecutedAction"
       },
       "FallbackResponse": {
         "properties": {
@@ -1420,7 +2073,8 @@
               "regulation",
               "standard",
               "statistic",
-              "definition"
+              "definition",
+              "operator"
             ],
             "title": "Kind",
             "default": "brief"
@@ -1445,6 +2099,11 @@
             ],
             "title": "Domain",
             "default": "shared"
+          },
+          "by": {
+            "type": "string",
+            "title": "By",
+            "default": ""
           }
         },
         "type": "object",
@@ -1455,7 +2114,7 @@
           "text"
         ],
         "title": "KnowledgePassage",
-        "description": "A quotable chunk of the brief or a regulation. Briefings cite these by id."
+        "description": "A quotable chunk of the brief, a regulation, or an operator's own words. Briefings cite these by id."
       },
       "Metric": {
         "properties": {
@@ -1675,6 +2334,55 @@
         ],
         "title": "NegotiationTrace"
       },
+      "Operator": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Role"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": ""
+          },
+          "organisation": {
+            "type": "string",
+            "title": "Organisation",
+            "default": ""
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "example",
+              "interviewed"
+            ],
+            "title": "Status",
+            "default": "example"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
+        "title": "Operator",
+        "description": "A named person whose knowledge is in the model. Judges want a named user; here they are."
+      },
       "Project": {
         "properties": {
           "id": {
@@ -1832,6 +2540,76 @@
           "proposal"
         ],
         "title": "ProposalEvent"
+      },
+      "Question": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "atc",
+              "pilot",
+              "ground",
+              "shared"
+            ],
+            "title": "Role"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "synthetic_type",
+              "default_param",
+              "undescribed_concept",
+              "unsourced_metric",
+              "unsourced_rule",
+              "open"
+            ],
+            "title": "Kind"
+          },
+          "target_kind": {
+            "type": "string",
+            "enum": [
+              "type",
+              "rule",
+              "concept",
+              "metric",
+              "none"
+            ],
+            "title": "Target Kind"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why",
+            "default": ""
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority",
+            "default": 2
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "kind",
+          "target_kind",
+          "target",
+          "text"
+        ],
+        "title": "Question",
+        "description": "One thing the build could not learn from documents. Generated, not hand-written."
       },
       "RelationType": {
         "properties": {
@@ -2459,6 +3237,9 @@
             },
             "type": "array",
             "title": "Vocabulary"
+          },
+          "elicitation": {
+            "$ref": "#/components/schemas/Elicitation"
           }
         },
         "type": "object",

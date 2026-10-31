@@ -22,6 +22,10 @@ arrival**. `arrival_min: 38` means 38 minutes late. Negative is early.
 | POST | `/negotiate` | `NegotiateRequest` | `NegotiationTrace` | Blocking, 20–90 s with real agents at `effort: "low"` (longer at higher effort), <1 s with `mock: true` |
 | POST | `/negotiate/stream` | `NegotiateRequest` | SSE | Same, streamed. Use this for the live view |
 | GET | `/semantic/graph`, `/semantic/model`, `/semantic/brief/{role}`, `/semantic/lookup?term=` | | JSON | Read-only semantic model the agents are grounded in. `/semantic/` (not in OpenAPI) is a ready-made HTML viewer. Use `/semantic/lookup?term={rule_id}` to explain a rule result |
+| POST | `/decisions` | `{scenario, trace}` | `Decision` (201) | Put a finished negotiation in front of an operator. `trace` is the stream's `done` payload, unchanged. See "Human approval" |
+| GET | `/decisions?status=` | | `Decision[]` | Newest first. `?status=pending_approval` is the operator's queue |
+| GET | `/decisions/{id}` | | `Decision` | 404 if unknown |
+| POST | `/decisions/{id}/decide` | `DecideRequest` | `Decision` | `approve` / `reject` / `divert`. 409 if not allowed now, or if the rule-engine re-check fails |
 
 `NegotiateRequest`:
 
@@ -182,6 +186,43 @@ infeasible, the same proposer goes again.
 `scenarios/sample_no_legal_option.json` (`GET /scenarios/sample-no-legal-option-ORD`)
 exercises the third case: minimum fuel plus a saturated runway. Use it for
 that UI state and for the demo's "the system declines" moment.
+
+## Human approval (`/decisions`)
+
+The agents negotiate without a human until consensus. Nothing is executed until a
+named operator approves it.
+
+1. Stream `/negotiate/stream`. On `done`, `POST /decisions` with
+   `{scenario, trace: <done payload>}`.
+2. Render the returned `Decision` as the approval card: `plan`, `evaluation`
+   (hard and soft rule results), `outcome`, and the buttons in `allowed_actions`.
+3. `POST /decisions/{id}/decide` with
+   `{action, operator, note?, scenario?}`. `operator` is required and goes into
+   the audit trail.
+
+| `status` | Meaning | `allowed_actions` |
+|---|---|---|
+| `pending_approval` | `consensus` or `fallback` plan waiting for the operator | `approve`, `reject` |
+| `needs_human_decision` | `no_legal_option`: there is **no plan to approve** | `divert`, `reject` |
+| `executed` | Approved. `executed[]` lists the instructions issued | none |
+| `rejected` / `diverted` | Closed by the operator | none |
+
+**Approve re-checks the rules first.** If you send `scenario` with the
+approval (the situation as it stands now), the plan is re-evaluated against it.
+Otherwise it's re-evaluated against the scenario it was negotiated on. If any
+hard rule now fails, the response is **409** with
+`{"detail": {"detail": "<why>", "evaluation": Evaluation}}`. Show the failing
+rules, as for `no_legal_option`. The decision stays `pending_approval` and the
+refusal is added to `audit`.
+
+**Execution is simulated.** `executed[]`
+(`slot_assigned`, `hold_issued`, `gate_assigned`, `divert_issued`) is what would
+be sent; nothing is sent anywhere. `Decision.simulated` is always `true`. Label
+it that way in the UI.
+
+`audit[]` is the full record: `created` by `system`, then each operator action
+with time, name and note, including `approve_refused`. Show it as the decision's
+history. Decisions survive a server reload (`traces/decisions.jsonl`).
 
 ## Key shapes (abridged, see types.ts for everything)
 
