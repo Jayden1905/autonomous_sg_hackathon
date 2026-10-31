@@ -119,6 +119,7 @@
     "gates",
     "crew_shift_ends_min",
     "turnaround_min",
+    "disruption",
     "earliest_arrival_min",
     "demo: flight, date, schedule and delays are the real DOT row; minimum fuel and the saturated runway are hand-set so that no legal option exists"
   ]

@@ -137,6 +137,7 @@
     "gates",
     "crew_shift_ends_min",
     "turnaround_min",
+    "disruption",
     "demo: flight, date, schedule and delays are the real DOT row; the airport layout is hand-tuned so the earliest legal slot and the cheapest plan differ"
   ]
 }
