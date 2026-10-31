@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, ArrowRight, X, Check } from "lucide-react";
 import type { Scenario } from "@/workspace";
-import { IconButton } from "@/workspace";
+import { IconButton, disruptionLabel, provenanceLabel } from "@/workspace";
 import styles from "./scenarios.module.css";
 
 export function ScenarioPicker({
   scenarios,
   selectedId,
   onSelect,
+  status,
 }: {
   scenarios: Scenario[];
   selectedId: string;
   onSelect: (scenario: Scenario) => void;
+  /** Where the loaded scenarios came from, e.g. dataset availability. */
+  status?: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -30,7 +33,18 @@ export function ScenarioPicker({
     trigger.current?.focus();
   };
   const filtered = scenarios.filter((s) =>
-    `${s.scenario_id} ${s.flight} ${s.origin} ${s.destination} ${s.disruption}`
+    [
+      s.scenario_id,
+      s.flight,
+      s.airline_name,
+      s.origin,
+      s.origin_info?.city,
+      s.destination,
+      s.destination_info?.city,
+      s.disruption,
+      provenanceLabel(s),
+    ]
+      .join(" ")
       .toLowerCase()
       .includes(query.trim().toLowerCase()),
   );
@@ -77,6 +91,11 @@ export function ScenarioPicker({
           Searching {scenarios.length} loaded scenarios. Times are relative to
           scheduled arrival.
         </p>
+        {status && (
+          <p className={styles.note} role="status">
+            {status}
+          </p>
+        )}
         <div className={styles.results}>
           {filtered.length ? (
             filtered.map((s) => (
@@ -97,7 +116,9 @@ export function ScenarioPicker({
                   </span>
                   {selectedId === s.scenario_id && <Check size={14} />}
                 </span>
-                <span>{s.disruption}</span>
+                <span>
+                  {provenanceLabel(s)} · {disruptionLabel(s)}
+                </span>
               </button>
             ))
           ) : (

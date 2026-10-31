@@ -13,20 +13,30 @@ import {
 } from "lucide-react";
 import { FlightTab } from "@/flight";
 import { ScenarioPicker } from "@/scenarios";
-import { AirportScene, demoLayout } from "@/airport";
+import { AirportScene, demoLayout, stormLayout } from "@/airport";
 import {
   IconButton,
   DataSection,
   DataRow,
   contextLabel,
+  disruptionLabel,
   relativeMinutes,
 } from "@/workspace";
 import type { FlightView, Scenario, Trace, ViewContext } from "@/workspace";
+import storm from "../../../scenarios/demo_storm_ua599.json";
+import divert from "../../../scenarios/demo_storm_vx204_divert.json";
+import hold from "../../../scenarios/demo_hold_ua599_decision_time.json";
 import weather from "../../../scenarios/sample_weather.json";
 import noOption from "../../../scenarios/sample_no_legal_option.json";
 import recorded from "./traces";
 
-const scenarios: Scenario[] = [weather as Scenario, noOption as Scenario];
+const samples: Scenario[] = [weather as Scenario, noOption as Scenario];
+const scenarios: Scenario[] = [
+  storm as Scenario,
+  divert as Scenario,
+  hold as Scenario,
+  ...samples,
+];
 const traces = recorded;
 type Tab = "Flight" | "Negotiation" | "History";
 
@@ -39,6 +49,10 @@ export function Preview() {
     kind: "flight",
     id: scenarios[0].flight,
   });
+  const layout = samples.includes(scenario) ? demoLayout : stormLayout;
+  const hasRecording = Object.values(traces).some(
+    (t) => t.scenario_id === scenario.scenario_id,
+  );
   const [tab, setTab] = useState<Tab>("Flight");
   const [inspector, setInspector] = useState(() => window.innerWidth >= 900);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -123,7 +137,7 @@ export function Preview() {
         >
           <AirportScene
             view={view}
-            layout={demoLayout}
+            layout={layout}
             inspectorWidth={inspector ? 340 : 0}
           />
         </Suspense>
@@ -136,8 +150,8 @@ export function Preview() {
                   {scenario.flight}
                 </h1>
                 <p>
-                  {scenario.origin} → {scenario.destination} · Weather
-                  disruption
+                  {scenario.origin} → {scenario.destination} ·{" "}
+                  {disruptionLabel(scenario)}
                 </p>
               </div>
               <IconButton
@@ -240,8 +254,9 @@ export function Preview() {
                       <History size={20} />
                       <h3>No recorded result loaded</h3>
                       <p>
-                        Load a bundled mock result to review how the airport and
-                        Flight tab respond.
+                        {hasRecording
+                          ? "Load a bundled mock result to review how the airport and Flight tab respond."
+                          : "No recorded result exists for this flight. Recorded mock results cover the hand-written samples; open Review states to load one."}
                       </p>
                     </div>
                   )}
@@ -291,6 +306,7 @@ export function Preview() {
                 <button
                   className="run-button"
                   onClick={() => loadFixture(fixture)}
+                  disabled={!hasRecording}
                 >
                   <span>
                     <Play size={15} fill="currentColor" />
@@ -304,7 +320,11 @@ export function Preview() {
                   onClick={exportTrace}
                 />
               </div>
-              <p>Recorded mock agents · Component preview</p>
+              <p>
+                {hasRecording
+                  ? "Recorded mock agents · Component preview"
+                  : "No recording for this flight · Component preview"}
+              </p>
             </footer>
           </aside>
         )}

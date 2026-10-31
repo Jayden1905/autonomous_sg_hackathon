@@ -27,14 +27,19 @@ export function DataRow({
   label,
   children,
   tone,
+  note,
 }: {
   label: string;
   children: ReactNode;
   tone?: "danger";
+  note?: string;
 }) {
   return (
     <div className={styles.row}>
-      <dt>{label}</dt>
+      <dt>
+        {label}
+        {note && <small>{note}</small>}
+      </dt>
       <dd className={tone === "danger" ? styles.danger : undefined}>
         {children}
       </dd>

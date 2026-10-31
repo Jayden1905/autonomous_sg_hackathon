@@ -3,6 +3,7 @@ import { afterEach, beforeAll, describe, it, expect, vi } from "vitest";
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import type { Scenario } from "@/workspace";
+import storm from "../../../scenarios/demo_storm_ua599.json";
 import weather from "../../../scenarios/sample_weather.json";
 import { ScenarioPicker } from "./picker";
 
@@ -35,6 +36,33 @@ describe("scenario picker", () => {
     fireEvent.click(screen.getByRole("button", { name: /UA1234/ }));
     expect(onSelect).toHaveBeenCalledWith(weather);
     expect(screen.getByRole("button", { name: /Find a flight/ })).toHaveFocus();
+  });
+  it("labels each result's provenance and reports where scenarios came from", () => {
+    render(
+      <ScenarioPicker
+        scenarios={[weather as Scenario, storm as Scenario]}
+        selectedId=""
+        onSelect={() => {}}
+        status="Backend not reachable"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Find a flight/ }));
+    expect(
+      screen.getByText(
+        "Hand-written sample · not from the dataset · Weather disruption",
+      ),
+    ).toBeVisible();
+    expect(
+      screen.getByText("US DOT flight · 8 May 2015 · Weather disruption"),
+    ).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Backend not reachable",
+    );
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "boston" },
+    });
+    expect(screen.getByRole("button", { name: /UA599/ })).toBeVisible();
+    expect(screen.queryByRole("button", { name: /UA1234/ })).toBeNull();
   });
   it("closes with Escape and returns focus to its trigger", () => {
     render(<ScenarioPicker scenarios={[]} selectedId="" onSelect={() => {}} />);

@@ -1,7 +1,17 @@
 import { describe, it, expect } from "vitest";
 import type { FlightView, Scenario } from "@/workspace";
+import storm from "../../../scenarios/demo_storm_ua599.json";
+import divert from "../../../scenarios/demo_storm_vx204_divert.json";
+import hold from "../../../scenarios/demo_hold_ua599_decision_time.json";
 import weather from "../../../scenarios/sample_weather.json";
-import { demoLayout, resolveScene, unmappedResources } from "./layout";
+import noOption from "../../../scenarios/sample_no_legal_option.json";
+import {
+  datasetLayout,
+  demoLayout,
+  resolveScene,
+  stormLayout,
+  unmappedResources,
+} from "./layout";
 
 const view: FlightView = {
   scenario: weather as Scenario,
@@ -70,5 +80,32 @@ describe("illustrative scene adapter", () => {
         demoLayout,
       ),
     ).toEqual(["Gate Z1"]);
+  });
+  it.each([
+    ["samples", [weather, noOption], demoLayout],
+    ["storm demos", [storm, divert, hold], stormLayout],
+  ])("maps every resource of the bundled %s", (_, scenarios, layout) => {
+    for (const scenario of scenarios)
+      expect(unmappedResources(scenario as Scenario, layout)).toEqual([]);
+  });
+  it("maps backend-generated dataset names in the dataset layout only", () => {
+    const runway = { open: true, taxiway_blocked: false, arrivals: [] };
+    const gate = { free_from_min: 0, free_until_min: 10 };
+    const dataset: Scenario = {
+      ...view.scenario,
+      runways: [
+        { ...runway, name: "04L" },
+        { ...runway, name: "36R" },
+      ],
+      gates: ["A1", "A4", "B7"].map((name) => ({ ...gate, name })),
+    };
+    expect(unmappedResources(dataset, datasetLayout)).toEqual([]);
+    expect(unmappedResources(dataset, demoLayout)).toEqual([
+      "Gate A1",
+      "Gate A4",
+      "Gate B7",
+      "Runway 04L",
+      "Runway 36R",
+    ]);
   });
 });

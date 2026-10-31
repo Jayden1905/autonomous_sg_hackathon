@@ -3,6 +3,7 @@
   atc run scenarios/sample_weather.json [--mock] [--out trace.json]
   atc from-dot data/flights.csv --row 3 [--mock] [--out trace.json]
   atc batch data/flights.csv --n 50 [--mock] [--out results.jsonl]
+  atc batch data/flights.csv --n 20 --sample --seed 2026   spread across months and airports
   atc impact results.jsonl      negotiated vs recorded 2015 delay, per batch (measured + labelled estimates)
   atc semantic profile          regenerate semantic/schema.yaml from data/*.csv
   atc semantic check            validate model.yaml + schema.yaml cross-references
@@ -93,12 +94,41 @@ def cmd_from_dot(args) -> None:
     _run(data.scenario_from_row(rows[args.row]), args)
 
 
+def _sample_rows(csv: Path, n: int, seed: int) -> list[dict]:
+    """Spread the sample across months and destination airports instead of taking the first N rows
+    (which are all 1 January). Round-robin over (month, destination) buckets in a seeded order, so the
+    draw is reproducible and no single hub or day dominates."""
+    import random
+    from collections import defaultdict
+    buckets: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for row in data.qualifying_rows(csv):
+        buckets[(row["MONTH"], row["DESTINATION_AIRPORT"])].append(row)
+    rng = random.Random(seed)
+    keys = sorted(buckets)
+    rng.shuffle(keys)
+    for k in keys:
+        rng.shuffle(buckets[k])
+    picked: list[dict] = []
+    while len(picked) < n and any(buckets.values()):
+        for k in keys:
+            if buckets[k] and len(picked) < n:
+                picked.append(buckets[k].pop())
+    return picked
+
+
 def cmd_batch(args) -> None:
     _preflight_credentials(args.mock)
     agents = make_agents(mock=args.mock, model=args.model)
     out = Path(args.out).open("w") if args.out else None
     stats = {"consensus": 0, "fallback": 0, "no_legal_option": 0, "vetoes": 0, "turns": 0}
-    for row in data.qualifying_rows(Path(args.csv), limit=args.n):
+    if args.sample:
+        rows = _sample_rows(Path(args.csv), args.n, args.seed)
+        months = sorted({r["MONTH"] for r in rows}); dests = sorted({r["DESTINATION_AIRPORT"] for r in rows})
+        print(f"sampled {len(rows)} rows (seed {args.seed}): months {months}, {len(dests)} destinations "
+              f"{dests[:8]}{'…' if len(dests) > 8 else ''}\n")
+    else:
+        rows = data.qualifying_rows(Path(args.csv), limit=args.n)
+    for row in rows:
         tr = negotiate(data.scenario_from_row(row), agents, max_turns=args.max_turns)
         stats[tr.outcome] += 1
         stats["turns"] += len(tr.turns)
@@ -228,9 +258,12 @@ def main(argv: list[str] | None = None) -> None:
     b.add_argument("--row", type=int, default=0, help="index among qualifying rows")
     b.set_defaults(fn=cmd_from_dot)
 
-    c = sub.add_parser("batch", parents=[common], help="run the first N qualifying rows and report convergence")
+    c = sub.add_parser("batch", parents=[common], help="run N qualifying rows and report convergence")
     c.add_argument("csv")
     c.add_argument("--n", type=int, default=20)
+    c.add_argument("--sample", action="store_true",
+                   help="spread the N rows across months and destination airports (seeded) instead of the first N in file order")
+    c.add_argument("--seed", type=int, default=2026)
     c.set_defaults(fn=cmd_batch)
 
     i = sub.add_parser("impact", help="compare a batch's negotiated plans against the recorded 2015 outcomes")
